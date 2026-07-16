@@ -261,9 +261,10 @@ local operator attestation, not cryptographic identity authentication.
 A separate proposal-only Qwen3-8B path now preserves an unreliable primary
 attempt and one linked review-ready retry. It uses two passes, deterministic
 dependent fields, oversized-focus abstention, blind-repeat checks, and a fixed
-review cap. The assisted decisions remain empty. They may estimate proposal
-correction burden but cannot replace the 32-label gold set or authorize holdout
-access.
+review cap. The user can record compact card-number actions in resumable,
+receipt-bound steps, but the assisted decisions remain empty. This path may
+later estimate proposal correction burden; it cannot replace the 32-label gold
+set or authorize holdout access.
 
 **Next check:** complete and submit all 32 labels, preserve the first agreement
 measurement separately

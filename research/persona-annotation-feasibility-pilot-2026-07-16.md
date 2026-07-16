@@ -125,14 +125,18 @@ lexical retrieval will work on the represented user.
 | A post-index verification failure could delete payloads while leaving the new index | Restore the prior mutable index before cleanup; if rollback itself fails, preserve committed payloads and report incomplete rollback |
 | Draft and ancestor races were not covered end to end | Bind the exact draft-byte digest under lock, verify every immutable entry on index read, and replay the initial and adjudication ancestry with barrier and forged-index tests |
 | Localized instructions initially reused schema `0.1`, and told users too broadly to fill every `null` | Issued Turkish label and adjudication contracts as `0.2`, retained exact legacy `0.1` replay, and distinguished required fields from conditional fields that must remain `null` when inapplicable |
+| A rehashed proposal bundle could retain a focus digest that no longer matched its presentation | Reload presentations from the immutable index under the review lock; rebind selected proposal ID, order, focus digest, and every proposal span before recording or sealing |
 
 ## Remaining Gate
 
 The represented user now has two distinct gates. The first is a small
 model-assisted audit using only `confirm`, `correct`, or `not_mine`. Its linked
 retry passed the configured review-burden gate, but no represented-user action
-has been submitted. This audit can measure proposal correction burden and
-false exclusions; it cannot become the gold-label set automatically.
+has been submitted. Compact card-number commands can now record this audit in
+resumable steps and seal it into an immutable receipt. A `correct` action still
+requires the represented user to supply the exact corrected private judgment;
+the system does not invent it. This audit can measure proposal correction
+burden and false exclusions; it cannot become the gold-label set automatically.
 
 The full benchmark still requires the represented user to complete and submit
 the 32 blind annotation labels.
@@ -156,8 +160,10 @@ processing remain separate approval boundaries.
 - [`../src/ynoy/persona_study/holdout.py`](../src/ynoy/persona_study/holdout.py)
 - [`../src/ynoy/persona_study/labels.py`](../src/ynoy/persona_study/labels.py)
 - [`../src/ynoy/persona_study/baselines.py`](../src/ynoy/persona_study/baselines.py)
+- [`../src/ynoy/persona_study/assisted_review_submission.py`](../src/ynoy/persona_study/assisted_review_submission.py)
 - [`../src/ynoy/persona_study/source.py`](../src/ynoy/persona_study/source.py)
 - [`../src/ynoy/persona_study/artifacts.py`](../src/ynoy/persona_study/artifacts.py)
 - [`../tests/test_persona_holdout.py`](../tests/test_persona_holdout.py)
 - [`../tests/test_persona_study_labels.py`](../tests/test_persona_study_labels.py)
 - [`../tests/test_persona_baselines.py`](../tests/test_persona_baselines.py)
+- [`../tests/test_persona_assisted_review_submission.py`](../tests/test_persona_assisted_review_submission.py)

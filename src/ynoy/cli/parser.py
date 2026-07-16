@@ -206,6 +206,15 @@ def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser])
     propose.add_argument("study_id")
     propose.add_argument("--synthetic", action="store_true")
     propose.add_argument("--retry-unreliable", action="store_true")
+    record_review = subcommands.add_parser("record-proposal-review")
+    record_review.add_argument("study_id")
+    record_review.add_argument("--synthetic", action="store_true")
+    record_review.add_argument("--confirm")
+    record_review.add_argument("--not-mine")
+    record_review.add_argument("--correct")
+    submit_review = subcommands.add_parser("submit-proposal-review")
+    submit_review.add_argument("study_id")
+    submit_review.add_argument("--synthetic", action="store_true")
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

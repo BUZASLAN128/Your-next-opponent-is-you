@@ -16,6 +16,11 @@ QUICK_REVIEW_PATH = "annotator/quick-review.template.json"
 QUICK_REVIEW_MARKDOWN_PATH = "annotator/quick-review.md"
 RETRY_QUICK_REVIEW_PATH = "annotator/quick-review.retry-01.template.json"
 RETRY_QUICK_REVIEW_MARKDOWN_PATH = "annotator/quick-review.retry-01.md"
+QUICK_REVIEW_INSTRUCTIONS = (
+    "Her kart için yalnız confirm, correct veya not_mine seç.",
+    "Model önerisi yoksa confirm kullanma.",
+    "correct seçersen corrected_judgment alanını doldur.",
+)
 
 
 def review_payloads(
@@ -58,11 +63,7 @@ def _review_template(bundle: PersonaProposalBundle) -> dict[str, object]:
         "study_id": bundle.receipt.study_id,
         "proposal_receipt_sha256": bundle.receipt.receipt_sha256,
         "completed_by": None,
-        "instructions": [
-            "Her kart için yalnız confirm, correct veya not_mine seç.",
-            "Model önerisi yoksa confirm kullanma.",
-            "correct seçersen corrected_judgment alanını doldur.",
-        ],
+        "instructions": QUICK_REVIEW_INSTRUCTIONS,
         "actions": [_review_action(item) for item in selected],
     }
 

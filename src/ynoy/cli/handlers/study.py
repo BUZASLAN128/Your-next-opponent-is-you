@@ -8,6 +8,10 @@ from pathlib import Path
 
 from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.study_proposals import propose_labels
+from ynoy.cli.handlers.study_review import (
+    record_proposal_review,
+    submit_recorded_proposal_review,
+)
 from ynoy.errors import DataValidationError
 from ynoy.models import StudyArtifactIndex
 from ynoy.persona_study.artifacts import PersonaStudyStore
@@ -17,6 +21,10 @@ from ynoy.persona_study.assisted_labels import (
     QUICK_REVIEW_PATH,
 )
 from ynoy.persona_study.assisted_review import RETRY_QUICK_REVIEW_PATH
+from ynoy.persona_study.assisted_review_contract import (
+    PRIMARY_RECEIPT_PATH,
+    RETRY_RECEIPT_PATH,
+)
 from ynoy.persona_study.label_submission import submit_persona_labels
 from ynoy.persona_study.labels import seal_persona_labels
 from ynoy.persona_study.prepare import prepare_persona_study
@@ -64,6 +72,10 @@ _STATUS_GUIDANCE_TR = {
         "Model geçişleri denetim yükü sınırını aştığı için güvenilmez sayıldı.",
         "Bu önerileri persona için kullanma; model veya protokol karşılaştırması yap.",
     ),
+    "proposal_review_sealed_not_persona_quality": (
+        "Temsil edilen kullanıcının kısa öneri denetimi mühürlendi.",
+        "Bu model denetimidir; persona kalitesi için bağımsız etiket ve saklı ölçüm gerekir.",
+    ),
 }
 
 
@@ -76,6 +88,8 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "submit-labels": _submit_labels,
         "seal-labels": _seal_labels,
         "propose-labels": propose_labels,
+        "record-proposal-review": record_proposal_review,
+        "submit-proposal-review": submit_recorded_proposal_review,
     }
     return handlers[args.study_command](args, context)
 
@@ -250,6 +264,8 @@ def _study_status(store: PersonaStudyStore, index: StudyArtifactIndex) -> str:
         return "awaiting_repeat_adjudication"
     if "evaluator/repeat-agreement.initial.json" in paths:
         return "initial_submission_sealed"
+    if PRIMARY_RECEIPT_PATH in paths or RETRY_RECEIPT_PATH in paths:
+        return "proposal_review_sealed_not_persona_quality"
     if RETRY_PROPOSALS_PATH in paths:
         if RETRY_QUICK_REVIEW_PATH in paths:
             return "awaiting_quick_proposal_review"

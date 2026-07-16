@@ -103,6 +103,13 @@ from ynoy.models.persona_labels import (
     PersonaLabelSealReceipt,
     SealedPersonaLabel,
 )
+from ynoy.models.persona_proposal_review import (
+    CompletedPersonaProposalReview,
+    PersonaProposalReviewAction,
+    PersonaProposalReviewDraft,
+    PersonaProposalReviewReceipt,
+    SealedPersonaProposalReviewDecision,
+)
 from ynoy.models.persona_proposals import (
     PersonaModelProposal,
     PersonaProposalBundle,
@@ -166,6 +173,7 @@ __all__ = [
     "CodexMetadataInventory",
     "CodexMonthSummary",
     "CompletedPersonaLabelSet",
+    "CompletedPersonaProposalReview",
     "CompletedRepeatAdjudicationSet",
     "ConfidenceDimensions",
     "ConfidenceLevel",
@@ -222,6 +230,9 @@ __all__ = [
     "PersonaPreview",
     "PersonaProposalBundle",
     "PersonaProposalPass",
+    "PersonaProposalReviewAction",
+    "PersonaProposalReviewDraft",
+    "PersonaProposalReviewReceipt",
     "PersonaProposalRunReceipt",
     "PersonaStudyManifest",
     "PersonaView",
@@ -242,6 +253,7 @@ __all__ = [
     "ReviewedInteractionState",
     "ScopeRef",
     "SealedPersonaLabel",
+    "SealedPersonaProposalReviewDecision",
     "SourceAuthority",
     "SourceEvent",
     "SourceReceipt",

@@ -270,3 +270,17 @@ review-ready. This reduces interface burden but does not close the Layer 2
 evidence gap: represented-user decisions, correction rate, false exclusions,
 full blind labels, holdout scoring, and a smaller-model comparison remain
 missing.
+
+## Compact Assisted Review Update — 2026-07-17
+
+The bounded proposal audit can now be completed through compact card-number
+actions rather than full-file editing. Partial decisions are resumable, exact
+repeats are idempotent, conflicting changes fail closed, and a complete audit
+is sealed with ancestry-bound decisions and a canonical receipt. Corrections
+remain incomplete until the represented user supplies the exact private
+replacement judgment. Write-failure rollback and concurrent ownership have
+dedicated synthetic coverage.
+
+This reduces interaction burden without changing the evidence layer. The
+active private review still has no represented-user decisions, the full 24+8
+labels remain empty, and no holdout target or persona-quality score exists.

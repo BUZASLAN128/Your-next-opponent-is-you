@@ -677,6 +677,30 @@ infrastructure.
   superiority, a chosen database security design, or permission to open real
   holdout content.
 
+### L-028 — Compact assisted-review submission and transaction checkpoint
+
+- **Type:** Explicit user direction, repository implementation, synthetic
+  lifecycle tests, and content-free validation of the active private contract
+- **Public paths:** [review CLI](../src/ynoy/cli/handlers/study_review.py),
+  [review contract](../src/ynoy/persona_study/assisted_review_contract.py),
+  [submission service](../src/ynoy/persona_study/assisted_review_submission.py),
+  [transaction helper](../src/ynoy/persona_study/artifact_mutations.py), and
+  [synthetic tests](../tests/test_persona_assisted_review_submission.py)
+- **Observed private result:** The active bounded retry draft still has no
+  represented-user decisions. Its immutable proposal binding and mutable
+  review shape validate under the new code without emitting content or
+  identifiers.
+- **Supports:** Compact partial decisions can be recorded idempotently and a
+  complete assisted audit can be sealed into ancestry-bound immutable evidence
+  with aggregate-only CLI output. Injected write and lock-contention cases fail
+  closed without silently creating two accepted histories.
+- **Privacy disposition:** Exact review text and decisions remain D2 private
+  artifacts outside Git. The public record contains only fixed protocol rules,
+  synthetic cases, and categorical pass/fail outcomes.
+- **Does not establish:** Any represented-user agreement rate, correction
+  quality, persona fidelity, gold labels, model selection, holdout performance,
+  automatic promotion, or cryptographic user authentication.
+
 ## External Sources
 
 ### S-001 — Graphiti official overview

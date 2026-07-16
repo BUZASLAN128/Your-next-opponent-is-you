@@ -898,6 +898,31 @@ from silently becoming product authority.
   protocol or establish persona quality. Holdout dialogue, scoring, durable
   persona memory, and automatic promotion remain closed.
 
+### D-051 — Make assisted proposal review compact, resumable, and receipt-bound
+
+- **Status:** Implemented; represented-user decisions remain pending.
+- **Decision:** The represented user may record an assisted audit with card
+  numbers and the three bounded actions `confirm`, `correct`, and `not_mine`
+  instead of editing the whole machine-readable draft. Partial submissions are
+  resumable. Repeating the same action is idempotent; conflicting, duplicate,
+  unavailable, or non-selected actions fail before mutation.
+- **Correction boundary:** `correct` marks the target but cannot invent the
+  replacement judgment. Submission remains blocked until the private draft
+  contains an exact, schema-valid represented-user correction.
+- **Seal and replay:** A complete audit atomically seals the completed draft,
+  exact decisions, and a canonical receipt. Source/proposal ancestry, exact
+  spans, immutable hashes, data class, and the selected attempt are rechecked.
+  A repeated submission replays the same sealed receipt.
+- **Privacy and authority:** Real review decisions and exact text stay outside
+  Git. Aggregate CLI output exposes no content or study identifier. A
+  represented-user review remains local operator attestation, not
+  cryptographic identity, a gold label set, persona-quality evidence, holdout
+  authority, or automatic core promotion.
+- **Transaction rule:** Draft replacement, immutable artifacts, and index
+  update form one rollback-aware transaction under the per-study lock. An
+  injected write failure restores the original draft byte for byte; concurrent
+  ownership fails closed.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

@@ -625,3 +625,19 @@ the next evidence check for the current pilot, but durable activation must
 first pass a separate canonical-claim Gate 0. The benchmark also needs a strict
 event-time boundary, executable fatal gates, target isolation, and a
 pre-registered decision rule before it can measure the center hypothesis.
+
+## Compact Assisted Review Checkpoint — 2026-07-17
+
+The review interface no longer requires an ordinary user to edit every field
+of the assisted proposal JSON. A compact, resumable command records only card
+numbers and `confirm`, `correct`, or `not_mine`; deterministic code retains
+proposal binding, exact-span validation, data classification, immutable
+receipt construction, abstention, and no-promotion rules. Corrections remain
+pending until the represented user supplies their exact replacement judgment.
+
+This is an interaction and transaction improvement, not a scientific result.
+The active private review still has no represented-user decisions. The next
+discriminator is unchanged: collect the small assisted audit, then complete
+the independent 24+8 gold labels before opening or scoring the protected
+holdout. The compact audit cannot promote a proposal or stand in for that gold
+set.

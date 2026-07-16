@@ -2091,3 +2091,38 @@ durable persona activation, use one canonical receipt-bound claim path and
 exclude proposed, non-user, unadopted, future-valid, expired, or wrong-scope
 claims before ranking. The report does not authorize infrastructure or
 real-data ingestion.
+
+## Event 042 — Add Compact Represented-User Proposal Review and PR Checkpoint
+
+### User Direction
+
+The user asked the system to reduce the manual data-entry burden, keep small
+model hallucination under deterministic control, use the available 8B model
+only where necessary, and publish frequent reviewable checkpoints without
+placing personal data in the public repository.
+
+### Implemented Boundary
+
+The assisted sidecar now accepts compact card-number decisions for
+`confirm`, `correct`, and `not_mine`. Decisions can be recorded in parts and
+replayed idempotently. Conflicts, unavailable confirmations, unknown cards,
+changed proposal ancestry, inexact spans, incomplete corrections, and tampered
+artifacts fail closed. A correction action does not synthesize the user's
+replacement judgment; the exact private correction remains required before
+submission.
+
+Completed review submission atomically seals the represented-user draft,
+decision set, and canonical receipt under the existing per-study transaction
+lock. Negative tests inject interrupted writes and concurrent ownership. The
+former restores the original draft byte for byte, while the latter leaves one
+consistent owner or a stable replay result rather than duplicate evidence.
+
+### Evidence Status
+
+The active private retry still contains no represented-user decisions. Its
+existing review contract was parsed and validated without emitting content,
+paths, identifiers, or hashes. Therefore this checkpoint reduces interaction
+burden and strengthens transaction evidence only. It does not measure proposal
+agreement, persona quality, model superiority, the full 24+8 annotation set,
+or protected-holdout performance. Public Git receives code, synthetic tests,
+and categorical research claims only.
