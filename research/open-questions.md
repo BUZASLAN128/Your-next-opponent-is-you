@@ -1,7 +1,7 @@
 # Open Questions and Deep-Research Briefs
 
 > Status: prioritized research backlog
-> Last updated: 2026-07-16
+> Last updated: 2026-07-17
 > Constraint: the V1 runtime baseline is confirmed in D-025 through D-032;
 > questions may challenge it with evidence but must not silently expand it.
 
@@ -1151,3 +1151,23 @@ These are candidates, not decisions:
    review burden.
 10. Publish capability status honestly: vision, researched, prototyped,
     implemented, and verified are different states.
+### RQ-026 — What is the minimum canonical-claim gate before durable persona activation?
+
+**Status:** Open and blocking before the reviewed annotation path can feed
+Mirror or any durable cognitive core.
+
+**Observed source conflict:** The new review and assisted-label paths preserve
+represented-user authority and keep model proposals ineligible for core
+promotion. The legacy Mirror path still ranks both `proposed` and `confirmed`
+claim candidates and does not require represented-user claim ownership. Its
+database writer currently has no non-test caller, so the unsafe path is dormant
+rather than absent.
+
+**Next discriminating check:** Define one typed admission contract and prove
+with adversarial tests that proposed, assistant/third-party, unadopted,
+unreceipted, future-valid, expired, wrong-scope, superseded, and duplicate-
+origin claims cannot enter inference. Then connect exactly one reviewed source
+through persist, retrieve, and erase without a second truth owner.
+
+**Unsafe to decide yet:** The database procedure shape, migration, automatic
+promotion policy, or real-corpus activation.

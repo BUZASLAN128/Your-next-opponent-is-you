@@ -2020,10 +2020,10 @@ a small represented-user review draft outside Git. Each presentation receives
 two independently prompted passes. The model may return only seven independent
 classification fields; exact source spans, scope defaults, exclusion,
 abstention, and persona eligibility are derived by deterministic code. Schema,
-configured and operator-attested provider identity, loopback locality, exact focus binding, pass agreement,
-blind-repeat agreement, append transaction integrity, and the review-burden
-cap fail closed. No proposal can promote itself into persona or open the
-protected holdout.
+configured and operator-attested provider identity, loopback locality, exact
+focus binding, pass agreement, blind-repeat agreement, append transaction
+integrity, and the review-burden cap fail closed. No proposal can promote
+itself into persona or open the protected holdout.
 
 Focus text that cannot fit the bounded local context is not truncated and
 presented as fully read. It receives a deterministic unknown, abstaining,
@@ -2058,3 +2058,36 @@ new proposal receipt is versioned `0.2` while retaining validated replay for
 the already immutable pre-guard `0.1` form. Documentation now describes the
 provider tuple as configured and operator-attested, not runtime-
 cryptographically verified.
+
+## Event 041 — Audit an External Project Evaluation Against Current HEAD
+
+### User Direction
+
+The user supplied another AI system's repository evaluation and asked for it
+to be inspected while the current checkpoint was being finalized.
+
+### Intake and Source Audit
+
+The evaluation was preserved with authority `none`, its original content hash,
+and its frozen commit. It was then checked against current source rather than
+accepted from prose. The central warning is supported: legacy Mirror ranking
+accepts both proposed and confirmed candidates without a represented-user
+claim-holder gate, while the candidate persistence method has no non-test
+caller. This makes the risk dormant today but blocking before the reviewed
+annotation path can feed durable inference.
+
+The D0-only benchmark, unsafe benchmark temporal boundary, nominal fatal
+gates, broad runtime database grants, missing derivation-edge insertion, and
+stale PR evidence were also confirmed. Deletion and temporal-validity claims
+needed qualification: the newer persona-study path has bounded on-access
+expiry, and some `valid_until` checks exist, but the older review path remains
+projection-only and `valid_from` is not consistently enforced.
+
+### Disposition
+
+No broad legacy-core change was mixed into the assisted-label checkpoint. The
+evaluation instead establishes a separate Gate 0 requirement: before any
+durable persona activation, use one canonical receipt-bound claim path and
+exclude proposed, non-user, unadopted, future-valid, expired, or wrong-scope
+claims before ranking. The report does not authorize infrastructure or
+real-data ingestion.

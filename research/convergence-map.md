@@ -609,3 +609,19 @@ an explicit deterministic abstention. This moves interface feasibility
 forward, but not identity evidence or persona quality. The next discriminator
 is represented-user agreement, correction, and false-exclusion behavior on the
 bounded review set; the protected holdout remains later.
+
+## External Evaluation Audit — 2026-07-17
+
+A user-supplied evaluation of commit `701c67b` was preserved with no authority
+and audited against current source. It confirms that the safe review sidecar
+and the legacy Mirror candidate path are not yet one system: the sidecar keeps
+proposals quarantined, while legacy ranking accepts proposed candidates
+without a represented-user ownership gate. The writer is not called by
+production code, so this is a pre-activation contract defect rather than
+evidence of a live contaminated core.
+
+This sharpens the convergence order. Represented-user review quality remains
+the next evidence check for the current pilot, but durable activation must
+first pass a separate canonical-claim Gate 0. The benchmark also needs a strict
+event-time boundary, executable fatal gates, target isolation, and a
+pre-registered decision rule before it can measure the center hypothesis.

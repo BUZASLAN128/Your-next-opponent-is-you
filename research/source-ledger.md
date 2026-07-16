@@ -655,6 +655,28 @@ infrastructure.
   rate for oversized text, holdout quality, or permission for automatic
   persona promotion.
 
+### L-027 — User-supplied project evaluation and current-HEAD claim audit
+
+- **Type:** User-supplied external AI evaluation plus local source audit
+- **Supplied artifact hash:**
+  `62A68EFE858E6758B6A3DD806B0052C13A6D044E81A666B99F4CEB429CF9668D`
+- **Frozen report commit:** `701c67b2a992e9884393a7de1cfd02a65d2354c0`
+- **Preserved intake:** [Project evaluation](incoming-reports/project-evaluation-2026-07-17.md)
+- **Authority:** None. Findings were checked individually against current
+  source.
+- **Confirmed:** legacy proposed/confirmed candidate mixing without a
+  represented-user gate; no production claim-candidate writer; D0-only
+  benchmark; unsafe benchmark temporal boundary; nominal fatal gates; broad
+  runtime database DML; missing derivation-edge insertion; stale PR evidence.
+- **Qualified:** newer persona-study expiry reduces but does not close the
+  deletion gap; selected `valid_until` checks exist, while `valid_from` and the
+  shared scope-time evaluator remain inconsistently applied.
+- **Supports:** a separate canonical-claim Gate 0 before durable persona
+  activation and a benchmark-instrument gate before center-claim scoring.
+- **Does not establish:** a production exploit, persona quality, model
+  superiority, a chosen database security design, or permission to open real
+  holdout content.
+
 ## External Sources
 
 ### S-001 — Graphiti official overview
