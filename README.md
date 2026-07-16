@@ -19,3 +19,5 @@ the AI agents you already use—across any IDE.
 **Your decisions become memory.  
 Your corrections become policy.  
 Your standards become the controller.**
+
+https://youtu.be/KzkHrhNLiV0?si=65EaVmcBr66vXedP
