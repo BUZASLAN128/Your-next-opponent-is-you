@@ -1,0 +1,31 @@
+name: ynoy
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    image: ynoy/postgres:18.4-pgvector0.8.2
+    environment:
+      POSTGRES_DB: ${YNOY_DB_NAME:-ynoy}
+      POSTGRES_USER: ${YNOY_DB_USER:-ynoy}
+      POSTGRES_PASSWORD: ${YNOY_DB_PASSWORD:-ynoy_local_dev_only}
+    ports:
+      - "127.0.0.1:${YNOY_POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - ynoy-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" &&
+          test "$$(psql -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" -Atqc
+          "SHOW server_version_num")" = "180004"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  ynoy-postgres-data:

@@ -1,0 +1,42 @@
+# Generated end-of-conversation Markdown bundle.
+/exports/*.md
+
+# Python tooling.
+/.venv/
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+/.coverage
+/htmlcov/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Private identity data and generated artifacts. Synthetic fixtures belong
+# under tests/fixtures and must declare themselves as synthetic in-file.
+data/
+private/
+reports/
+models/
+!/src/ynoy/models/
+!/src/ynoy/models/*.py
+*.sqlite
+*.sqlite3
+*.db
+*.parquet
+*.gguf
+*.safetensors
+conversations.json
+conversations-*.json
+*.zip
+*.jsonl
+sessions/
+archived_sessions/
+codex-metadata-inventory/
+manifests/
+backup*/
+
+# Local configuration and secrets.
+/.env
+/.env.*
+!/.env.example
