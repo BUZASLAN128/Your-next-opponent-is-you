@@ -38,6 +38,9 @@ leaving only the promoted private run.
 - Completed labels require a local `completed_by=represented_user` operator
   attestation, exact focus spans, the fixed vocabulary, and all 32 presentation
   IDs in immutable order. It is not cryptographic identity authentication.
+- Newly generated Turkish forms use `persona-labels/0.2`. Legacy `0.1` label
+  and repeat-adjudication forms remain valid only with their original exact
+  instructions, so localization does not silently rewrite an existing contract.
 - Unknown, quoted, pasted, mixed, third-party, non-endorsed, or hypothetical
   material cannot enter persona. Unknown identity or decision fields require
   abstention.
@@ -121,12 +124,16 @@ lexical retrieval will work on the represented user.
 | A corpus-dependent annotation partition count remained public | Replaced it with a categorical configured-bounds result |
 | A post-index verification failure could delete payloads while leaving the new index | Restore the prior mutable index before cleanup; if rollback itself fails, preserve committed payloads and report incomplete rollback |
 | Draft and ancestor races were not covered end to end | Bind the exact draft-byte digest under lock, verify every immutable entry on index read, and replay the initial and adjudication ancestry with barrier and forged-index tests |
+| Localized instructions initially reused schema `0.1`, and told users too broadly to fill every `null` | Issued Turkish label and adjudication contracts as `0.2`, retained exact legacy `0.1` replay, and distinguished required fields from conditional fields that must remain `null` when inapplicable |
 
 ## Remaining Gate
 
 The represented user must complete and submit the 32 blind annotation labels.
 That first submission is immutable; any mismatched repeat pairs must then be
 resolved in the separate adjudication draft before the final label set seals.
+The user-facing form, value glossary, status guidance, and repeat-resolution
+steps are available in the
+[Turkish labeling guide](persona-etiketleme-kilavuzu-tr.md).
 Only afterward may the protected holdout dialogue be opened, exact duplicates checked, target-free
 predictions frozen, and represented-user holdout targets collected for scoring.
 

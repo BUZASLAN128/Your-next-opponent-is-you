@@ -116,6 +116,7 @@ The shortest current distinction is:
 | [codex-metadata-inventory-2026-07-16.md](codex-metadata-inventory-2026-07-16.md) | Public contract, privacy boundary, result qualification, and next step for the private local metadata inventory |
 | [codex-content-pilot-2026-07-16.md](codex-content-pilot-2026-07-16.md) | Content-free public record of the bounded, memory-only real Codex parser checkpoint and the next annotation gate |
 | [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md) | Current 24+8 label contract, metadata-only protected holdout, synthetic baselines, real aggregate evidence, and remaining user-label gate |
+| [persona-etiketleme-kilavuzu-tr.md](persona-etiketleme-kilavuzu-tr.md) | Özel 24+8 etiketleme paketi için Türkçe adımlar, sabit değer sözlüğü ve kör tekrar uzlaştırma akışı |
 | [incoming-reports/](incoming-reports/README.md) | User-supplied inputs preserved verbatim when safe or hash-linked and redacted when identity-bearing; all remain non-authoritative |
 
 ## End-of-Conversation Markdown Bundle

@@ -21,6 +21,21 @@ from ynoy.persona_study.prepare import PreparedPersonaStudy, prepare_persona_stu
 from ynoy.util import canonical_sha256
 
 _NOW = datetime(2026, 2, 1, tzinfo=UTC)
+_LEGACY_LABEL_INSTRUCTIONS = (
+    "Her null alani yalniz kendi yarginla doldur.",
+    "Yapisal user rolu, sozlerin sana ait oldugunu kanitlamaz.",
+    "Kart tanidik gelse bile onceki yaniti kopyalama.",
+    "Exact span alanlarinda focus metnindeki karakter araliklarini kullan.",
+    "Ilk submit-labels islemi cevaplarini immutable yapar; once yerel kopyani kontrol et.",
+    "Blind-repeat uyusmazligi olursa ilk cevaplar korunur ve ayri adjudication acilir.",
+    "Bitirdiginde completed_by alanini represented_user yap.",
+)
+_LEGACY_ADJUDICATION_INSTRUCTIONS = (
+    "Bu dosya ilk submission'i degistirmez; yalniz uyusmayan tekrar ciftlerini karara baglar.",
+    "initial_judgments alanlarini degistirme.",
+    "Her final_judgment ve adjudication_reason alanini kendi yarginla doldur.",
+    "Bitirdiginde completed_by alanini represented_user yap.",
+)
 
 
 def _study(tmp_path: Path) -> tuple[PersonaStudyStore, PreparedPersonaStudy]:
@@ -218,3 +233,37 @@ def test_non_self_text_cannot_enter_persona(tmp_path: Path) -> None:
         submit_persona_labels(store, result.manifest.study_id)
 
     assert error.value.code == "persona_labels_incomplete_or_invalid"
+
+
+def test_legacy_label_contract_can_be_submitted_without_rewriting_history(tmp_path: Path) -> None:
+    store, result = _study(tmp_path)
+    draft = _complete_draft(result)
+    draft["schema_version"] = "persona-labels/0.1"
+    draft["instructions"] = list(_LEGACY_LABEL_INSTRUCTIONS)
+    _write_draft(result, draft)
+
+    submitted = submit_persona_labels(store, result.manifest.study_id)
+
+    assert submitted.initial_receipt.repeat_exact_match_count == 8
+    assert submitted.seal_receipt is not None
+
+
+def test_legacy_adjudication_contract_can_be_sealed_without_rewriting_history(
+    tmp_path: Path,
+) -> None:
+    store, result, submitted = _mismatch_submission(tmp_path)
+    study_id = result.manifest.study_id
+    template = json.loads(store.read_artifact(study_id, ADJUDICATION_PATH, allow_user_draft=True))
+    template["schema_version"] = "persona-repeat-adjudication/0.1"
+    template["instructions"] = list(_LEGACY_ADJUDICATION_INSTRUCTIONS)
+    _complete_adjudication(
+        store,
+        study_id,
+        json.dumps(template, ensure_ascii=False).encode(),
+        tamper_initial=False,
+    )
+
+    sealed = seal_persona_labels(store, study_id)
+
+    assert submitted.initial_receipt.adjudication_required is True
+    assert sealed.receipt.adjudicated_repeat_pair_count == 1

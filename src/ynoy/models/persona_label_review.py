@@ -72,7 +72,9 @@ class RepeatAdjudicationEntry(StrictModel):
 
 
 class CompletedRepeatAdjudicationSet(StrictModel):
-    schema_version: Literal["persona-repeat-adjudication/0.1"] = "persona-repeat-adjudication/0.1"
+    schema_version: Literal[
+        "persona-repeat-adjudication/0.1", "persona-repeat-adjudication/0.2"
+    ] = "persona-repeat-adjudication/0.2"
     study_id: str = Field(pattern=r"^[0-9a-f]{64}$")
     initial_receipt_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     completed_by: Literal["represented_user"]

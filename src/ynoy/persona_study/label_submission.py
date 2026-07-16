@@ -1,3 +1,5 @@
+# ruff: noqa: RUF001 -- Turkish dotless-i text is intentional user-facing copy.
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -36,12 +38,27 @@ from ynoy.persona_study.label_contract import (
 )
 from ynoy.util import canonical_json_bytes, canonical_sha256
 
-ADJUDICATION_INSTRUCTIONS = (
+_ADJUDICATION_INSTRUCTIONS_V01 = (
     "Bu dosya ilk submission'i degistirmez; yalniz uyusmayan tekrar ciftlerini karara baglar.",
     "initial_judgments alanlarini degistirme.",
     "Her final_judgment ve adjudication_reason alanini kendi yarginla doldur.",
     "Bitirdiginde completed_by alanini represented_user yap.",
 )
+
+ADJUDICATION_INSTRUCTIONS = (
+    "Bu dosya ilk gönderimi değiştirmez; yalnız uyuşmayan kör tekrar çiftlerini uzlaştırır.",
+    "`initial_judgments` alanlarına dokunma; bunlar mühürlenmiş ilk yanıtları gösterir.",
+    "Her `final_judgment` ve `adjudication_reason` alanını kendi nihai yargına göre doldur.",
+    "Bitirdiğinde `completed_by` alanını `represented_user` yap.",
+)
+
+
+def adjudication_instructions(schema_version: str) -> tuple[str, ...]:
+    if schema_version == "persona-repeat-adjudication/0.1":
+        return _ADJUDICATION_INSTRUCTIONS_V01
+    if schema_version == "persona-repeat-adjudication/0.2":
+        return ADJUDICATION_INSTRUCTIONS
+    raise ValueError(f"unsupported adjudication schema: {schema_version}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,7 +174,7 @@ def _adjudication_template(
 ) -> dict[str, object]:
     mismatches = {item.window_id for item in receipt.pair_results if not item.exact_match}
     return {
-        "schema_version": "persona-repeat-adjudication/0.1",
+        "schema_version": "persona-repeat-adjudication/0.2",
         "study_id": completed.study_id,
         "initial_receipt_sha256": receipt.receipt_sha256,
         "completed_by": None,

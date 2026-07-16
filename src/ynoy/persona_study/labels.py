@@ -35,7 +35,7 @@ from ynoy.persona_study.label_contract import (
     validate_completed_labels,
     validate_judgment_spans,
 )
-from ynoy.persona_study.label_submission import ADJUDICATION_INSTRUCTIONS, submit_persona_labels
+from ynoy.persona_study.label_submission import adjudication_instructions, submit_persona_labels
 from ynoy.util import canonical_json_bytes, canonical_sha256, sha256_bytes
 
 
@@ -151,7 +151,7 @@ def _validate_adjudication(
             "persona_label_adjudication_receipt_mismatch",
             "Repeat adjudication does not match the immutable initial submission.",
         )
-    if value.instructions != ADJUDICATION_INSTRUCTIONS:
+    if value.instructions != adjudication_instructions(value.schema_version):
         raise DataValidationError(
             "persona_label_adjudication_contract_changed",
             "The represented-user adjudication instructions changed.",

@@ -1974,3 +1974,26 @@ deleted; the operation reports incomplete rollback. The current private empty
 pack was regenerated through a disposable staging run, semantic artifacts and
 holdout lineage replayed, and the staging root was removed. No private content,
 model output, or persona-quality claim entered Git.
+
+## Event 039 — Localize the Represented-User Labeling Gate Without Rewriting Legacy Contracts
+
+The user requested a Turkish labeling workflow. The form instructions, review
+cards, fixed-value glossary, repeat-resolution instructions, and CLI guidance
+were translated while machine field names, enum values, commands, and status
+codes remained stable. A public Turkish guide now explains the complete 24+8
+workflow without exposing the private pack location or content.
+
+Independent review found two protocol issues in the first localization pass.
+Changing exact instruction text under schema `0.1` would have invalidated older
+forms, and a general direction to fill every `null` conflicted with fields that
+must remain empty when they do not apply. The corrected contract emits new
+Turkish label and adjudication forms as `0.2`, validates legacy `0.1` forms
+against their original exact instructions, and explicitly separates required
+decisions from conditional or optional fields.
+
+Synthetic regression tests cover both legacy paths and the Turkish null-field
+guidance. The active private draft was confirmed empty before replacement,
+regenerated through a disposable staging root, replayed against the same
+semantic selection and holdout lineage, and left as one empty active `0.2`
+pack. No holdout dialogue, model provider, persona target, or private content
+was opened or written to Git.

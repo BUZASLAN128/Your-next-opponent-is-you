@@ -143,7 +143,7 @@ class PersonaAnnotationLabel(PersonaAnnotationJudgment):
 
 
 class CompletedPersonaLabelSet(StrictModel):
-    schema_version: Literal["persona-labels/0.1"] = "persona-labels/0.1"
+    schema_version: Literal["persona-labels/0.1", "persona-labels/0.2"] = "persona-labels/0.2"
     study_id: str = Field(pattern=r"^[0-9a-f]{64}$")
     completed_by: Literal["represented_user"]
     instructions: tuple[str, ...]

@@ -1,3 +1,5 @@
+# ruff: noqa: RUF001 -- Turkish dotless-i text is intentional user-facing copy.
+
 from __future__ import annotations
 
 import argparse
@@ -11,6 +13,41 @@ from ynoy.persona_study.labels import seal_persona_labels
 from ynoy.persona_study.prepare import prepare_persona_study
 from ynoy.policy import assert_outside_git
 from ynoy.util import utc_now
+
+_STATUS_GUIDANCE_TR = {
+    "awaiting_represented_user_labels": (
+        "Paket hazır; temsil edilen kullanıcının 32 kör etiketi tamamlaması bekleniyor.",
+        "Önce inceleme kartlarını oku, sonra etiket dosyasındaki boş alanları doldur.",
+    ),
+    "initial_submission_sealed": (
+        "İlk etiket gönderimi değiştirilemez olarak mühürlendi.",
+        "Çalışma durumunu yeniden denetle; gerekiyorsa uzlaştırma formunu tamamla.",
+    ),
+    "awaiting_repeat_adjudication": (
+        "Kör tekrar uyuşmazlıkları için kullanıcı uzlaştırması bekleniyor.",
+        "Uzlaştırma formundaki nihai yargıları doldur, sonra etiketleri mühürle.",
+    ),
+    "annotation_initial_submission_sealed_awaiting_adjudication": (
+        "İlk yanıtlar mühürlendi; kör tekrar uyuşmazlıkları ayrı biçimde korunuyor.",
+        "Oluşturulan uzlaştırma formunu tamamladıktan sonra `seal-labels` çalıştır.",
+    ),
+    "annotation_labels_sealed_not_persona_quality": (
+        "Etiketler mühürlendi; bu sonuç henüz kişilik benzerliği kalitesi kanıtı değildir.",
+        "Saklı değerlendirme adımı, ayrı bütünlük kontrollerinden sonra açılabilir.",
+    ),
+    "expired_artifacts_purged": (
+        "Süresi dolan özel çalışma kalıntıları temizlendi.",
+        "Gerekirse çalışma durumunu yeniden denetle.",
+    ),
+    "expiry_purge_incomplete": (
+        "Süresi dolan bazı özel çalışma kalıntıları güvenli biçimde temizlenemedi.",
+        "Yeni işleme geçmeden önce başarısız temizleme kayıtlarını incele.",
+    ),
+    "derived_study_deleted": (
+        "Türetilmiş çalışma ve kayıtlı bağımlılık kapanımı silindi.",
+        "Kaynak konuşmalar değiştirilmedi; gerekiyorsa yeni bir çalışma hazırla.",
+    ),
+}
 
 
 def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
@@ -36,8 +73,11 @@ def _prepare(args: argparse.Namespace, context: CommandContext) -> dict[str, obj
         synthetic=synthetic,
     )
     manifest = result.manifest
+    message_tr, next_step_tr = _status_guidance_tr(manifest.status)
     return {
         "status": manifest.status,
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "study_id": manifest.study_id,
         "manifest_sha256": manifest.manifest_sha256,
         "selection_sha256": manifest.selection_sha256,
@@ -75,15 +115,22 @@ def _status(args: argparse.Namespace, context: CommandContext) -> dict[str, obje
     store = _store(args, context)
     purge = store.purge_expired(utc_now())
     if purge.failed_count:
+        message_tr, next_step_tr = _status_guidance_tr("expiry_purge_incomplete")
         return {
             "status": "expiry_purge_incomplete",
+            "message_tr": message_tr,
+            "next_step_tr": next_step_tr,
             "failed_run_count": purge.failed_run_count,
             "failed_tombstone_count": purge.failed_tombstone_count,
             "content_emitted": False,
         }
     index = store.read_index(args.study_id)
+    status = _study_status(index)
+    message_tr, next_step_tr = _status_guidance_tr(status)
     return {
-        "status": _study_status(index),
+        "status": status,
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "study_id": index.study_id,
         "expires_at": index.expires_at,
         "artifact_count": len(index.entries),
@@ -93,10 +140,12 @@ def _status(args: argparse.Namespace, context: CommandContext) -> dict[str, obje
 
 def _purge_expired(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
     result = _store(args, context).purge_expired(utc_now())
+    status = "expired_artifacts_purged" if not result.failed_count else "expiry_purge_incomplete"
+    message_tr, next_step_tr = _status_guidance_tr(status)
     return {
-        "status": "expired_artifacts_purged"
-        if not result.failed_count
-        else "expiry_purge_incomplete",
+        "status": status,
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "deleted_artifact_count": result.deleted_artifact_count,
         "deleted_tombstone_count": result.deleted_tombstone_count,
         "failed_run_count": result.failed_run_count,
@@ -110,8 +159,11 @@ def _delete(args: argparse.Namespace, context: CommandContext) -> dict[str, obje
     store = _store(args, context)
     deleted = store.delete_run(args.study_id)
     store.require_absent(args.study_id)
+    message_tr, next_step_tr = _status_guidance_tr("derived_study_deleted")
     return {
         "status": "derived_study_deleted",
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "deleted_artifact_count": deleted,
         "source_deleted": False,
     }
@@ -120,12 +172,16 @@ def _delete(args: argparse.Namespace, context: CommandContext) -> dict[str, obje
 def _submit_labels(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
     result = submit_persona_labels(_store(args, context), args.study_id)
     receipt = result.initial_receipt
+    status = (
+        "annotation_initial_submission_sealed_awaiting_adjudication"
+        if receipt.adjudication_required
+        else "annotation_labels_sealed_not_persona_quality"
+    )
+    message_tr, next_step_tr = _status_guidance_tr(status)
     return {
-        "status": (
-            "annotation_initial_submission_sealed_awaiting_adjudication"
-            if receipt.adjudication_required
-            else "annotation_labels_sealed_not_persona_quality"
-        ),
+        "status": status,
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "blind_repeat_pairs": receipt.repeat_pair_count,
         "initial_exact_matches": receipt.repeat_exact_match_count,
         "initial_mismatches": receipt.repeat_mismatch_count,
@@ -139,8 +195,11 @@ def _submit_labels(args: argparse.Namespace, context: CommandContext) -> dict[st
 def _seal_labels(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
     result = seal_persona_labels(_store(args, context), args.study_id)
     receipt = result.receipt
+    message_tr, next_step_tr = _status_guidance_tr("annotation_labels_sealed_not_persona_quality")
     return {
         "status": "annotation_labels_sealed_not_persona_quality",
+        "message_tr": message_tr,
+        "next_step_tr": next_step_tr,
         "counts": {
             "presentations": receipt.presentation_count,
             "unique_windows": receipt.unique_window_count,
@@ -174,3 +233,10 @@ def _study_status(index: StudyArtifactIndex) -> str:
     if "evaluator/repeat-agreement.initial.json" in paths:
         return "initial_submission_sealed"
     return "awaiting_represented_user_labels"
+
+
+def _status_guidance_tr(status: str) -> tuple[str, str]:
+    try:
+        return _STATUS_GUIDANCE_TR[status]
+    except KeyError as exc:
+        raise ValueError(f"unsupported persona-study status: {status}") from exc

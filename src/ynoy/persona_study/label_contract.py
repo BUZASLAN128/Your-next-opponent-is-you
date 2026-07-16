@@ -94,7 +94,11 @@ def validate_completed_labels(
     cards: tuple[AnnotationPresentation, ...],
     mapping: tuple[BlindMapEntry, ...],
 ) -> None:
-    expected = label_template(completed.study_id, cards)
+    expected = label_template(
+        completed.study_id,
+        cards,
+        schema_version=completed.schema_version,
+    )
     expected_ids = tuple(item.presentation_id for item in cards)
     expected_instructions = cast(list[str], expected["instructions"])
     expected_catalog = cast(dict[str, list[str]], expected["allowed_values"])
