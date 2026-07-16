@@ -55,8 +55,8 @@ accuracy score and does not change the absence of real-user evidence.
 
 | Layer | Implemented apparatus | Persona evidence | Main gap | Next discriminating check |
 | --- | --- | --- | --- | --- |
-| 0 — Private ownership and governance | Git-boundary checks, explicit outside-Git private-root checks, bounded archive handling, D0-D5 policy, transactional D0/private subject-plane isolation, erasure planning, and append-only audit contracts | One checksum-verified local Codex metadata manifest exists outside Git without content or claims | Real ownership, third-party exclusion, retention, backup, and deletion behavior remain untested | Define annotation and source-governance rules before any content sample; treat an official account export as a separate source |
-| 1 — Source evidence plane | Speaker, claim holder, source authority, branch, time, scope, origin, review, and correction receipt types exist; canonical replay validates the source review and predecessor chain | One current-thread response has a private source, review, two linked correction receipts, deterministic zero-pending replay, and a 26-record deletion projection | The source is unsealed; quote, pasted text, branch, outcome, durable correction, signed integrity, and real deletion semantics remain untested | Preserve this chain as pilot evidence, then test provenance and deletion round-trips before durable ingestion |
+| 0 — Private ownership and governance | Git-boundary checks, explicit outside-Git private-root checks, bounded archive handling, D0-D5 policy, transactional D0/private subject-plane isolation, erasure planning, and append-only audit contracts | One checksum-verified local Codex metadata manifest exists outside Git; a later bounded parser run retained no content or claims beyond process exit | Durable ownership proof, third-party exclusion, retention, backup, artifact, and deletion behavior remain untested | Approve the evidence-window governance contract before any content is retained; treat an official account export as a separate source |
+| 1 — Source evidence plane | Speaker, claim holder, source authority, branch, time, scope, origin, review, and correction receipt types exist; a memory-only Codex parser preserves structural speaker, repeated source families, and explicit parent-thread metadata without inventing message parents | One current-thread response has a private source, review, two linked correction receipts, deterministic zero-pending replay, and a 26-record deletion projection; two bounded parser replays matched without retaining content | Quote, pasted text, active-branch semantics, outcome, durable correction, signed integrity, evidence-window reconstruction, and real deletion remain untested | Preserve these checkpoints, then run the governed branch-aware evidence-window and deletion round-trip pilots before durable ingestion |
 | 2 — Interpretation and identity candidates | One receipt can produce multiple proposed atoms; an attested loopback Qwen3-8B path can propose exact-segment candidates; eight per-atom correction actions, partial review, scope/time filtering, target-layer partitioning, and explicit abstention exist | The historical 20 proposals remain uncorrected; all ten fresh proposals were decided through six splits, three rejections, and one confirmation | No randomized labeled extractor benchmark, annotation-agreement study, behavior-based trait evidence, semantic paraphrase conflict detector, or durable candidate | Measure per-action correction burden and agreement on a larger randomized, repeat-labeled set |
 | 3 — Consolidation and promotion | Deterministic supersession history and no-promotion core-review requests exist; deletion dependencies can be projected without deletion | None | No consolidation experiment and intentionally no automatic core promotion | Replay declaration-only, no-promotion, and later evidence-gated policies; compare false promotion and scope leakage |
 | 4 — Durable subconscious core | PostgreSQL tables and readers support synthetic declaration and candidate experiments; real declaration persistence is blocked when adoption provenance would be lost | None | No learned or validated durable core, no provenance-preserving real declaration schema, and no proposed-versus-confirmed ablation | First decide and test a lossless adoption receipt or schema; then compare declarations-only, confirmed-only, and proposed-plus-confirmed arms on the same sealed cases |
@@ -88,7 +88,7 @@ accuracy score and does not change the absence of real-user evidence.
 
 ## Open Scientific Evidence Gaps
 
-- no authorized real corpus inventory;
+- no durable content-bearing corpus inventory or annotation set;
 - no branch-aware annotation guide or agreement measurement;
 - no labeled extraction-quality or smaller-model comparison;
 - only one selected ten-atom interaction has a complete two-receipt user
@@ -135,10 +135,12 @@ unknowns.
 ### H3 — The project has overbuilt infrastructure before seeing data
 
 **Status: materially supported.** The repository has a substantial storage,
-policy, lineage, adapter, CLI, and benchmark surface while corpus evidence is
-still zero. Some of that work is justified by privacy and experimental
-integrity, but another infrastructure phase now has lower information value
-than a small authorized annotation experiment.
+policy, lineage, adapter, CLI, and benchmark surface while durable corpus and
+annotation evidence remains zero. The ephemeral parser checkpoint reduces
+format uncertainty but does not validate the ontology or persona. Some of the
+apparatus is justified by privacy and experimental integrity, but another
+infrastructure phase now has lower information value than a small governed
+annotation experiment.
 
 **Could be weakened by:** showing that the existing apparatus immediately
 supports a safe metadata inventory, annotation pilot, ablation, and temporal
@@ -222,20 +224,23 @@ persona-fidelity estimate.
 
 ## Recommended Near-Term Sequence
 
-1. Write a minimal branch-aware annotation guide and source-governance contract
-   before requesting access to any conversation content.
+1. Finalize the minimal branch-aware annotation guide and explicitly approve
+   ownership, third-party exclusion, retention, private-artifact, and deletion
+   rules before retaining any conversation evidence window.
 2. Treat an official account export as a separate optional source and inventory
    it only after explicit authorization.
-3. Freeze manual labels for a varied synthetic suite and compare the current
+3. Run the governed 24-window annotation-feasibility pilot with eight blind
+   repeats and revise or remove fields that cannot be labeled reliably.
+4. Freeze manual labels for a varied synthetic suite and compare the current
    Qwen3-8B pin with one pinned 1–3B local extractor. Both models may propose
    only and must preserve the same correction contract.
-4. Compare raw retrieval, a static declared profile, and the structured core
+5. Compare raw retrieval, a static declared profile, and the structured core
    before adding consolidation.
-5. Implement the missing rationale, evidence-demand, and calibration metric
+6. Implement the missing rationale, evidence-demand, and calibration metric
    contracts.
-6. Freeze a real chronological Mirror holdout and have the represented user
+7. Freeze a real chronological Mirror holdout and have the represented user
    audit attribution, judgment, scope, uncertainty, and abstention separately.
-7. Change retrieval, schema, models, graph structure, or consolidation only in
+8. Change retrieval, schema, models, graph structure, or consolidation only in
    response to measured failure.
 
 ## Stop and Falsification Conditions

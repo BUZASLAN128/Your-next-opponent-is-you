@@ -1,0 +1,176 @@
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from ynoy.cli.context import CommandContext
+from ynoy.models import StudyArtifactIndex
+from ynoy.persona_study.artifacts import PersonaStudyStore
+from ynoy.persona_study.label_submission import submit_persona_labels
+from ynoy.persona_study.labels import seal_persona_labels
+from ynoy.persona_study.prepare import prepare_persona_study
+from ynoy.policy import assert_outside_git
+from ynoy.util import utc_now
+
+
+def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    handlers = {
+        "prepare": _prepare,
+        "status": _status,
+        "purge-expired": _purge_expired,
+        "delete": _delete,
+        "submit-labels": _submit_labels,
+        "seal-labels": _seal_labels,
+    }
+    return handlers[args.study_command](args, context)
+
+
+def _prepare(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    synthetic = bool(args.synthetic)
+    source = Path(args.codex_root)
+    if not synthetic:
+        assert_outside_git(source)
+    result = prepare_persona_study(
+        source,
+        context.settings.require_private_root(),
+        synthetic=synthetic,
+    )
+    manifest = result.manifest
+    return {
+        "status": manifest.status,
+        "study_id": manifest.study_id,
+        "manifest_sha256": manifest.manifest_sha256,
+        "selection_sha256": manifest.selection_sha256,
+        "blind_map_sha256": manifest.blind_map_sha256,
+        "counts": {
+            "selected_files": manifest.selected_file_count,
+            "normalized_events": manifest.normalized_event_count,
+            "unique_windows": manifest.unique_window_count,
+            "presentations": manifest.presentation_count,
+            "blind_repeats": manifest.blind_repeat_count,
+            "annotation_development": manifest.annotation_development_count,
+            "annotation_reserved": manifest.annotation_reserved_count,
+            "dependency_components": manifest.dependency_component_count,
+        },
+        "review_path": str(result.review_path),
+        "labels_path": str(result.labels_path),
+        "expires_at": manifest.expires_at,
+        "independent_source_replay_verified": manifest.independent_source_replay_verified,
+        "disposable_canary_deletion_proof": "passed",
+        "retention_enforcement": manifest.retention_enforcement,
+        "background_deletion_guaranteed": manifest.background_deletion_guaranteed,
+        "protected_holdout_claimed": manifest.protected_holdout_claimed,
+        "blinding_scope": "operational_directory_separation_not_cryptographic",
+        "source_deleted": False,
+        "raw_content_emitted": False,
+        "database_used": False,
+        "model_provider_used": False,
+        "automatic_core_promotion": False,
+        "expired_artifacts_purged": result.expired_artifacts_purged,
+        "expired_tombstones_purged": result.expired_tombstones_purged,
+    }
+
+
+def _status(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    store = _store(args, context)
+    purge = store.purge_expired(utc_now())
+    if purge.failed_count:
+        return {
+            "status": "expiry_purge_incomplete",
+            "failed_run_count": purge.failed_run_count,
+            "failed_tombstone_count": purge.failed_tombstone_count,
+            "content_emitted": False,
+        }
+    index = store.read_index(args.study_id)
+    return {
+        "status": _study_status(index),
+        "study_id": index.study_id,
+        "expires_at": index.expires_at,
+        "artifact_count": len(index.entries),
+        "content_emitted": False,
+    }
+
+
+def _purge_expired(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    result = _store(args, context).purge_expired(utc_now())
+    return {
+        "status": "expired_artifacts_purged"
+        if not result.failed_count
+        else "expiry_purge_incomplete",
+        "deleted_artifact_count": result.deleted_artifact_count,
+        "deleted_tombstone_count": result.deleted_tombstone_count,
+        "failed_run_count": result.failed_run_count,
+        "failed_tombstone_count": result.failed_tombstone_count,
+        "retention_enforcement": "on_access",
+        "background_deletion_guaranteed": False,
+    }
+
+
+def _delete(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    store = _store(args, context)
+    deleted = store.delete_run(args.study_id)
+    store.require_absent(args.study_id)
+    return {
+        "status": "derived_study_deleted",
+        "deleted_artifact_count": deleted,
+        "source_deleted": False,
+    }
+
+
+def _submit_labels(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    result = submit_persona_labels(_store(args, context), args.study_id)
+    receipt = result.initial_receipt
+    return {
+        "status": (
+            "annotation_initial_submission_sealed_awaiting_adjudication"
+            if receipt.adjudication_required
+            else "annotation_labels_sealed_not_persona_quality"
+        ),
+        "blind_repeat_pairs": receipt.repeat_pair_count,
+        "initial_exact_matches": receipt.repeat_exact_match_count,
+        "initial_mismatches": receipt.repeat_mismatch_count,
+        "adjudication_required": receipt.adjudication_required,
+        "persona_quality_claimed": receipt.persona_quality_claimed,
+        "protected_holdout_used": receipt.protected_holdout_used,
+        "private_content_emitted": False,
+    }
+
+
+def _seal_labels(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    result = seal_persona_labels(_store(args, context), args.study_id)
+    receipt = result.receipt
+    return {
+        "status": "annotation_labels_sealed_not_persona_quality",
+        "counts": {
+            "presentations": receipt.presentation_count,
+            "unique_windows": receipt.unique_window_count,
+            "blind_repeat_pairs": receipt.repeat_pair_count,
+            "initial_exact_matches": receipt.initial_repeat_exact_match_count,
+            "adjudicated_pairs": receipt.adjudicated_repeat_pair_count,
+            "excluded_from_persona": receipt.excluded_from_persona_count,
+            "abstained": receipt.abstained_count,
+            "persona_candidates": receipt.persona_candidate_count,
+        },
+        "persona_quality_claimed": receipt.persona_quality_claimed,
+        "protected_holdout_used": receipt.protected_holdout_used,
+        "model_provider_used": receipt.model_provider_used,
+        "automatic_core_promotion": receipt.automatic_core_promotion,
+        "private_content_emitted": False,
+    }
+
+
+def _store(args: argparse.Namespace, context: CommandContext) -> PersonaStudyStore:
+    return PersonaStudyStore(
+        context.settings.require_private_root(), real_data=not bool(args.synthetic)
+    )
+
+
+def _study_status(index: StudyArtifactIndex) -> str:
+    paths = {item.relative_path for item in index.entries}
+    if "evaluator/label-seal.json" in paths:
+        return "annotation_labels_sealed_not_persona_quality"
+    if "annotator/repeat-adjudication.template.json" in paths:
+        return "awaiting_repeat_adjudication"
+    if "evaluator/repeat-agreement.initial.json" in paths:
+        return "initial_submission_sealed"
+    return "awaiting_represented_user_labels"

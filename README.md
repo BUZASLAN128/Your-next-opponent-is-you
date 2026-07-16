@@ -19,6 +19,8 @@ V1 is an implemented command-line research harness, not a finished virtual
 self. It supports synthetic and locally authorized experiments around:
 
 - bounded ChatGPT-export inventory and explicit ingestion approval;
+- a bounded, memory-only local Codex content parser that emits no message text,
+  artifact, identity claim, database write, or model request;
 - speaker, claim-holder, branch, scope, time, and source provenance;
 - cold start from no history or explicit user declarations;
 - a data-free Manager that starts without PostgreSQL, a private data root, or
@@ -41,8 +43,10 @@ The repository has synthetic test evidence plus one bounded private
 current-thread correction observation whose content remains outside Git. A
 pinned Qwen3-8B Q4_K_M endpoint has been validated locally on loopback against
 one synthetic extraction case and used for that proposal-only private review.
-No conversation export has been processed, and no result establishes
-extraction quality, persona fidelity, or real-user decision prediction.
+No conversation corpus has been ingested, persisted, annotated, or used for a
+persona benchmark. One bounded local Codex parser pilot ran only in process
+memory. No result establishes extraction quality, persona fidelity, or
+real-user decision prediction.
 
 The correction lifecycle is a private-artifact CLI and Python contract, not a
 database schema. The optional model proposes candidates only; correction and
@@ -340,6 +344,26 @@ directories, message text, tool output, filenames, or session identifiers.
 Backups, credentials, noncanonical directories, the database, and model
 providers remain out of scope. The resulting manifest, counts, dates, opaque
 keys, and hashes are private and must stay outside Git.
+
+### 2.2 Run the non-persisting Codex parser pilot
+
+```powershell
+uv run ynoy --private-root C:\private\ynoy `
+  corpus codex-pilot C:\private\codex-root
+```
+
+The pilot deterministically selects no more than five canonical files and
+reads at most 16 MiB total, 4 MiB per file, 1 MiB per JSONL record, 20,000
+records, and 2,000 dialogue events. It normalizes only structural user and
+assistant dialogue in process memory. Raw user turns retain unknown claim
+holders and unattributed authority; developer, system, reasoning, tool,
+attachment, image, and binary content is excluded from dialogue evidence.
+
+The CLI returns only counts and a private snapshot checksum. It writes no
+content artifact, database record, embedding, annotation, claim, or persona
+candidate and invokes no model provider. Process exit discards the transient
+events. A durable annotation sample requires a separate retention and deletion
+decision.
 
 ### 3. Approve an exact manifest
 

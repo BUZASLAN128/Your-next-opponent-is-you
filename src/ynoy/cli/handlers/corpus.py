@@ -7,13 +7,14 @@ from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.common import build_audit_receipt, parse_uuid, require_matching_mode
 from ynoy.corpus import (
     ChatGPTZipAdapter,
+    CodexContentSampleAdapter,
     CodexMetadataAdapter,
     create_ingestion_approval,
     verify_approval,
 )
 from ynoy.errors import YnoyError
 from ynoy.models import AuditReceipt, DataClass, IngestionApproval, InventoryManifest, SourceReceipt
-from ynoy.policy import assert_outside_git
+from ynoy.policy import assert_outside_git, require_private_root
 from ynoy.report import render_inventory_markdown
 from ynoy.storage import CorpusRepository
 from ynoy.util import new_id
@@ -23,10 +24,25 @@ def handle_corpus(args: argparse.Namespace, context: CommandContext) -> dict[str
     handlers = {
         "inventory": _inventory,
         "codex-inventory": _codex_inventory,
+        "codex-pilot": _codex_pilot,
         "approve": _approve,
         "ingest": _ingest,
     }
     return handlers[args.corpus_command](args, context)
+
+
+def _codex_pilot(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    synthetic = bool(args.synthetic)
+    private_root = context.settings.require_private_root()
+    require_private_root(private_root, real_data=not synthetic)
+    source_root = Path(args.codex_root)
+    if not synthetic:
+        assert_outside_git(source_root)
+    sample = CodexContentSampleAdapter().sample(source_root, synthetic=synthetic)
+    return {
+        "status": "content_sampled_ephemerally",
+        "summary": sample.summary.model_dump(mode="json"),
+    }
 
 
 def _codex_inventory(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:

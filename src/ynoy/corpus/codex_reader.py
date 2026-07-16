@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import os
 import stat
+from collections.abc import Iterator
+from contextlib import contextmanager
+from typing import BinaryIO
 
 from ynoy.corpus.codex_discovery import DiscoveredCodexFile
 from ynoy.errors import DataValidationError
@@ -10,6 +13,15 @@ from ynoy.models.codex_inventory import FirstRecordState
 
 
 def inspect_first_record(item: DiscoveredCodexFile, limit: int) -> FirstRecordState:
+    with open_stable_codex_file(item) as stream:
+        prefix = stream.readline(limit + 1)
+    return _classify_prefix(prefix, limit)
+
+
+@contextmanager
+def open_stable_codex_file(item: DiscoveredCodexFile) -> Iterator[BinaryIO]:
+    """Open one discovered file without following links and verify stable identity."""
+
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(item.path, flags)
@@ -22,7 +34,7 @@ def inspect_first_record(item: DiscoveredCodexFile, limit: int) -> FirstRecordSt
         current = os.stat(item.path, follow_symlinks=False)
         _validate_opened_file(item, before, current)
         with os.fdopen(descriptor, "rb", closefd=False) as stream:
-            prefix = stream.readline(limit + 1)
+            yield stream
         after = os.fstat(descriptor)
     except OSError as exc:
         raise DataValidationError(
@@ -33,9 +45,8 @@ def inspect_first_record(item: DiscoveredCodexFile, limit: int) -> FirstRecordSt
     if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
         raise DataValidationError(
             "codex_source_changed_during_inventory",
-            "A Codex session file changed during metadata inventory.",
+            "A Codex session file changed while it was being read.",
         )
-    return _classify_prefix(prefix, limit)
 
 
 def _validate_opened_file(

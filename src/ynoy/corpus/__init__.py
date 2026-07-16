@@ -6,10 +6,14 @@ from ynoy.corpus.approval import (
 from ynoy.corpus.chatgpt import ChatGPTZipAdapter
 from ynoy.corpus.codex import CodexMetadataAdapter
 from ynoy.corpus.codex_discovery import CodexInventoryLimits
+from ynoy.corpus.codex_sample import CodexContentSampleAdapter
+from ynoy.corpus.codex_sample_reader import CodexContentPilotLimits
 from ynoy.corpus.types import NormalizationStats, SourceAdapter
 
 __all__ = [
     "ChatGPTZipAdapter",
+    "CodexContentPilotLimits",
+    "CodexContentSampleAdapter",
     "CodexInventoryLimits",
     "CodexMetadataAdapter",
     "NormalizationStats",

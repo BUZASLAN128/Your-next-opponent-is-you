@@ -76,11 +76,14 @@ root outside Git. Review and persona inputs must also resolve inside that root.
 The project makes no host-storage-product claim; identity, authority,
 provenance, egress, and capability controls remain independent.
 
-**Next check:** the content-free local metadata inventory is complete. Before
-content sampling, corpus ingestion, database use, or durable persona
-persistence, separately define third-party, retention, deletion, and
-runtime-role boundaries. A distinct non-superuser runtime database role must be
-verified as audit-insert-only before real database use.
+**Status update:** D-046 completed one memory-only Codex content-parser check.
+Its transient contract retained no content or derived event and therefore
+closed retention and deletion only for that process lifetime. Before any
+evidence window, annotation, corpus ingestion, database use, or durable persona
+persistence, separately approve ownership and third-party exclusions,
+retention, deletion lineage, and the private artifact contract. A distinct
+non-superuser runtime database role must be verified as audit-insert-only
+before real database use.
 
 ### RQ-017 — Which exact model revisions fit the local runtime boundary?
 
@@ -241,6 +244,27 @@ reporting precision or general correction burden. Keep confirmation, split,
 rejection, scope change, and inference rejection as separate measures. Do not
 treat a schema-valid atom as identity truth merely because the full receipt
 chain replayed successfully.
+
+### RQ-025 — Do the 32 blind annotation labels support a reliable real benchmark?
+
+**Status: awaiting represented-user labels.** The active private pack contains
+the fixed 24+8 annotation shape. A distinct bounded holdout passed its minimum
+metadata-only shape in canonical rollout-filename session-start order; its
+event order, dialogue, targets, and predictors remain unverified or unopened.
+The label seal now rejects incomplete fields, inexact spans, identity
+laundering, and unadjudicated repeat disagreement. The first complete
+submission and raw repeat receipt are immutable; any disagreement is resolved
+in a separately linked adjudication artifact. Its represented-user marker is a
+local operator attestation, not cryptographic identity authentication.
+
+**Next check:** complete and submit all 32 labels, preserve the first agreement
+measurement separately
+for authorship, adoption, decision, target layer, scope, evidence spans, and
+abstention, adjudicate only mismatched pairs, and report exclusions without
+treating them as model errors. After final sealing, open the holdout once, remove exact annotation duplicates,
+freeze target-free baseline predictions, and collect represented-user targets
+only afterward. Failure to retain enough independent cases must stop the
+benchmark rather than relax the holdout.
 
 ## Next Discriminating Questions
 
@@ -684,8 +708,13 @@ conversation, but abandoned branches, edits, retries, rejected answers, and
 corrections may carry negative evidence and derivation history. Retaining every
 branch may also increase duplication, privacy exposure, and false consensus.
 
-**Next discriminating check:** inspect a metadata-only sample from a real export
-and compare active-path-only, all-branch, and lineage-only representations
+**Status update:** the local Codex parser now preserves explicit parent-thread
+metadata and leaves absent message-parent relations unknown. It does not yet
+establish active-path semantics, edit/retry meaning, or branch-level negative
+evidence.
+
+**Next discriminating check:** use the approved private evidence-window pilot
+to compare active-path-only, all-branch, and lineage-only representations
 without placing raw content in the repository.
 
 ### Q-028 — Which identity dimensions can humans label without a psychometric proxy?

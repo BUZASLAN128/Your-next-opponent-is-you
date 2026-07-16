@@ -21,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     _memory_parser(commands)
     _erase_parser(commands)
     _review_parser(commands)
+    _study_parser(commands)
     return parser
 
 
@@ -45,6 +46,9 @@ def _corpus_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]
     codex_inventory = subcommands.add_parser("codex-inventory")
     codex_inventory.add_argument("codex_root")
     codex_inventory.add_argument("--synthetic", action="store_true")
+    codex_pilot = subcommands.add_parser("codex-pilot")
+    codex_pilot.add_argument("codex_root")
+    codex_pilot.add_argument("--synthetic", action="store_true")
     approve = subcommands.add_parser("approve")
     approve.add_argument("manifest_id")
     approve.add_argument("--synthetic", action="store_true")
@@ -176,6 +180,28 @@ def _review_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]
 
 def _add_review_data_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--synthetic", action="store_true")
+
+
+def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    parser = commands.add_parser("study")
+    subcommands = parser.add_subparsers(dest="study_command", required=True)
+    prepare = subcommands.add_parser("prepare")
+    prepare.add_argument("codex_root")
+    prepare.add_argument("--synthetic", action="store_true")
+    status = subcommands.add_parser("status")
+    status.add_argument("study_id")
+    status.add_argument("--synthetic", action="store_true")
+    purge = subcommands.add_parser("purge-expired")
+    purge.add_argument("--synthetic", action="store_true")
+    delete = subcommands.add_parser("delete")
+    delete.add_argument("study_id")
+    delete.add_argument("--synthetic", action="store_true")
+    submit = subcommands.add_parser("submit-labels")
+    submit.add_argument("study_id")
+    submit.add_argument("--synthetic", action="store_true")
+    seal = subcommands.add_parser("seal-labels")
+    seal.add_argument("study_id")
+    seal.add_argument("--synthetic", action="store_true")
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

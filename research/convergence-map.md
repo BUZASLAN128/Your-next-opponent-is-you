@@ -67,13 +67,18 @@ have to be measured.
 - Local-first operation is required.
 - Deletion, revocation, provenance, and inspectability cannot be optional.
 
-### Required before content processing
+### Required before retaining or interpreting content
 
 - source-by-source ownership and consent;
 - a metadata-only inventory;
 - third-party and organizational-data boundaries;
 - retention and deletion propagation;
 - classification of which derived artifacts remain identity-bearing.
+
+D-046 closes these questions only for one transient parser check: no content or
+derived event survives process exit, no interpretation occurs, and structural
+user turns remain unattributed. Durable evidence windows still require the
+full governance contract above.
 
 ### Not decided
 
@@ -494,6 +499,10 @@ hypothesis.
   edges;
 - bounded ChatGPT archive inventory, content-free local Codex metadata
   inventory, checksum-bound manifests, and source-preserving ingestion;
+- a bounded local Codex dialogue parser that runs only in process memory,
+  preserves structural speaker and explicit parent-thread provenance, retains
+  repeated source records, and emits no content, artifact, claim, database
+  write, or model request;
 - protected cold start, real declared-only preview, and synthetic-only
   database bootstrap; real declaration persistence is blocked until adoption
   provenance survives storage;
@@ -538,24 +547,39 @@ The detailed implementation and limitation record is in
 
 ## Next Convergence Gates
 
-The first complete two-receipt private correction chain is now observed. Its
-selected ten-atom result is evidence about correction burden only and does not
-remove the need for randomized annotation or a durable deletion round-trip.
+The first complete two-receipt private correction chain is observed. A separate
+24+8 annotation pack remains outside Git with a bounded metadata-only,
+canonical-filename session-start-ordered holdout under the current schema. The
+older empty pack and verified staging copy were deleted after safe replacement.
+Event-time order is not yet verified. All represented-user labels remain empty,
+so the current result is evaluation apparatus rather than persona-quality
+evidence.
 
-1. Define the minimal operational annotation guide for source author,
-   represented claim holder, stance, adoption, decision, scope, change,
-   evidence demand, modality, target layer, and metacognitive tendency.
-2. Define source ownership, third-party exclusion, retention, correction, and
-   deletion rules before ingestion.
+The first completed label submission will be immutable even if blind repeats
+disagree. Raw agreement remains preserved, and only the disagreeing pairs move
+to a separately linked adjudication draft. Public research records only fixed
+protocol shapes and categorical outcomes, not corpus-dependent runtime counts.
+Exclusive-create writes, a per-study transaction lock, and index-to-disk
+inventory checks prevent a retry from overwriting interrupted or concurrent
+submission evidence. Final seals bind any completed adjudication set.
+
+1. **Implemented contract:** the minimal annotation guide now covers source
+   author, represented claim holder, adoption, decision, scope, evidence spans,
+   target layer, uncertainty, abstention, and persona exclusion.
+2. **Implemented bounded governance:** the selected local source, third-party
+   exclusion, seven-day on-access expiry, outside-Git artifact, and disposable
+   deletion-canary rules apply to this pilot only; this is not ingestion.
 3. Treat an official account export as a separate optional source and inventory
    it only after explicit authorization.
-4. Run a small branch-aware annotation pilot and remove or revise fields that
-   cannot be labeled reliably.
+4. **Awaiting represented-user work:** complete and submit the prepared
+   24-window pilot plus eight blind repeats, then adjudicate only the repeat
+   pairs that disagree without rewriting the first submission.
 5. Compare the pinned Qwen3-8B extractor with manual labels and one pinned
    1–3B candidate; both models remain proposal-only.
-6. Freeze a Mirror-only chronological holdout and compare the structured core
-   with zero-history, declared-profile, recent-context, retrieval, and simple
-   rule baselines.
+6. **Freeze implemented, scoring pending:** keep the bounded Mirror holdout
+   dialogue and targets closed until annotation sealing, then compare zero,
+   declared, recent, frequency, lexical, and structured baselines. Synthetic
+   target-isolation checks are support evidence only.
 7. Have the user audit attribution, judgment, evidence demand,
    scope leakage, uncertainty, and useful abstention separately.
 8. Use those results—not implementation convenience—to decide whether the V1

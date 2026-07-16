@@ -173,6 +173,14 @@ is unknown. Any evidence of speaker laundering, scope leakage, undeletable
 derived identity, fabricated receipts, or silent authority expansion blocks
 promotion to a broader pilot.
 
+D-046 permits one narrower diagnostic without relaxing this stop condition.
+Its selected path is explicit, possible third-party or quoted spans remain
+unattributed D2 source content, no semantic interpretation occurs, and no
+content or derived event survives process exit. Any retained evidence window,
+annotation set, database record, report, model input, or persona candidate
+still requires the unresolved ownership, exclusion, retention, and deletion-
+lineage contract.
+
 The threat model must be revised before adding network service exposure,
 multi-user access, provider egress beyond D0, automatic promotion, external
 communication, tool execution, backup, or deployment.

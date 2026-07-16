@@ -20,6 +20,7 @@ from ynoy.cli.handlers import (
     handle_mirror,
     handle_persona,
     handle_review,
+    handle_study,
 )
 from ynoy.cli.parser import parse_args
 from ynoy.config import Settings
@@ -40,6 +41,7 @@ HANDLERS: dict[str, Handler] = {
     "memory": handle_memory,
     "erase": handle_erase,
     "review": handle_review,
+    "study": handle_study,
 }
 
 

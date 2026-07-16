@@ -45,7 +45,7 @@ class CodexMetadataAdapter:
     ) -> CodexMetadataInventory:
         source = resolve_codex_root(root)
         if synthetic:
-            _assert_synthetic_marker(source)
+            assert_synthetic_codex_root(source)
         before = discover_codex_sessions(source, self.limits)
         entries = tuple(_entry(item, self.limits) for item in before.files)
         after = discover_codex_sessions(source, self.limits)
@@ -63,7 +63,7 @@ class CodexMetadataAdapter:
         )
 
 
-def _assert_synthetic_marker(root: Path) -> None:
+def assert_synthetic_codex_root(root: Path) -> None:
     path = root / ".ynoy-synthetic-codex-fixture"
     try:
         if path.is_symlink() or path.is_junction():

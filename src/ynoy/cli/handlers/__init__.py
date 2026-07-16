@@ -9,6 +9,7 @@ from ynoy.cli.handlers.manager import handle_manager
 from ynoy.cli.handlers.memory import handle_memory
 from ynoy.cli.handlers.persona import handle_persona
 from ynoy.cli.handlers.review import handle_review
+from ynoy.cli.handlers.study import handle_study
 
 __all__ = [
     "handle_advisor",
@@ -23,4 +24,5 @@ __all__ = [
     "handle_mirror",
     "handle_persona",
     "handle_review",
+    "handle_study",
 ]

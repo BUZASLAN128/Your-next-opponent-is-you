@@ -538,6 +538,89 @@ infrastructure.
   prior clones, or unreachable-object retention. Platform-side purge remains a
   separate repository-level action.
 
+### L-024 — Ephemeral local Codex content parser pilot
+
+- **Type:** Explicit user authorization, repository implementation and
+  synthetic tests, read-only local metadata evidence, and bounded private live
+  parser evidence
+- **Public paths:** [parser adapter](../src/ynoy/corpus/codex_sample.py),
+  [bounded reader](../src/ynoy/corpus/codex_sample_reader.py),
+  [event normalization](../src/ynoy/corpus/codex_sample_events.py),
+  [content-free summary](../src/ynoy/models/codex_sample.py),
+  [synthetic tests](../tests/test_codex_content_pilot.py), and
+  [public checkpoint](codex-content-pilot-2026-07-16.md)
+- **Observed source boundary:** The explicitly selected canonical Codex
+  surface contains a sufficiently small file stratum for a bounded pilot and
+  large outliers that rule out whole-file loading. Exact private metadata is
+  excluded from Git.
+- **Observed parser result:** Two bounded real memory-only runs produced the
+  same content-free normalized snapshot and count summary. No content or event
+  was emitted or persisted, the private output-root file count did not change,
+  and neither a database nor a model provider was called.
+- **Attribution result:** Structural user turns remain unattributed with an
+  unknown claim holder; assistant records remain assistant context. Repeated
+  source representations are retained in opaque clusters, explicit
+  parent-thread metadata is preserved, and absent message-parent relations are
+  not invented.
+- **Privacy disposition:** Content, paths, filenames, identifiers, dates,
+  counts, hashes, and runtime summaries remain private. Public evidence is
+  limited to the code contract and pass/fail qualifications.
+- **Review evidence:** An independent privacy pass found and closed a raw
+  discriminator-to-summary-key path. Fixed-category sanitization and a
+  sentinel CLI regression now cover outer record, payload, and content-part
+  types.
+- **Supports:** The local Codex source can be parsed deterministically under a
+  small fail-closed, memory-only contract without turning role metadata into
+  persona truth.
+- **Does not establish:** Durable provenance, third-party classification,
+  annotation agreement, persona fidelity, deletion propagation, retrieval or
+  model quality, or permission to process the full corpus.
+
+### L-025 — Private annotation, protected holdout, and baseline checkpoint
+
+- **Type:** Persistent goal authorization, repository implementation,
+  synthetic tests, and bounded private local runtime evidence
+- **Public paths:** [checkpoint](persona-annotation-feasibility-pilot-2026-07-16.md),
+  [holdout planner](../src/ynoy/persona_study/holdout.py),
+  [label seal](../src/ynoy/persona_study/labels.py),
+  [baseline runner](../src/ynoy/persona_study/baselines.py),
+  [holdout tests](../tests/test_persona_holdout.py),
+  [label tests](../tests/test_persona_study_labels.py), and
+  [baseline tests](../tests/test_persona_baselines.py)
+- **Observed private result:** The promoted outside-Git pack contains the fixed
+  24+8 annotation shape and passed the configured minimum metadata-only
+  holdout shape under the current schema. All 32 represented-user
+  labels remain empty. Explicit lineage and canonical-filename ordering checks
+  passed; event-time ordering remains unverified, and holdout dialogue, targets,
+  and predictors remain closed. The older empty pack and staging replacement
+  were deleted only after the promoted replacement passed verification.
+- **Synthetic result:** Six deterministic baselines produce coverage,
+  abstention, selective-accuracy, and provenance metrics on three D0 cases.
+  Changing targets does not change predictions. Exact training overlap,
+  duplicate holdout contexts, source overlap, future evidence, and wrong-scope
+  evidence are covered by fail-closed tests.
+- **Privacy disposition:** Real text, source locators, identifiers, hashes,
+  timestamps, and corpus-dependent runtime counts remain outside Git. Public
+  evidence contains only protocol-fixed cardinalities and categorical
+  capability qualifications.
+- **Supports:** A protected target-free evaluation path can be prepared before
+  real labels or model use, and deterministic baselines can be measured without
+  exposing targets to predictors.
+- **Does not establish:** Annotation agreement, correct real-user attribution,
+  sufficient independent holdout cases after duplicate removal, real persona
+  quality, a baseline winner, calibration, model quality, or permission to
+  process beyond the bounded pilot.
+- **Integrity amendment:** The initial completed labels and raw repeat agreement
+  are immutable even on mismatch; adjudication is a separately linked artifact.
+  Context digests are recomputed from supplied text, store-backed access enforces
+  expiry, tombstones share the seven-day boundary, and deletion absence covers
+  all three scoped run roots. Exclusive-create writes, a per-study lock, and
+  index-to-disk inventory comparison make interrupted or concurrent mutation
+  fail closed. A final seal with resolved mismatches binds the completed
+  adjudication set directly. Post-index validation failure restores the prior
+  mutable index before cleanup; rollback-write failure preserves the committed
+  payload set and reports incomplete rollback.
+
 ## External Sources
 
 ### S-001 — Graphiti official overview
@@ -1587,9 +1670,10 @@ The current ledger lacks:
 - source-code audits of adjacent open-source projects beyond the targeted
   HiveMind-Actions case study;
 - independent benchmark reproduction;
-- corpus-level evidence from an authorized private history source;
+- durable corpus-level identity or annotation evidence from an authorized
+  private history source;
 - annotation agreement data;
-- a threat model and privacy impact assessment;
+- a privacy impact assessment beyond the implemented V1 threat model;
 - proof that any candidate method predicts the user's real decisions;
 - evidence for product-market demand outside the originating user;
 - recovered bibliographies and claim maps for all four supplied reports;

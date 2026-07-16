@@ -756,6 +756,120 @@ from silently becoming product authority.
   caches or unreachable-object retention. Stronger platform-side purging is a
   separate repository-level action.
 
+### D-046 — Authorize an ephemeral local Codex content parser pilot
+
+- **Date:** 2026-07-16
+- **Status:** Confirmed user authorization and completed private operation
+- **Decision:** Return to the explicitly selected private local Codex history
+  through one bounded, memory-only parser feasibility pilot. The operation may
+  read canonical `sessions` and `archived_sessions` content but must emit and
+  persist no message text or normalized event.
+- **Source-authority rule:** Structural `user` turns remain
+  `user_turn_unattributed` with an unknown claim holder. Assistant text remains
+  assistant context. Developer, system, reasoning, tool, attachment, image,
+  and binary material cannot become dialogue or persona evidence in this
+  checkpoint.
+- **Transient governance:** The user reported the selected local history as
+  their corpus. Possible quotations, pasted text, and third-party material
+  remain unresolved D2 source content and cannot be interpreted or promoted.
+  Derived events exist only in process memory and are discarded at exit; the
+  source files are read-only and unchanged.
+- **Observed result:** The bounded real parser completed twice with matching
+  content-free snapshot and count summaries. The private output-root file
+  count remained unchanged. No content was emitted or persisted, no claim or
+  annotation was created, and no database or model provider was called.
+- **Privacy disposition:** Actual content, paths, filenames, identifiers,
+  dates, counts, hashes, and private summaries remain outside Git.
+- **Review hardening:** Independent privacy review found that unexpected JSON
+  discriminator strings could become count-summary keys. Record, payload, and
+  content-part types are now reduced to fixed allowlisted categories, with a
+  sentinel regression test proving that raw discriminator text is not emitted.
+- **Next stop:** Durable evidence windows require a separately approved
+  ownership and third-party exclusion rule, retention period, deletion
+  lineage, and private artifact contract. Bulk processing, ingestion,
+  annotation, model use, persona construction, and automatic promotion remain
+  unauthorized by this checkpoint.
+- **Scientific qualification:** This establishes parser feasibility and
+  deterministic bounded replay only. It does not establish corpus quality,
+  annotation agreement, persona fidelity, deletion propagation, model
+  quality, or full-corpus readiness.
+
+### D-047 — Treat the first real 24+8 pack as annotation feasibility only
+
+- **Status:** Implemented and bounded.
+- **Decision:** The 24 unique windows and eight blind repeats are an
+  annotation-feasibility pack. Its bounded chronological partitions are named
+  annotation-development and annotation-reserved; neither partition is a
+  protected persona-quality holdout.
+- **Evidence:** A bounded real run independently reloaded its selected source
+  files, reproduced the same receipts, retained structural user turns as
+  unattributed, separated annotator and evaluator roots, and passed a
+  disposable derived-deletion canary. Public output contains only aggregate
+  counts and capability limits.
+- **Retention:** Private artifacts and deletion tombstones have a seven-day
+  expiry, enforced on store-backed study access. No background deletion
+  guarantee is claimed. Corrupt or linked storage is surfaced as an incomplete
+  purge instead of being skipped.
+- **Consequence:** No persona score, baseline win, model comparison, or core
+  promotion may be reported from this pack. The represented user must first
+  label and adjudicate it; a separate protected chronological Mirror set must
+  then be frozen before predictors run.
+- **Limit:** Separate private directories provide operational blinding only,
+  not cryptographic isolation or an authorization boundary. The deletion
+  receipt covers a disposable canary, not the unchanged source corpus.
+
+### D-048 — Freeze a distinct metadata-only session-start-ordered Mirror holdout
+
+- **Status:** Implemented and verified in the active replacement private pack.
+- **Decision:** Reserve eight to twelve later-by-canonical-filename-session-start,
+  explicit-lineage-disjoint source files before selecting the 24 earlier
+  annotation files. Read only the bounded first session-metadata record while
+  frozen; dialogue content, target labels, and predictor access remain false
+  until annotation labels are sealed.
+- **Evidence:** The bounded replacement run passed the configured minimum
+  later-by-session-start holdout shape, found no explicit lineage overlap, and used no model or
+  database. It emitted no private content publicly. The prior pack was deleted
+  only after its 32 labels were verified empty and a staging replacement passed;
+  the staging copy was deleted after promotion. Only the promoted private run remains.
+- **Evaluation consequence:** Six target-isolated deterministic baselines now
+  have synthetic mock/support coverage with provenance and abstention metrics.
+  Real baseline predictions cannot run until represented-user annotation labels
+  are complete and exact duplication is checked when the holdout is opened.
+- **Limit:** Canonical filename session-start order is not proof of event-time
+  order, active branch membership, ownership, semantic independence, or persona
+  relevance. Exact content overlap remains unknown while dialogue stays sealed.
+  The label completion marker is local operator attestation, not cryptographic
+  identity authentication. No real persona-quality claim or acceptance
+  threshold follows from this freeze.
+
+### D-049 — Preserve initial labels and separate repeat adjudication
+
+- **Status:** Implemented; represented-user submission remains pending.
+- **Decision:** The first complete 32-label submission and its raw eight-pair
+  agreement receipt become immutable regardless of mismatch. Only mismatched
+  pairs enter a separate adjudication artifact linked to that initial receipt.
+- **Integrity rule:** Context digests are recomputed from their exact supplied
+  text. The final receipt binds the resolved sealed labels and, when present,
+  the completed adjudication set. Adjudication cannot rewrite the initial
+  judgments or create automatic persona promotion. Exclusive-create writes,
+  a per-study transaction lock, and index-to-disk inventory checks make
+  interrupted or concurrent mutation fail closed instead of overwriting.
+  Post-index verification failure restores the prior mutable index before new
+  payload cleanup. If index rollback itself fails, committed payloads are
+  retained and the operation reports incomplete rollback rather than deleting
+  data under the committed index.
+- **Retention and deletion:** Every store-backed access performs the on-access
+  expiry check. Deletion tombstones expire after seven days, and absence checks
+  cover control, annotator, and evaluator roots including unindexed remnants.
+  Purge success requires both a matching pre-delete inventory and post-delete
+  absence.
+- **Public evidence rule:** Corpus-dependent runtime counts remain private.
+  Public research may state protocol-fixed cardinalities and categorical
+  pass/fail results only.
+- **Limit:** This is evaluation-apparatus integrity, not annotation agreement,
+  identity authentication, persona quality, or permission to open holdout
+  dialogue.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
@@ -795,7 +909,8 @@ from silently becoming product authority.
 
 No decision has been made for:
 
-- corpus acquisition, export, ownership, consent, or retention;
+- durable corpus acquisition, export, ownership, consent, or retention beyond
+  the ephemeral parser boundary in D-046;
 - expansion beyond the coding-judgment V1 into a general personal persona;
 - mission hierarchy, conflict resolution, priority, pause, resume, and
   completion semantics;

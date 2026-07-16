@@ -48,6 +48,8 @@ explicit user decision.
 
 ## Next Discriminating Step
 
-Write the minimal annotation and source-governance contract before requesting
-access to conversation content. The first pilot should be small,
-branch-aware, repeat-labeled, correction-first, and proposal-only.
+The later [ephemeral content-parser checkpoint](codex-content-pilot-2026-07-16.md)
+completed the next non-persisting format check. The remaining step is to
+approve the durable evidence-window governance contract, then run a small,
+branch-aware, repeat-labeled, correction-first, proposal-only annotation
+pilot.

@@ -1,8 +1,8 @@
 # Research Hub
 
-> Status: V1.2 deterministic correction lifecycle and proposal-only local
-> extractor implemented; the first bounded private correction chain is closed,
-> and the public record now has a neutral-language and accountability policy
+> Status: V1.2 deterministic correction lifecycle, proposal-only local
+> extractor, and ephemeral Codex content parser implemented; the first bounded
+> private correction chain and memory-only real parser check are closed
 > Last updated: 2026-07-16
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and one bounded private
@@ -76,11 +76,13 @@ The shortest current distinction is:
 | The PostgreSQL 18.4 plus pgvector 0.8.2 image built and both V1 migrations ran locally on loopback. | Observed local runtime fact | [V1 implementation record](v1-implementation-record-2026-07-15.md) |
 | Every real-data operation requires an explicit outside-Git root; review and persona inputs must also resolve inside it. | Implemented fail-closed path boundary | [Threat model](v1-threat-model-2026-07-15.md) and [Decision D-042](decision-log.md#d-042--make-the-explicit-outside-git-root-the-complete-local-path-gate) |
 | One real local Codex metadata inventory completed outside Git without copying conversation fields, deriving claims, or calling a database or model provider. | Private runtime checkpoint; metadata map only, not corpus or persona evidence | [Inventory checkpoint](codex-metadata-inventory-2026-07-16.md), [Decision D-043](decision-log.md#d-043--authorize-a-content-free-local-codex-metadata-inventory), [Event 030](conversation-record.md#event-030--remove-the-host-storage-probe-and-inventory-local-codex-metadata), and [Source L-022](source-ledger.md#l-022--content-free-local-codex-metadata-inventory) |
+| A bounded local Codex content parser completed two matching real runs in process memory while emitting and persisting no content, deriving no claim, and calling neither a database nor a model. | Private parser-feasibility checkpoint; not ingestion, annotation, persona evidence, or full-corpus readiness | [Parser checkpoint](codex-content-pilot-2026-07-16.md), [Decision D-046](decision-log.md#d-046--authorize-an-ephemeral-local-codex-content-parser-pilot), [Event 032](conversation-record.md#event-032--return-to-the-private-corpus-with-an-ephemeral-parser-pilot), and [Source L-024](source-ledger.md#l-024--ephemeral-local-codex-content-parser-pilot) |
+| A private 24+8 annotation pack has immutable first-submission receipts, separate repeat adjudication, and a distinct metadata-only session-start-ordered holdout under the current schema; dialogue, targets, and predictors remain unopened. | Implemented private evaluation apparatus; awaiting labels and not persona-quality evidence | [Pilot checkpoint](persona-annotation-feasibility-pilot-2026-07-16.md), [Decisions D-048](decision-log.md#d-048--freeze-a-distinct-metadata-only-session-start-ordered-mirror-holdout) and [D-049](decision-log.md#d-049--preserve-initial-labels-and-separate-repeat-adjudication), and [Event 036](conversation-record.md#event-036--preserve-the-first-label-submission-and-remove-corpus-dependent-public-counts) |
 | A loopback endpoint is transport-local but is not trusted with private identity data until the operator separately attests provider locality. | Implemented fail-closed boundary; local experiment attested and first bounded private proposal run observed | [Decisions D-029](decision-log.md) and [D-038](decision-log.md#d-038--permit-one-pinned-local-extractor-as-a-proposal-only-experiment) |
 | Raw user turns remain unattributed with an unknown claim holder until explicit adoption or span attribution, preventing pasted third-party text from silently becoming persona evidence. | Implemented source-authority rule | [Decision D-027](decision-log.md) |
 | Qwen3-8B Q4_K_M is the first live extractor experiment; gpt-oss-20b and BGE-M3 remain untested candidates. | Local synthetic observation; no model winner selected | [RQ-017](open-questions.md#rq-017--which-exact-model-revisions-fit-the-local-runtime-boundary) and [Source L-018](source-ledger.md#l-018--pinned-proposal-only-local-extractor-checkpoint) |
 | User-authored decisions and verified outcomes must carry different authority from assistant-authored context. | Confirmed decision | Originating proposal and user clarification |
-| Conversation content has not been inspected, normalized, annotated, or cleared for ingestion; only a private local metadata map exists. | Observed project state | [Inventory checkpoint](codex-metadata-inventory-2026-07-16.md) |
+| A bounded private annotation pack is retained outside Git for represented-user review; no label is complete, no real holdout dialogue or target is open, and nothing is cleared for ingestion or promotion. | Observed project state | [Annotation and holdout checkpoint](persona-annotation-feasibility-pilot-2026-07-16.md) |
 | Adjacent systems cover memory, graph retrieval, personalization, and digital-twin behavior. | Research finding | [Source ledger](source-ledger.md) |
 | The exact integrated product category appears underexplored in the sampled sources. | Inference, medium confidence | [Landscape](landscape.md); not an exhaustive novelty search |
 | No real-person benchmark, annotation study, or user-audited temporal holdout has been run. | Observed project state | Conversation content has not been sampled for those experiments |
@@ -112,6 +114,8 @@ The shortest current distinction is:
 | [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md) | Layer 0-8 implementation-versus-evidence matrix, competing hypotheses, corrected gaps, and next discriminating sequence |
 | [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md) | Git-safe 20-slot correction control record; private atom content and runtime identifiers remain local |
 | [codex-metadata-inventory-2026-07-16.md](codex-metadata-inventory-2026-07-16.md) | Public contract, privacy boundary, result qualification, and next step for the private local metadata inventory |
+| [codex-content-pilot-2026-07-16.md](codex-content-pilot-2026-07-16.md) | Content-free public record of the bounded, memory-only real Codex parser checkpoint and the next annotation gate |
+| [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md) | Current 24+8 label contract, metadata-only protected holdout, synthetic baselines, real aggregate evidence, and remaining user-label gate |
 | [incoming-reports/](incoming-reports/README.md) | User-supplied inputs preserved verbatim when safe or hash-linked and redacted when identity-bearing; all remain non-authoritative |
 
 ## End-of-Conversation Markdown Bundle
@@ -182,6 +186,7 @@ Read the files in the order listed below:
 17. [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md)
 18. [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md)
 19. [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md)
+20. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

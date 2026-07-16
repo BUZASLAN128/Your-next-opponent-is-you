@@ -1,8 +1,8 @@
 # Originating Conversation Record
 
 > Date range covered: 2026-07-15 through 2026-07-16
-> Status: complete substantive record through the neutral-language and public
-> feature-history correction checkpoint
+> Status: complete substantive record through the first ephemeral real-corpus
+> parser checkpoint
 > Method: preserves every distinct user intent, product claim, correction,
 > risk, suggestion, research finding, and unresolved question from the
 > conversation. Repetition is consolidated. Tool chatter and hidden internal
@@ -1712,3 +1712,265 @@ possible while removing the earlier feature chain from the live branch.
 This operation can prove live branch and pull-request ref state. It cannot
 prove physical deletion from hosting caches, prior clones, or unreachable
 object retention; any stronger platform-side purge remains a separate action.
+
+## Event 032 — Return to the Private Corpus with an Ephemeral Parser Pilot
+
+### User Direction
+
+The user directed the project to continue with data processing and return to
+the reported private conversation corpus. The instruction was treated as
+authorization for the next smallest local operation: a bounded content-parser
+feasibility check. Full-corpus ingestion, durable storage, database or schema
+changes, external providers, model extraction, annotation persistence, and
+automatic persona promotion remained separate stop points.
+
+### Live Metadata and Format Evidence
+
+Read-only metadata inspection confirmed that the explicitly selected canonical
+Codex surface is at the user-reported corpus scale and includes both many small
+files suitable for a pilot and very large outliers that make whole-file loading
+unsafe. Exact roots, counts, sizes, dates, locators, and identifiers remain
+private.
+
+A bounded structural probe showed that local rollout records use several
+record families and that some user or assistant text may be represented in
+more than one family. It also showed explicit parent-thread metadata in part of
+the surface. No raw text or identifier from the probe was printed, retained,
+or copied into Git.
+
+### Implemented Boundary
+
+The new Codex content adapter is separate from the content-free metadata
+adapter. It uses fixed file, total-byte, per-file, line, record, event, and
+message limits; canonical discovery; no-follow stable-file reads; strict JSONL;
+and deterministic, opaque source identities. It normalizes only user and
+assistant dialogue in process memory. Repeated records remain distinct but are
+placed in opaque repeat clusters. Explicit parent-thread relationships are
+preserved, while absent message-parent relationships remain unknown rather
+than being fabricated.
+
+Independent privacy review identified one output-boundary defect before the
+checkpoint was closed: unexpected JSON discriminator strings could have become
+summary keys. The parser now maps those strings to fixed categories, and a
+sentinel CLI regression test verifies that the raw values cannot reach stdout.
+
+Every user-role event remains an unattributed turn with an unknown claim
+holder. Assistant events remain assistant context. No event becomes an
+interaction receipt, identity claim, annotation, core candidate, or action.
+Developer, system, reasoning, tool, attachment, image, and binary content is
+excluded from dialogue evidence.
+
+### Real Runtime Result and Limits
+
+The synthetic parser, CLI, attribution, privacy, malformed-input, and bounded-
+resource checks passed. A bounded real run then completed twice with identical
+content-free snapshot and count summaries. It emitted and persisted no content,
+created no private artifact, changed no source file, used no database or model
+provider, derived no claim, and left core eligibility and automatic promotion
+disabled.
+
+This is real parser-feasibility evidence, not corpus ingestion, an annotation
+study, persona evidence, deletion proof, model quality, or full-corpus
+readiness. The next discriminating experiment is a small branch-aware,
+repeat-labeled evidence-window study. Before that study persists any content,
+its ownership and third-party exclusion, retention, deletion lineage, and
+private artifact contract require explicit approval.
+
+## Event 033 — First Private 24+8 Annotation-Feasibility Pack
+
+### User Direction
+
+The user authorized continued evidence production from the bounded local
+corpus and later requested that reviewer findings be fixed while keeping memory
+use low. Work therefore remained sequential, kept local models disabled, and
+did not broaden into full-corpus ingestion, schema changes, external access, or
+automatic persona promotion.
+
+### Reviewer Corrections
+
+The first implementation incorrectly used holdout-like language for a set
+whose content had already been selected and rendered for annotation. It also
+stored the blind map beside the annotator pack, described in-memory replay too
+strongly, described a disposable deletion canary too broadly, enforced expiry
+only opportunistically without saying so, and required stronger junction and
+source-authority checks.
+
+The corrected protocol calls the two partitions annotation-development and
+annotation-reserved, explicitly disclaims a protected holdout, reloads the
+selected source from disk for independent replay, labels deletion evidence as
+a disposable canary, separates evaluator and annotator private roots, and
+rejects link or junction redirection. Seven-day expiry is explicitly on-access;
+background deletion is not claimed.
+
+### Bounded Real Result
+
+The corrected real run produced the fixed 24+8 annotation shape and stayed
+within its bounded event budget. Corpus-dependent component and event counts
+are intentionally not published.
+The two sequential source reads matched. The private label draft contains 32
+empty entries and is the only mutable indexed artifact. No database, model
+provider, upload, source deletion, persona score, protected holdout, or core
+promotion was used or claimed.
+
+This result proves annotation-pack feasibility and several privacy controls.
+It does not prove that the fields are labelable, that a persona can predict the
+user, or that any architecture beats a simpler baseline. Those claims remain
+blocked on represented-user labels, repeat adjudication, and a separately
+frozen chronological Mirror evaluation set.
+
+## Event 034 — Freeze the Protected Mirror Set and Add Target-Isolated Baselines
+
+### Objective and Constraint
+
+The persistent objective required the first privacy-safe persona-quality
+experiment, while the user requested lower memory use. Work remained
+sequential and model-free. The next implementation therefore addressed the
+unprotected-holdout and missing-label-contract gaps without expanding the
+corpus budget or adding infrastructure.
+
+### Implemented Label Boundary
+
+**Superseded by Event 036:** this checkpoint's fail-before-receipt behavior was
+later replaced by immutable initial submission plus separate adjudication.
+
+The represented-user label draft now has a strict frozen vocabulary, exact
+focus-span validation, identity/adoption exclusion rules, and a no-promotion
+seal receipt. Unknown critical fields require abstention. Quoted, pasted,
+mixed, third-party, non-endorsed, and hypothetical material cannot enter
+persona. Eight blind repeat pairs must agree on every critical field; otherwise
+the draft remains mutable and no sealed labels are created.
+
+### Protected Holdout Boundary
+
+Before any annotation dialogue is parsed, the source planner now reserves eight
+to twelve later canonical-filename session-start files from explicit lineage
+components that cannot cross into annotation history. Only the first
+session-metadata record is inspected. The holdout manifest records that event
+ordering is unverified, dialogue, targets, and predictor access remain closed,
+and exact-content overlap is still unchecked.
+
+The corrected bounded read-only replay selected the fixed earlier annotation
+and later metadata-only holdout shapes, stayed within its event budget, and
+found no source or explicit-lineage overlap. The
+existing private annotation pack still contains 24 windows plus eight blind
+repeats with an empty label draft, but its evaluator freeze predates the current
+ordering schema and is superseded. No replacement artifact was written in this
+checkpoint, and the source corpus was not modified.
+
+### Baseline Support Evidence
+
+A D0 fixture now compares zero abstention, recent-three, frequency, lexical,
+declared, and structured baselines without exposing hidden targets to predictor
+functions. Changing all targets leaves predictions unchanged. Duplicate cases,
+exact training-content overlap, source overlap, future evidence, and
+wrong-scope evidence are rejected or excluded. This is mock/support evidence,
+not a real-user score.
+
+### Remaining Human Gate
+
+The real draft still contains 32 empty labels. The holdout remains unopened.
+The next valid operation is represented-user annotation and blind-repeat
+adjudication; only then may target-free predictions be frozen before the user
+supplies holdout decisions for scoring.
+
+## Event 035 — Replace the Superseded Private Freeze Without Opening Holdout Content
+
+The current code checkpoint changed the holdout ordering contract from file
+modification time to the canonical rollout filename's session-start token and
+made event-time ordering explicitly unverified. The existing private pack was
+therefore audited before reuse. Its 32 labels were empty, seven immutable
+artifacts passed hash verification, and its evaluator freeze used the older
+schema.
+
+A replacement was first produced in a disposable private staging root. It
+reproduced the fixed annotation and metadata-only holdout shapes, stayed within
+the bounded event budget, and preserved source and explicit-lineage disjointness. Dialogue,
+targets, predictor access, database use, model-provider use, and automatic core
+promotion all remained false. The disposable deletion canary passed.
+
+Only after that verification were the eight old derived artifacts removed and
+the same selection regenerated in the original private root. Source, selection,
+blind-map, annotation-selection, and holdout-source receipts matched the staging
+run. The staging run and root were then removed, leaving only the promoted
+private run. The source corpus was not modified or deleted, and no private
+text, locator, identifier, hash, or timestamp entered Git.
+
+This closes the replacement-artifact gap but not the persona-quality gate. The
+active draft still contains 32 empty labels. Event-time ordering, exact content
+overlap, real target decisions, baseline scores, and model comparison remain
+unverified or unopened until represented-user annotation is complete.
+
+## Event 036 — Preserve the First Label Submission and Remove Corpus-Dependent Public Counts
+
+An independent privacy review found that a blind-repeat mismatch could stop
+sealing before the first represented-user answers and raw agreement result were
+preserved. It also found that overlap digests were not recomputed from their
+supplied text, expiry enforcement did not cover every store-backed read,
+deletion tombstones had no bounded lifetime, deletion absence checked only one
+storage scope, and public research included exact corpus-dependent runtime
+counts.
+
+The revised protocol makes the first completed 32-label submission and its raw
+eight-pair agreement receipt immutable. A mismatch now opens a separate
+adjudication draft that must cite the initial receipt and preserve both initial
+judgments. The final seal binds the resolved labels and cannot promote anything
+to persona automatically. Evaluation and history context digests are recomputed
+from the exact supplied text. Store-backed access enforces expiry, deletion
+tombstones use the same seven-day boundary, and deletion absence spans control,
+annotator, and evaluator roots.
+
+Public records now retain only protocol-fixed cardinalities and categorical
+pass/fail evidence. Exact runtime counts determined by the private corpus were
+removed from the working tree. This is a privacy correction, not evidence that
+annotation agreement, persona fidelity, or model quality has been established.
+
+## Event 037 — Make Label Mutation and Derived Deletion Fail Closed Under Interruption
+
+A second independent privacy review found that the normal immutable-label flow
+still lacked crash and concurrency evidence. Payloads reached their final paths
+before the updated index, so an interruption could leave unindexed files; a
+retry could overwrite those paths. The same missing inventory comparison meant
+TTL purge could remove indexed files while an unindexed same-run artifact
+survived. The final receipt also did not directly bind the adjudication set, and
+one corpus-dependent annotation-partition count remained public.
+
+The storage contract now uses exclusive-create payload writes and one opaque
+per-study transaction lock. Every parsed index is compared with the actual file
+set under control, annotator, and evaluator scopes. Existing or unindexed target
+files are never overwritten. Deletion and TTL purge require matching inventory
+before mutation and absence across all three roots afterward; any remnant makes
+the operation fail. Synthetic error-injection and concurrent-submit tests prove
+that exactly one immutable initial submission survives and incomplete mutation
+cannot report success.
+
+When repeat adjudication occurs, the final receipt now carries the canonical
+digest of the immutable completed adjudication set; an exact-match seal carries
+no adjudication digest. The remaining private corpus-dependent partition count
+was replaced with a categorical configured-bounds result. These changes prove
+transaction and lineage behavior on synthetic fixtures only. Represented-user
+labels and persona-quality evidence remain absent.
+
+## Event 038 — Close Draft Races, Ancestor Replay, and Post-Commit Rollback
+
+Further adversarial review found two narrow gaps after the transaction layer
+was introduced. The represented-user draft was parsed before the per-study
+lock, so an editor could change its bytes between computation and sealing. A
+sealed replay also did not reload the initial and adjudication ancestors. After
+those were fixed, review found that a post-index validation failure could remove
+new payloads while leaving the new index committed.
+
+The submission path now captures the SHA-256 of the exact bytes that were parsed
+and checks that digest under the study lock both before and after payload writes.
+Every index read validates the complete immutable payload set. Final replay
+reloads the initial receipt, immutable initial labels, and any completed
+adjudication, then recomputes every cross-link. Barrier tests change both label
+and adjudication drafts between compute and seal; forged-index tests rewrite an
+ancestor and its index hash. All cases fail closed.
+
+If verification fails after the new index is published, the prior mutable index
+is atomically restored before added payloads are removed, and a clean retry is
+proved. If restoring the old index itself fails, no committed payload is
+deleted; the operation reports incomplete rollback. The current private empty
+pack was regenerated through a disposable staging run, semantic artifacts and
+holdout lineage replayed, and the staging root was removed. No private content,
+model output, or persona-quality claim entered Git.
