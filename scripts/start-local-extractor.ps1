@@ -6,6 +6,8 @@ param(
     ),
     [ValidateRange(1024, 65535)]
     [int]$Port = 18100,
+    [ValidateRange(2048, 8192)]
+    [int]$ContextSize = 4096,
     [string]$Device = "Vulkan0",
     [string]$LlamaServerPath = "llama-server",
     [ValidateRange(5, 300)]
@@ -65,7 +67,9 @@ $arguments = @(
     "--alias", $ModelAlias,
     "--host", "127.0.0.1",
     "--port", "$Port",
-    "--ctx-size", "8192",
+    "--ctx-size", "$ContextSize",
+    "--batch-size", "512",
+    "--ubatch-size", "128",
     "--n-gpu-layers", "all",
     "--device", $Device,
     "--flash-attn", "on",

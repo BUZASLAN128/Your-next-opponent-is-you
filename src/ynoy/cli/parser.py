@@ -202,6 +202,10 @@ def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser])
     seal = subcommands.add_parser("seal-labels")
     seal.add_argument("study_id")
     seal.add_argument("--synthetic", action="store_true")
+    propose = subcommands.add_parser("propose-labels")
+    propose.add_argument("study_id")
+    propose.add_argument("--synthetic", action="store_true")
+    propose.add_argument("--retry-unreliable", action="store_true")
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from ynoy.cli.context import CommandContext
+from ynoy.cli.handlers.study_proposals import propose_labels
+from ynoy.errors import DataValidationError
 from ynoy.models import StudyArtifactIndex
 from ynoy.persona_study.artifacts import PersonaStudyStore
+from ynoy.persona_study.assisted_attempts import RETRY_PROPOSALS_PATH
+from ynoy.persona_study.assisted_labels import (
+    PROPOSALS_PATH,
+    QUICK_REVIEW_PATH,
+)
+from ynoy.persona_study.assisted_review import RETRY_QUICK_REVIEW_PATH
 from ynoy.persona_study.label_submission import submit_persona_labels
 from ynoy.persona_study.labels import seal_persona_labels
 from ynoy.persona_study.prepare import prepare_persona_study
@@ -47,6 +56,14 @@ _STATUS_GUIDANCE_TR = {
         "Türetilmiş çalışma ve kayıtlı bağımlılık kapanımı silindi.",
         "Kaynak konuşmalar değiştirilmedi; gerekiyorsa yeni bir çalışma hazırla.",
     ),
+    "awaiting_quick_proposal_review": (
+        "Yerel model önerileri iki geçiş ve deterministik kapılardan geçti.",
+        "Seçilen küçük denetim grubunda Doğru, Düzelt veya Bana ait değil kararı ver.",
+    ),
+    "proposal_run_unreliable": (
+        "Model geçişleri denetim yükü sınırını aştığı için güvenilmez sayıldı.",
+        "Bu önerileri persona için kullanma; model veya protokol karşılaştırması yap.",
+    ),
 }
 
 
@@ -58,6 +75,7 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "delete": _delete,
         "submit-labels": _submit_labels,
         "seal-labels": _seal_labels,
+        "propose-labels": propose_labels,
     }
     return handlers[args.study_command](args, context)
 
@@ -125,7 +143,7 @@ def _status(args: argparse.Namespace, context: CommandContext) -> dict[str, obje
             "content_emitted": False,
         }
     index = store.read_index(args.study_id)
-    status = _study_status(index)
+    status = _study_status(store, index)
     message_tr, next_step_tr = _status_guidance_tr(status)
     return {
         "status": status,
@@ -224,7 +242,7 @@ def _store(args: argparse.Namespace, context: CommandContext) -> PersonaStudySto
     )
 
 
-def _study_status(index: StudyArtifactIndex) -> str:
+def _study_status(store: PersonaStudyStore, index: StudyArtifactIndex) -> str:
     paths = {item.relative_path for item in index.entries}
     if "evaluator/label-seal.json" in paths:
         return "annotation_labels_sealed_not_persona_quality"
@@ -232,7 +250,31 @@ def _study_status(index: StudyArtifactIndex) -> str:
         return "awaiting_repeat_adjudication"
     if "evaluator/repeat-agreement.initial.json" in paths:
         return "initial_submission_sealed"
+    if RETRY_PROPOSALS_PATH in paths:
+        if RETRY_QUICK_REVIEW_PATH in paths:
+            return "awaiting_quick_proposal_review"
+        if _proposal_status(store, index.study_id, RETRY_PROPOSALS_PATH) == "unreliable":
+            return "proposal_run_unreliable"
+    if PROPOSALS_PATH in paths:
+        if QUICK_REVIEW_PATH in paths:
+            return "awaiting_quick_proposal_review"
+        if _proposal_status(store, index.study_id, PROPOSALS_PATH) == "unreliable":
+            return "proposal_run_unreliable"
     return "awaiting_represented_user_labels"
+
+
+def _proposal_status(store: PersonaStudyStore, study_id: str, path: str) -> str:
+    try:
+        value = json.loads(store.read_artifact(study_id, path))
+        status = value["receipt"]["status"]
+        if status not in {"review_ready", "unreliable"}:
+            raise ValueError
+        return str(status)
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise DataValidationError(
+            "persona_proposal_receipt_invalid",
+            "The immutable persona proposal receipt is invalid.",
+        ) from exc
 
 
 def _status_guidance_tr(status: str) -> tuple[str, str]:

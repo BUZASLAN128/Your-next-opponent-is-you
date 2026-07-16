@@ -15,6 +15,7 @@ from ynoy.persona_study.artifact_contract import (
     artifact_entry,
 )
 from ynoy.persona_study.artifact_mutations import (
+    append_artifacts_locked,
     delete_run_locked,
     delete_source_closure,
     seal_mutable_locked,
@@ -127,6 +128,13 @@ class PersonaStudyStore:
         require_complete_purge(self.purge_expired(self.evaluation_time or utc_now()))
         with self.study_lock(study_id):
             return self._delete_source_closure_locked(study_id, source_dependency)
+
+    def append_artifacts(
+        self, study_id: str, payloads: tuple[ArtifactPayload, ...]
+    ) -> StudyArtifactIndex:
+        require_complete_purge(self.purge_expired(self.evaluation_time or utc_now()))
+        with self.study_lock(study_id):
+            return append_artifacts_locked(self, study_id, payloads)
 
     def _delete_source_closure_locked(self, study_id: str, source_dependency: str) -> int:
         return delete_source_closure(self, study_id, source_dependency)

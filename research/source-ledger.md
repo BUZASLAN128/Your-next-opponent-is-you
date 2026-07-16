@@ -621,6 +621,40 @@ infrastructure.
   mutable index before cleanup; rollback-write failure preserves the committed
   payload set and reports incomplete rollback.
 
+### L-026 — Bounded model-assisted label-proposal checkpoint
+
+- **Type:** Explicit user direction, repository implementation, synthetic
+  tests, pinned local runtime observation, and bounded private proposal run
+- **Public paths:** [assisted proposal service](../src/ynoy/persona_study/assisted_labels.py),
+  [local proposer](../src/ynoy/persona_study/local_proposer.py),
+  [deterministic gates](../src/ynoy/persona_study/assisted_gates.py),
+  [retry contract](../src/ynoy/persona_study/assisted_attempts.py), and
+  [assisted tests](../tests/test_persona_assisted_labels.py)
+- **Observed private result:** The first two-pass attempt exceeded its fixed
+  review-burden cap and remained an immutable unreliable receipt without a
+  review draft. After a schema and bounded-context correction, one linked retry
+  passed the categorical review-ready and blind-repeat gates and created a
+  small represented-user review draft outside Git. The represented user has
+  not yet supplied those review decisions.
+- **Runtime boundary:** Only the pinned loopback Qwen3-8B Q4_K_M proposer was
+  used, with one worker and reduced context and batch budgets. No 3B artifact
+  was available, no model was downloaded, and larger unrelated installed
+  artifacts were not started.
+- **Privacy disposition:** No private content, path, identifier, digest,
+  timestamp, or corpus-dependent runtime count entered Git or CLI output. Raw
+  model output remains private; public evidence is limited to protocol-fixed
+  shape and categorical gate outcomes. Private proposal and review JSON that
+  retain exact focus text are indexed as D2 raw corpus, not D3 derived
+  identity.
+- **Supports:** A local model can reduce the interface to a bounded review set
+  while deterministic code retains source, uncertainty, repeat, transaction,
+  and promotion control. Preserving the failed primary also supports honest
+  protocol iteration.
+- **Does not establish:** Correct represented-user attribution, annotation
+  agreement, persona fidelity, a winning model, acceptable false-negative
+  rate for oversized text, holdout quality, or permission for automatic
+  persona promotion.
+
 ## External Sources
 
 ### S-001 — Graphiti official overview

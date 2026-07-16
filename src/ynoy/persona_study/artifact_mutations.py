@@ -58,6 +58,42 @@ def write_new_run(
         raise
 
 
+def append_artifacts_locked(
+    store: MutationStore,
+    study_id: str,
+    payloads: tuple[ArtifactPayload, ...],
+) -> StudyArtifactIndex:
+    index = store._read_index_unchecked(study_id)
+    store._verify_entries(study_id, index.entries)
+    require_unique_payloads(payloads)
+    existing = {item.relative_path for item in index.entries}
+    if existing & {item.relative_path for item in payloads}:
+        raise DataValidationError(
+            "persona_study_artifact_exists",
+            "Refusing to replace an existing study artifact.",
+        )
+    added: tuple[StudyArtifactEntry, ...] = ()
+    index_committed = False
+    try:
+        added = store._write_payloads(study_id, payloads)
+        updated = artifact_index(
+            study_id,
+            index.created_at,
+            index.expires_at,
+            (*index.entries, *added),
+        )
+        store._write_index(updated)
+        index_committed = True
+        store._verify_entries(study_id, updated.entries)
+        return updated
+    except Exception:
+        if index_committed:
+            _restore_index_before_cleanup(store, index)
+        store._remove_entries(study_id, added)
+        store.paths.remove_empty_run(study_id)
+        raise
+
+
 def delete_source_closure(store: MutationStore, study_id: str, source_dependency: str) -> int:
     index = store._read_index_unchecked(study_id)
     selected = tuple(

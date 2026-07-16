@@ -591,3 +591,21 @@ The immediate question is no longer **which architecture should we install?**
 The bounded V1 answer exists. The discriminating question is **which identity
 and decision signals can humans label reliably, and do those signals predict
 the user's later judgment better than the frozen baselines?**
+
+## Model-Assisted Annotation Checkpoint — 2026-07-16
+
+The annotation interface now has two separate evidence tracks. The complete
+24+8 represented-user form remains the gold-label protocol. A model-assisted
+sidecar can pre-classify each presentation through two local passes and ask the
+user to inspect only a bounded audit set. Model output has no interpretation
+authority: deterministic code owns exact source binding, dependent exclusion
+and abstention fields, oversized-focus guards, blind-repeat checks, immutable
+attempt chaining, and the review-burden stop rule.
+
+The first private attempt failed the burden gate and remains preserved. One
+linked retry passed the categorical review-ready gate after the model schema
+was narrowed and oversized focus text was changed from an invalid request into
+an explicit deterministic abstention. This moves interface feasibility
+forward, but not identity evidence or persona quality. The next discriminator
+is represented-user agreement, correction, and false-exclusion behavior on the
+bounded review set; the protected holdout remains later.

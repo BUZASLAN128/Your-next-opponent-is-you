@@ -103,6 +103,12 @@ from ynoy.models.persona_labels import (
     PersonaLabelSealReceipt,
     SealedPersonaLabel,
 )
+from ynoy.models.persona_proposals import (
+    PersonaModelProposal,
+    PersonaProposalBundle,
+    PersonaProposalPass,
+    PersonaProposalRunReceipt,
+)
 from ynoy.models.persona_study import (
     AnnotationPresentation,
     BlindMapEntry,
@@ -212,7 +218,11 @@ __all__ = [
     "PersonaHistoryEvidence",
     "PersonaInitialLabelReceipt",
     "PersonaLabelSealReceipt",
+    "PersonaModelProposal",
     "PersonaPreview",
+    "PersonaProposalBundle",
+    "PersonaProposalPass",
+    "PersonaProposalRunReceipt",
     "PersonaStudyManifest",
     "PersonaView",
     "PersonaViewName",

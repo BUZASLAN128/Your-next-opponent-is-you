@@ -247,7 +247,8 @@ chain replayed successfully.
 
 ### RQ-025 — Do the 32 blind annotation labels support a reliable real benchmark?
 
-**Status: awaiting represented-user labels.** The active private pack contains
+**Status: awaiting represented-user labels and a separate assisted-proposal
+audit.** The active private pack contains
 the fixed 24+8 annotation shape. A distinct bounded holdout passed its minimum
 metadata-only shape in canonical rollout-filename session-start order; its
 event order, dialogue, targets, and predictors remain unverified or unopened.
@@ -256,6 +257,13 @@ laundering, and unadjudicated repeat disagreement. The first complete
 submission and raw repeat receipt are immutable; any disagreement is resolved
 in a separately linked adjudication artifact. Its represented-user marker is a
 local operator attestation, not cryptographic identity authentication.
+
+A separate proposal-only Qwen3-8B path now preserves an unreliable primary
+attempt and one linked review-ready retry. It uses two passes, deterministic
+dependent fields, oversized-focus abstention, blind-repeat checks, and a fixed
+review cap. The assisted decisions remain empty. They may estimate proposal
+correction burden but cannot replace the 32-label gold set or authorize holdout
+access.
 
 **Next check:** complete and submit all 32 labels, preserve the first agreement
 measurement separately

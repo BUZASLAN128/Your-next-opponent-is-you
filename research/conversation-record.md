@@ -1997,3 +1997,64 @@ regenerated through a disposable staging root, replayed against the same
 semantic selection and holdout lineage, and left as one empty active `0.2`
 pack. No holdout dialogue, model provider, persona target, or private content
 was opened or written to Git.
+
+## Event 040 — Bound Model-Assisted Labeling and Preserve the Failed Attempt
+
+### User Direction
+
+The user identified the full 32-entry JSON workflow as too burdensome for
+ordinary users and asked the system to derive provisional labels from the data
+itself. The user explicitly warned that small local models can fabricate or
+overstate interpretations and required every stage to be checked. The user
+also authorized using an already available local 8B or 3B model where
+appropriate. Live inventory found no active model service and no available 3B
+artifact; the already pinned Qwen3-8B Q4_K_M artifact was therefore used as an
+experiment without downloading another model or making it the permanent model
+choice.
+
+### Implemented Boundary
+
+The original 24+8 represented-user labeling protocol remains unchanged as the
+gold-label path. A separate assisted path appends immutable model proposals and
+a small represented-user review draft outside Git. Each presentation receives
+two independently prompted passes. The model may return only seven independent
+classification fields; exact source spans, scope defaults, exclusion,
+abstention, and persona eligibility are derived by deterministic code. Schema,
+configured and operator-attested provider identity, loopback locality, exact focus binding, pass agreement,
+blind-repeat agreement, append transaction integrity, and the review-burden
+cap fail closed. No proposal can promote itself into persona or open the
+protected holdout.
+
+Focus text that cannot fit the bounded local context is not truncated and
+presented as fully read. It receives a deterministic unknown, abstaining,
+persona-excluded guard result instead, and the longest cases are included in
+the audit sample. The local server uses one worker and a reduced context and
+batch budget. The two large unrelated installed model artifacts were not
+started.
+
+### Negative and Retry Evidence
+
+The first private two-pass attempt exceeded the configured review-burden cap
+and was recorded as unreliable. It produced no quick-review draft and no
+persona-quality claim. A diagnostic pass separated model-schema failures from
+requests that exceeded the reduced context budget. After narrowing the model
+schema and adding deterministic oversized-focus handling, a memory-only replay
+reached the review-ready gate.
+
+The failed primary receipt was not overwritten or deleted. One explicitly
+bounded retry was chained to it through immutable receipt digests. That retry
+reached the configured review-ready gate, passed the blind-repeat consistency
+gate categorically, and created a review set within the fixed maximum burden.
+The local review document was opened for the represented user. User decisions
+remain pending, so this is protocol-operability evidence only—not annotation
+agreement, persona fidelity, model superiority, or permission to open holdout
+dialogue.
+
+An independent pre-push review found and corrected three protocol defects:
+proposal and review JSON that retain exact focus text are now classified as D2
+raw corpus rather than D3 derived identity; the private command requires an
+explicit model name instead of accepting the general reasoner default; and the
+new proposal receipt is versioned `0.2` while retaining validated replay for
+the already immutable pre-guard `0.1` form. Documentation now describes the
+provider tuple as configured and operator-attested, not runtime-
+cryptographically verified.

@@ -258,3 +258,15 @@ Revisit the representation before expanding capability if:
 The current result is therefore **research-aligned but scientifically early**.
 The next valuable unit of progress is evidence from a small, authorized,
 correctable user study—not another memory framework.
+
+## Assisted Annotation Update — 2026-07-16
+
+The largest immediate usability gap was the requirement to hand-author a full
+machine-readable label file. A proposal-only sidecar now uses the pinned local
+8B model to produce two-pass suggestions, while deterministic code supplies
+exact spans, exclusion, abstention, oversized-input handling, repeat checks,
+and a hard review cap. One failed attempt is preserved and one linked retry is
+review-ready. This reduces interface burden but does not close the Layer 2
+evidence gap: represented-user decisions, correction rate, false exclusions,
+full blind labels, holdout scoring, and a smaller-model comparison remain
+missing.

@@ -128,7 +128,14 @@ lexical retrieval will work on the represented user.
 
 ## Remaining Gate
 
-The represented user must complete and submit the 32 blind annotation labels.
+The represented user now has two distinct gates. The first is a small
+model-assisted audit using only `confirm`, `correct`, or `not_mine`. Its linked
+retry passed the configured review-burden gate, but no represented-user action
+has been submitted. This audit can measure proposal correction burden and
+false exclusions; it cannot become the gold-label set automatically.
+
+The full benchmark still requires the represented user to complete and submit
+the 32 blind annotation labels.
 That first submission is immutable; any mismatched repeat pairs must then be
 resolved in the separate adjudication draft before the final label set seals.
 The user-facing form, value glossary, status guidance, and repeat-resolution
@@ -138,8 +145,9 @@ Only afterward may the protected holdout dialogue be opened, exact duplicates ch
 predictions frozen, and represented-user holdout targets collected for scoring.
 
 No real zero-, low-, or history-data quality result exists yet. The installed
-local model remains disabled until deterministic baselines have frozen real
-predictions. Background deletion scheduling, stronger evaluator access
+local model has been used only for annotation proposals; it remains excluded
+from protected-holdout targets and scoring until the label and prediction
+freeze gates are satisfied. Background deletion scheduling, stronger evaluator access
 separation, schema or database persistence, model downloads, and full-corpus
 processing remain separate approval boundaries.
 

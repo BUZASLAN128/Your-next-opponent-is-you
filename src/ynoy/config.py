@@ -19,6 +19,7 @@ class Settings:
     embedding_model: str
     local_reasoner_revision: str | None = None
     local_reasoner_artifact_sha256: str | None = None
+    local_reasoner_model_explicit: bool = False
 
     @classmethod
     def from_environment(
@@ -46,6 +47,7 @@ class Settings:
             embedding_model=os.environ.get("YNOY_EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL),
             local_reasoner_revision=os.environ.get("YNOY_LOCAL_REASONER_REVISION"),
             local_reasoner_artifact_sha256=os.environ.get("YNOY_LOCAL_REASONER_ARTIFACT_SHA256"),
+            local_reasoner_model_explicit=bool(os.environ.get("YNOY_LOCAL_REASONER_MODEL")),
         )
 
     def require_private_root(self) -> Path:

@@ -1,12 +1,13 @@
 # Research Hub
 
 > Status: V1.2 deterministic correction lifecycle, proposal-only local
-> extractor, and ephemeral Codex content parser implemented; the first bounded
-> private correction chain and memory-only real parser check are closed
+> extractor, ephemeral Codex content parser, and bounded assisted-label review
+> implemented; represented-user assisted review remains pending
 > Last updated: 2026-07-16
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
-> pinned Qwen3-8B loopback extractor has synthetic and one bounded private
-> proposal run, while correction quality, model selection, and future
+> pinned Qwen3-8B loopback extractor has synthetic and bounded private
+> proposal evidence, while assisted-review decisions, correction quality,
+> model selection, and future
 > integrations remain unverified.
 
 This directory is the durable research record for **Your Next Opponent Is
@@ -78,6 +79,7 @@ The shortest current distinction is:
 | One real local Codex metadata inventory completed outside Git without copying conversation fields, deriving claims, or calling a database or model provider. | Private runtime checkpoint; metadata map only, not corpus or persona evidence | [Inventory checkpoint](codex-metadata-inventory-2026-07-16.md), [Decision D-043](decision-log.md#d-043--authorize-a-content-free-local-codex-metadata-inventory), [Event 030](conversation-record.md#event-030--remove-the-host-storage-probe-and-inventory-local-codex-metadata), and [Source L-022](source-ledger.md#l-022--content-free-local-codex-metadata-inventory) |
 | A bounded local Codex content parser completed two matching real runs in process memory while emitting and persisting no content, deriving no claim, and calling neither a database nor a model. | Private parser-feasibility checkpoint; not ingestion, annotation, persona evidence, or full-corpus readiness | [Parser checkpoint](codex-content-pilot-2026-07-16.md), [Decision D-046](decision-log.md#d-046--authorize-an-ephemeral-local-codex-content-parser-pilot), [Event 032](conversation-record.md#event-032--return-to-the-private-corpus-with-an-ephemeral-parser-pilot), and [Source L-024](source-ledger.md#l-024--ephemeral-local-codex-content-parser-pilot) |
 | A private 24+8 annotation pack has immutable first-submission receipts, separate repeat adjudication, and a distinct metadata-only session-start-ordered holdout under the current schema; dialogue, targets, and predictors remain unopened. | Implemented private evaluation apparatus; awaiting labels and not persona-quality evidence | [Pilot checkpoint](persona-annotation-feasibility-pilot-2026-07-16.md), [Decisions D-048](decision-log.md#d-048--freeze-a-distinct-metadata-only-session-start-ordered-mirror-holdout) and [D-049](decision-log.md#d-049--preserve-initial-labels-and-separate-repeat-adjudication), and [Event 036](conversation-record.md#event-036--preserve-the-first-label-submission-and-remove-corpus-dependent-public-counts) |
+| A proposal-only assisted-label path now runs two independent local-model passes, derives dependent safety fields in deterministic code, abstains on oversized focus text, audits blind-repeat consistency, and refuses review when the bounded burden cap is exceeded. One preserved failed attempt was followed by one linked retry that reached the configured review-ready gate; represented-user review remains pending. | Implemented private proposal checkpoint; not labels, persona quality, holdout evidence, or model selection | [Decision D-050](decision-log.md#d-050--replace-full-manual-pre-labeling-with-bounded-model-assisted-review), [Event 040](conversation-record.md#event-040--bound-model-assisted-labeling-and-preserve-the-failed-attempt), and [Source L-026](source-ledger.md#l-026--bounded-model-assisted-label-proposal-checkpoint) |
 | A loopback endpoint is transport-local but is not trusted with private identity data until the operator separately attests provider locality. | Implemented fail-closed boundary; local experiment attested and first bounded private proposal run observed | [Decisions D-029](decision-log.md) and [D-038](decision-log.md#d-038--permit-one-pinned-local-extractor-as-a-proposal-only-experiment) |
 | Raw user turns remain unattributed with an unknown claim holder until explicit adoption or span attribution, preventing pasted third-party text from silently becoming persona evidence. | Implemented source-authority rule | [Decision D-027](decision-log.md) |
 | Qwen3-8B Q4_K_M is the first live extractor experiment; gpt-oss-20b and BGE-M3 remain untested candidates. | Local synthetic observation; no model winner selected | [RQ-017](open-questions.md#rq-017--which-exact-model-revisions-fit-the-local-runtime-boundary) and [Source L-018](source-ledger.md#l-018--pinned-proposal-only-local-extractor-checkpoint) |

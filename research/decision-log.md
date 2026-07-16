@@ -870,6 +870,34 @@ from silently becoming product authority.
   identity authentication, persona quality, or permission to open holdout
   dialogue.
 
+### D-050 — Replace full manual pre-labeling with bounded model-assisted review
+
+- **Status:** Confirmed and implemented as a proposal-only experiment;
+  represented-user review remains pending.
+- **Decision:** The system should derive provisional persona labels from the
+  bounded private data instead of requiring every ordinary user to author a
+  complete machine-readable label set from scratch. A small local model may
+  propose, but it cannot supply represented-user authority, ground truth,
+  persona promotion, or action authority.
+- **Hallucination controls:** Use two independent passes, a strict schema with
+  only independent fields, deterministic dependent-field materialization,
+  exact focus binding, blind-repeat comparison, explicit abstention, a fixed
+  audit sample, and a hard review-burden cap. Oversized focus text is guarded
+  as unknown and persona-excluded rather than truncated and described as fully
+  read.
+- **Retry rule:** Preserve an unreliable primary attempt. Permit at most one
+  explicitly requested retry linked to the primary receipt; never overwrite
+  either attempt. A review draft exists only if the retry remains within the
+  configured burden cap.
+- **Model status:** The already pinned Qwen3-8B Q4_K_M artifact is an
+  experimental local proposer because no available 3B artifact was found. It
+  is not a permanent model selection and no download was authorized. The
+  provider tuple is explicitly configured and operator-attested; this is not
+  runtime cryptographic verification of the serving process.
+- **Limit:** Model-assisted review does not replace the full 24+8 gold-label
+  protocol or establish persona quality. Holdout dialogue, scoring, durable
+  persona memory, and automatic promotion remain closed.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
