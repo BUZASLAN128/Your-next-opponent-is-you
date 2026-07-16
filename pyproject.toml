@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "your-next-opponent-is-you"
+version = "0.1.0"
+description = "A local-first scientific personality-core prototype"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "AGPL-3.0-only" }
+authors = [{ name = "Your Next Opponent Is You contributors" }]
+dependencies = [
+  "psycopg[binary]==3.3.4",
+  "pydantic==2.13.4",
+]
+
+[project.scripts]
+ynoy = "ynoy.cli:main"
+
+[dependency-groups]
+dev = [
+  "mypy==2.3.0",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.15.21",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ynoy = ["migrations/*.sql", "py.typed"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["ynoy"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers --cov=ynoy --cov-report=term-missing --cov-fail-under=70"
+testpaths = ["tests"]
+markers = [
+  "integration: requires the repository PostgreSQL service",
+  "acceptance: exercises a complete synthetic CLI workflow",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["ynoy"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

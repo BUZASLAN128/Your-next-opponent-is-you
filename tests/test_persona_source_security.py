@@ -1,0 +1,273 @@
+from __future__ import annotations
+
+import json
+from collections.abc import Sequence
+from io import BytesIO
+from pathlib import Path
+
+import pytest
+
+from ynoy.cli.main import main
+from ynoy.errors import DataValidationError
+from ynoy.persona import build_persona_preview
+from ynoy.persona_source import load_adopted_persona_source
+
+
+def _persona_item(*, synthetic: bool) -> dict[str, object]:
+    return {
+        "kind": "trait",
+        "statement": "Prefer evidence-backed changes.",
+        "speaker": "user",
+        "claim_holder": "represented_user",
+        "source_authority": "explicit_user_statement",
+        "adopted": True,
+        "evidence_plane": "identity_interpretation",
+        "synthetic": synthetic,
+    }
+
+
+def _write_source(path: Path, item: dict[str, object]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps([item]), encoding="utf-8")
+    return path
+
+
+def _run_cli(
+    arguments: Sequence[str], capsys: pytest.CaptureFixture[str]
+) -> tuple[int, dict[str, object]]:
+    exit_code = main(["--indent", "0", *arguments])
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    payload = json.loads(captured.out)
+    assert isinstance(payload, dict)
+    return exit_code, payload
+
+
+def _remove_optional_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    for variable in (
+        "YNOY_DATABASE_URL",
+        "YNOY_PRIVATE_ROOT",
+        "YNOY_LOCAL_REASONER_URL",
+    ):
+        monkeypatch.delenv(variable, raising=False)
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "missing"),
+    [
+        ("speaker", None, True),
+        ("claim_holder", None, True),
+        ("source_authority", None, True),
+        ("adopted", None, True),
+        ("evidence_plane", None, True),
+        ("synthetic", None, True),
+        ("speaker", "assistant", False),
+        ("claim_holder", "third_party", False),
+        ("source_authority", "system_control", False),
+        ("adopted", False, False),
+        ("evidence_plane", "control_plane", False),
+        ("synthetic", False, False),
+    ],
+)
+def test_persona_source_requires_exact_explicit_adoption_markers(
+    field: str,
+    value: object,
+    missing: bool,
+    tmp_path: Path,
+) -> None:
+    item = _persona_item(synthetic=True)
+    if missing:
+        item.pop(field)
+    else:
+        item[field] = value
+    source = _write_source(tmp_path / f"invalid-{field}.json", item)
+
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source, synthetic=True)
+    assert blocked.value.code == "persona_explicit_adoption_required"
+
+
+@pytest.mark.parametrize(
+    ("synthetic", "field", "value"),
+    [
+        pytest.param(True, "adopted", 1, id="adopted-int-one"),
+        pytest.param(True, "synthetic", 1, id="synthetic-int-one"),
+        pytest.param(False, "synthetic", 0, id="synthetic-int-zero"),
+    ],
+)
+def test_persona_source_rejects_integer_boolean_markers(
+    synthetic: bool,
+    field: str,
+    value: int,
+    tmp_path: Path,
+) -> None:
+    item = _persona_item(synthetic=synthetic)
+    item[field] = value
+    source = _write_source(tmp_path / f"integer-{field}.json", item)
+
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source, synthetic=synthetic)
+    assert blocked.value.code == "persona_explicit_adoption_required"
+
+
+def test_persona_source_requires_json(tmp_path: Path) -> None:
+    source = tmp_path / "persona.md"
+    source.write_text("- I explicitly adopt this statement.", encoding="utf-8")
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source)
+    assert blocked.value.code == "persona_json_required"
+
+
+def test_subject_defaults_to_scope_person_at_parser_boundary(tmp_path: Path) -> None:
+    item = _persona_item(synthetic=True)
+    item["scope"] = {"person_id": "alice", "project": "pilot"}
+    source = _write_source(tmp_path / "scope-default.json", item)
+
+    declaration = load_adopted_persona_source(source, synthetic=True)[0]
+
+    assert declaration.subject_id == "alice"
+    assert declaration.scope.person_id == "alice"
+
+
+def test_preview_preserves_exact_statement_whitespace_from_loader(tmp_path: Path) -> None:
+    statement = " \tExact declaration with whitespace. \r\n"
+    item = _persona_item(synthetic=True)
+    item["statement"] = statement
+    source = _write_source(tmp_path / "exact-statement.json", item)
+
+    declaration = load_adopted_persona_source(source, synthetic=True)[0]
+    facet = build_persona_preview((declaration,)).views[0].facets[0]
+
+    assert declaration.statement.encode("utf-8") == statement.encode("utf-8")
+    assert facet.statement.encode("utf-8") == statement.encode("utf-8")
+
+
+def test_explicit_subject_scope_mismatch_fails_closed(tmp_path: Path) -> None:
+    item = _persona_item(synthetic=True)
+    item["subject_id"] = "alice"
+    item["scope"] = {"person_id": "bob"}
+    source = _write_source(tmp_path / "scope-mismatch.json", item)
+
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source, synthetic=True)
+    assert blocked.value.code == "persona_declaration_invalid"
+
+
+@pytest.mark.parametrize("location", ["subject", "scope"])
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param(None, id="null"),
+        pytest.param(True, id="bool"),
+        pytest.param([], id="list"),
+        pytest.param({}, id="object"),
+        pytest.param(7, id="numeric"),
+        pytest.param("", id="blank"),
+        pytest.param(" alice ", id="padded"),
+    ],
+)
+def test_persona_source_rejects_invalid_subject_identifiers(
+    location: str,
+    value: object,
+    tmp_path: Path,
+) -> None:
+    item = _persona_item(synthetic=True)
+    if location == "subject":
+        item["subject_id"] = value
+    else:
+        item["scope"] = {"person_id": value}
+    source = _write_source(tmp_path / f"invalid-{location}.json", item)
+
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source, synthetic=True)
+    assert blocked.value.code == "persona_subject_invalid"
+
+
+def test_persona_growth_guard_reads_at_most_limit_plus_one(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "growing-persona.json"
+    source.write_text("[]", encoding="utf-8")
+    read_sizes: list[int] = []
+
+    class ReadSpy(BytesIO):
+        def read(self, size: int = -1) -> bytes:
+            read_sizes.append(size)
+            return super().read(size)
+
+    reader = ReadSpy(b"x" * 32)
+
+    def fake_open(path: Path, mode: str) -> ReadSpy:
+        assert path.resolve() == source.resolve() and mode == "rb"
+        return reader
+
+    monkeypatch.setattr("ynoy.persona_source.DEFAULT_BOOTSTRAP_MAX_SOURCE_BYTES", 8)
+    monkeypatch.setattr(Path, "open", fake_open)
+    with pytest.raises(DataValidationError) as blocked:
+        load_adopted_persona_source(source, synthetic=True)
+    assert blocked.value.code == "persona_source_too_large"
+    assert read_sizes == [9]
+
+
+def test_real_persona_cli_accepts_only_explicit_source_inside_private_root(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "private-root"
+    source = _write_source(root / "persona.json", _persona_item(synthetic=False))
+    _remove_optional_environment(monkeypatch)
+
+    exit_code, payload = _run_cli(
+        ["--private-root", str(root), "persona", "preview", str(source)], capsys
+    )
+
+    assert exit_code == 0 and payload["ok"] is True
+    result = payload["result"]
+    assert isinstance(result, dict)
+    assert result["data_class"] == "D3"
+    assert result["database_used"] is False and result["provider_used"] is False
+    assert result["persistence_status"] == "not_persisted"
+
+
+def test_real_persona_cli_rejects_source_outside_private_root(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "private-root"
+    root.mkdir()
+    source = _write_source(tmp_path / "outside.json", _persona_item(synthetic=False))
+    _remove_optional_environment(monkeypatch)
+
+    exit_code, payload = _run_cli(
+        ["--private-root", str(root), "persona", "preview", str(source)], capsys
+    )
+
+    assert exit_code == 2 and payload["ok"] is False
+    error = payload["error"]
+    assert isinstance(error, dict)
+    assert error["code"] == "private_source_outside_root"
+
+
+def test_real_git_source_is_rejected_before_parser_or_private_root_work(
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+
+    def forbidden(*_: object, **__: object) -> None:
+        calls.append("called")
+        raise AssertionError("Git-contained input must fail before parser/private-root work")
+
+    _remove_optional_environment(monkeypatch)
+    monkeypatch.setattr("ynoy.cli.handlers.persona.load_adopted_persona_source", forbidden)
+    monkeypatch.setattr("ynoy.config.Settings.require_private_root", forbidden)
+    exit_code, payload = _run_cli(["persona", "preview", __file__], capsys)
+
+    assert exit_code == 2 and payload["ok"] is False
+    error = payload["error"]
+    assert isinstance(error, dict)
+    assert error["code"] == "private_root_inside_git"
+    assert calls == []
