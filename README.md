@@ -1,5 +1,3 @@
-<img width="2568" height="1632" alt="Gemini_Generated_Image_fzy7acfzy7acfzy7 (1)" src="https://github.com/user-attachments/assets/b94939ed-7164-492d-86a7-04ed2a5c036e" /># Your Next Opponent Is You.
-
 > **It doesn't learn to talk like you. It learns to judge like you.**
 
 An open-source, IDE-agnostic personal controller for AI coding agents.
