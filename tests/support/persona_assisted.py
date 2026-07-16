@@ -79,7 +79,10 @@ def candidate(value: PersonaAnnotationJudgment) -> dict[str, object]:
 
 def response(value: PersonaAnnotationJudgment | dict[str, object]) -> dict[str, object]:
     raw = candidate(value) if isinstance(value, PersonaAnnotationJudgment) else value
-    return {"choices": [{"message": {"content": json.dumps(raw)}}]}
+    return {
+        "model": "ynoy-extractor-qwen3-8b-q4km",
+        "choices": [{"message": {"content": json.dumps(raw)}}],
+    }
 
 
 def local_proposer(*, attested: bool = True) -> LocalPersonaProposer:

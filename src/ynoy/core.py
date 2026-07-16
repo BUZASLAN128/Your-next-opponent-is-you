@@ -9,6 +9,7 @@ from ynoy.models import (
     BootstrapDeclaration,
     CandidateStatus,
     ClaimCandidate,
+    ClaimHolder,
     DataClass,
     DecisionLabel,
     Mode,
@@ -19,9 +20,10 @@ from ynoy.reasoner import (
     EvidenceItem,
     Reasoner,
     ReasonerRequest,
+    ReasonerResponse,
     ensure_reasoner_data_boundary,
 )
-from ynoy.scope import scope_matches
+from ynoy.scope import scope_is_active, scope_matches
 from ynoy.util import utc_now
 
 
@@ -40,6 +42,7 @@ class SelectedEvidence:
     items: tuple[EvidenceItem, ...]
     wrong_scope_count: int
     stale_count: int
+    conflict_count: int = 0
 
 
 RankedEvidence = tuple[int, datetime, EvidenceItem]
@@ -49,8 +52,20 @@ def _tokens(value: str) -> set[str]:
     return {token for token in re.findall(r"[\w-]+", value.casefold()) if len(token) > 2}
 
 
-def _is_stale(valid_until: datetime | None, now: datetime) -> bool:
-    return valid_until is not None and valid_until < now
+def _decision_marker(value: str) -> DecisionLabel | None:
+    match = re.search(
+        r"\bdecision\s*:\s*(accept|reject|correct|defer|ask|unknown)\b", value.casefold()
+    )
+    return DecisionLabel(match.group(1)) if match else None
+
+
+def _validity_is_active(
+    valid_from: datetime | None, valid_until: datetime | None, now: datetime
+) -> bool:
+    return scope_is_active(
+        ScopeRef(valid_from=valid_from, valid_until=valid_until),
+        now,
+    )
 
 
 def select_evidence(
@@ -76,6 +91,7 @@ def select_evidence(
         items=tuple(relevant),
         wrong_scope_count=declaration_scope + candidate_scope,
         stale_count=declaration_stale + candidate_stale,
+        conflict_count=_conflict_count(relevant),
     )
 
 
@@ -91,7 +107,7 @@ def _rank_declarations(
         if not scope_matches(declaration.scope, scope):
             wrong_scope += 1
             continue
-        if _is_stale(declaration.scope.valid_until, now):
+        if not scope_is_active(declaration.scope, now):
             stale += 1
             continue
         overlap = len(task_tokens & _tokens(declaration.statement))
@@ -107,6 +123,8 @@ def _rank_declarations(
                     text=f"{declaration.statement}{label_marker}",
                     data_class=declaration.data_class,
                     source_kind="explicit_declaration",
+                    decision_label=declaration.decision_label
+                    or _decision_marker(declaration.statement),
                 ),
             )
         )
@@ -122,12 +140,18 @@ def _rank_candidates(
     ranked: list[RankedEvidence] = []
     wrong_scope = stale = 0
     for candidate in candidates:
-        if candidate.status not in {CandidateStatus.PROPOSED, CandidateStatus.CONFIRMED}:
+        if candidate.status != CandidateStatus.CONFIRMED:
+            continue
+        if candidate.claim_holder != ClaimHolder.REPRESENTED_USER:
+            continue
+        if not candidate.origin_cluster_ids:
             continue
         if not scope_matches(candidate.scope, scope):
             wrong_scope += 1
             continue
-        if _is_stale(candidate.valid_until, now):
+        if not scope_is_active(candidate.scope, now) or not _validity_is_active(
+            candidate.valid_from, candidate.valid_until, now
+        ):
             stale += 1
             continue
         overlap = len(task_tokens & _tokens(candidate.proposition))
@@ -140,6 +164,7 @@ def _rank_candidates(
                     text=candidate.proposition,
                     data_class=DataClass.DERIVED_IDENTITY,
                     source_kind=f"candidate:{candidate.status.value}",
+                    decision_label=_decision_marker(candidate.proposition),
                 ),
             )
         )
@@ -157,33 +182,35 @@ def cold_start_mirror() -> OutputEnvelope:
     )
 
 
-def mirror_predict(
-    memory: MemoryReader,
-    *,
-    task: str,
-    scope: ScopeRef,
-    reasoner: Reasoner,
-    task_data_class: DataClass = DataClass.PRIVATE_TASK,
-    subject_id: str = "self",
-) -> OutputEnvelope:
-    selected = select_evidence(memory, task=task, scope=scope, subject_id=subject_id)
-    if not selected.items:
-        result = cold_start_mirror()
-        unknowns = list(result.unknowns)
-        if selected.wrong_scope_count:
-            unknowns.append("available_evidence_belongs_to_another_scope")
-        if selected.stale_count:
-            unknowns.append("stale_evidence_was_excluded")
-        return result.model_copy(update={"unknowns": tuple(unknowns)})
-    ensure_reasoner_data_boundary(reasoner, selected.items, task_data_class)
-    response = reasoner.complete(
-        ReasonerRequest(
-            mode=Mode.MIRROR,
-            task=task,
-            task_data_class=task_data_class,
-            evidence=selected.items,
-        )
+def _conflict_count(items: list[EvidenceItem]) -> int:
+    labels = {item.decision_label for item in items if item.decision_label is not None}
+    return max(0, len(labels) - 1)
+
+
+def _conflict_abstention() -> OutputEnvelope:
+    return OutputEnvelope(
+        mode=Mode.MIRROR,
+        answer="I cannot choose between conflicting active decisions without your clarification.",
+        confidence=0.0,
+        unknowns=("conflicting_active_decisions",),
+        personal_fit="unknown",
+        question="Which active decision should govern this task?",
     )
+
+
+def _cold_start_response(selected: SelectedEvidence) -> OutputEnvelope:
+    result = cold_start_mirror()
+    unknowns = list(result.unknowns)
+    if selected.wrong_scope_count:
+        unknowns.append("available_evidence_belongs_to_another_scope")
+    if selected.stale_count:
+        unknowns.append("stale_evidence_was_excluded")
+    return result.model_copy(update={"unknowns": tuple(unknowns)})
+
+
+def _reasoned_mirror_response(
+    response: ReasonerResponse, selected: SelectedEvidence
+) -> OutputEnvelope:
     unknowns = list(response.unknowns)
     if selected.stale_count:
         unknowns.append("stale_evidence_was_excluded")
@@ -201,6 +228,32 @@ def mirror_predict(
             else "Which option would you choose here, and what evidence decides it?"
         ),
     )
+
+
+def mirror_predict(
+    memory: MemoryReader,
+    *,
+    task: str,
+    scope: ScopeRef,
+    reasoner: Reasoner,
+    task_data_class: DataClass = DataClass.PRIVATE_TASK,
+    subject_id: str = "self",
+) -> OutputEnvelope:
+    selected = select_evidence(memory, task=task, scope=scope, subject_id=subject_id)
+    if selected.conflict_count:
+        return _conflict_abstention()
+    if not selected.items:
+        return _cold_start_response(selected)
+    ensure_reasoner_data_boundary(reasoner, selected.items, task_data_class)
+    response = reasoner.complete(
+        ReasonerRequest(
+            mode=Mode.MIRROR,
+            task=task,
+            task_data_class=task_data_class,
+            evidence=selected.items,
+        )
+    )
+    return _reasoned_mirror_response(response, selected)
 
 
 def advisor_suggest(

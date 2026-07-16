@@ -206,6 +206,17 @@ def _read_lineage(item: DiscoveredCodexFile) -> _LineageFile:
 
 def _component_lineages(values: tuple[_LineageFile, ...]) -> tuple[_LineageFile, ...]:
     graph = _UnionFind()
+    known_threads = {value.thread_receipt for value in values}
+    missing_parents = {
+        value.parent_receipt
+        for value in values
+        if value.parent_receipt and value.parent_receipt not in known_threads
+    }
+    if missing_parents:
+        raise DataValidationError(
+            "persona_holdout_lineage_parent_missing",
+            "A lineage parent is referenced but absent from the selected source set.",
+        )
     for value in values:
         graph.find(value.thread_receipt)
         if value.parent_receipt:

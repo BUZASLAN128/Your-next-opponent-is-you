@@ -14,10 +14,9 @@ from ynoy.persona_study.artifact_contract import (
 from ynoy.persona_study.artifact_contract import (
     artifact_entry,
 )
+from ynoy.persona_study.artifact_deletion import delete_run_locked, delete_source_closure
 from ynoy.persona_study.artifact_mutations import (
     append_artifacts_locked,
-    delete_run_locked,
-    delete_source_closure,
     seal_mutable_locked,
     write_new_run,
 )

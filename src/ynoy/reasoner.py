@@ -24,6 +24,7 @@ class EvidenceItem(BaseModel):
     text: str
     data_class: DataClass
     source_kind: str
+    decision_label: DecisionLabel | None = None
 
 
 class ReasonerRequest(BaseModel):

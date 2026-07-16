@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import timedelta
 from pathlib import Path
 from typing import cast
 
@@ -14,10 +15,28 @@ from ynoy.benchmark import (
     verify_benchmark_run,
 )
 from ynoy.benchmark.predictors import build_predictor_input, predict_case
-from ynoy.benchmark.protocol import split_dependency_clusters, verify_benchmark_manifest
+from ynoy.benchmark.protocol import (
+    FATAL_GATES,
+    evaluate_fatal_gates,
+    split_dependency_clusters,
+    verify_benchmark_manifest,
+)
 from ynoy.errors import DataValidationError
-from ynoy.models import BenchmarkPredictorInput, DecisionLabel, EvidenceRegime
+from ynoy.models import (
+    BenchmarkManifest,
+    BenchmarkPredictorInput,
+    DecisionLabel,
+    EvidenceRegime,
+)
 from ynoy.report import render_benchmark_markdown
+from ynoy.util import canonical_sha256
+
+
+def _reseal_manifest(manifest: BenchmarkManifest, **updates: object) -> BenchmarkManifest:
+    """Return a semantically changed manifest with its outer hash resealed."""
+    draft = manifest.model_copy(update=updates)
+    digest = canonical_sha256(draft.model_dump(mode="json", exclude={"manifest_sha256"}))
+    return draft.model_copy(update={"manifest_sha256": digest})
 
 
 def test_freeze_separates_dependency_clusters_and_seals_manifest() -> None:
@@ -35,6 +54,46 @@ def test_freeze_separates_dependency_clusters_and_seals_manifest() -> None:
         *manifest.sealed_case_ids,
     }
     verify_benchmark_manifest(manifest, cases)
+
+
+def test_interleaved_dependency_clusters_fail_closed_temporal_holdout() -> None:
+    cases = benchmark_cases()
+    interleaved = [
+        case.model_copy(
+            update={
+                "dependency_cluster_id": "cluster-a" if index % 2 == 0 else "cluster-b",
+                "event_time": cases[0].event_time + timedelta(days=index),
+            }
+        )
+        for index, case in enumerate(cases)
+    ]
+
+    with pytest.raises(DataValidationError):
+        split_dependency_clusters(interleaved, development_fraction=0.5)
+
+
+@pytest.mark.parametrize(
+    "updates",
+    [
+        pytest.param({"protocol_sha256": "0" * 64}, id="protocol"),
+        pytest.param({"algorithms": ("no_personalization",)}, id="algorithms"),
+        pytest.param({"regimes": (EvidenceRegime.ZERO,)}, id="regimes"),
+        pytest.param({"development_case_ids": ()}, id="partition"),
+        pytest.param(
+            {"temporal_cutoff": benchmark_cases()[0].event_time + timedelta(days=100)},
+            id="cutoff",
+        ),
+    ],
+)
+def test_manifest_semantic_tampering_is_rejected_after_outer_hash_reseal(
+    updates: dict[str, object],
+) -> None:
+    cases = benchmark_cases()
+    manifest = freeze_benchmark("coding-pilot", cases, development_fraction=0.5)
+    tampered = _reseal_manifest(manifest, **updates)
+
+    with pytest.raises(DataValidationError):
+        verify_benchmark_manifest(tampered, cases)
 
 
 def test_manifest_integrity_rejects_metadata_or_case_changes() -> None:
@@ -137,6 +196,19 @@ def test_benchmark_run_reports_metrics_without_claiming_calibration() -> None:
     assert "Synthetic protocol/implementation check".casefold() in report.casefold()
     assert "No real acceptance threshold is claimed" in report
     assert "no action authority" in report
+
+
+def test_explicit_fatal_challenge_tag_invalidates_benchmark_run() -> None:
+    cases = benchmark_cases()
+    cases[0] = cases[0].model_copy(update={"challenge_tags": (FATAL_GATES[0],)})
+    manifest = freeze_benchmark("coding-pilot", cases, development_fraction=0.5)
+
+    run = run_benchmark(manifest, cases)
+
+    assert evaluate_fatal_gates(cases[0], run.predictions[0]) == (FATAL_GATES[0],)
+    assert run.status == "invalid"
+    assert run.fatal_gates == (FATAL_GATES[0],)
+    assert run.acceptance_status == "failed_fatal_gate"
 
 
 def test_benchmark_run_integrity_rejects_metric_tampering() -> None:

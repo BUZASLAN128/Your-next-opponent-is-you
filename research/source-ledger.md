@@ -1741,6 +1741,22 @@ infrastructure.
   enforcement independent of the runtime, and retain deterministic semantic
   validation after schema-constrained generation.
 
+### L-029 — Gate 0 remediation checkpoint (2026-07-17)
+
+- **Type:** Local source and synthetic/private regression evidence
+- **Provenance:** Current feature-branch source, review findings, and focused
+  test runs; no external source or private corpus was added.
+- **Supports:** The first remediation checkpoint now rejects unsafe legacy
+  Mirror admission states, enforces benchmark temporal/manifest semantics and
+  explicit challenge gates, closes continuity erasure endpoints, rolls back
+  private artifact deletion failures, narrows runtime grants, accepts compact
+  private corrections, and checks the serving response model identity.
+- **Does not establish:** Canonical persisted adoption/source receipts for all
+  candidates, real-user accuracy, calibration, model superiority, automatic
+  promotion, external egress safety, or production readiness.
+- **Next check:** Bind one reviewed source through persisted admission,
+  retrieval, and deletion while keeping the raw and derived data outside Git.
+
 ## Evidence Gaps
 
 The current ledger lacks:

@@ -4,9 +4,17 @@ from collections.abc import Sequence
 
 from ynoy.benchmark.metrics import calculate_metrics
 from ynoy.benchmark.predictors import build_predictor_input, predict_case
-from ynoy.benchmark.protocol import verify_benchmark_manifest
+from ynoy.benchmark.protocol import evaluate_fatal_gates, verify_benchmark_manifest
 from ynoy.errors import DataValidationError
-from ynoy.models import BenchmarkCase, BenchmarkManifest, BenchmarkRun, Prediction
+from ynoy.models import (
+    BenchmarkCase,
+    BenchmarkManifest,
+    BenchmarkPredictorInput,
+    BenchmarkRun,
+    DecisionLabel,
+    EvidenceRegime,
+    Prediction,
+)
 from ynoy.util import canonical_sha256
 
 
@@ -22,8 +30,9 @@ def run_benchmark(manifest: BenchmarkManifest, cases: Sequence[BenchmarkCase]) -
     for regime in manifest.regimes:
         for algorithm in manifest.algorithms:
             group = [
-                predict_case(
+                _predict_with_gates(
                     build_predictor_input(case),
+                    case=case,
                     algorithm=algorithm,
                     regime=regime,
                     training_labels=training_labels,
@@ -32,15 +41,37 @@ def run_benchmark(manifest: BenchmarkManifest, cases: Sequence[BenchmarkCase]) -
             ]
             predictions.extend(group)
             metric_groups[f"{regime.value}/{algorithm}"] = calculate_metrics(group, targets)
-    return _build_run(manifest, predictions, metric_groups)
+    challenge_gates = tuple(sorted({gate for case in cases for gate in evaluate_fatal_gates(case)}))
+    return _build_run(manifest, predictions, metric_groups, fatal_gates=challenge_gates)
+
+
+def _predict_with_gates(
+    predictor_input: BenchmarkPredictorInput,
+    *,
+    case: BenchmarkCase,
+    algorithm: str,
+    regime: EvidenceRegime,
+    training_labels: Sequence[DecisionLabel],
+) -> Prediction:
+    prediction = predict_case(
+        predictor_input,
+        algorithm=algorithm,
+        regime=regime,
+        training_labels=training_labels,
+    )
+    gates = evaluate_fatal_gates(case, prediction)
+    return prediction.model_copy(update={"fatal_gate": gates[0] if gates else None})
 
 
 def _build_run(
     manifest: BenchmarkManifest,
     predictions: list[Prediction],
     metrics: dict[str, dict[str, float | int | str | bool]],
+    *,
+    fatal_gates: tuple[str, ...] = (),
 ) -> BenchmarkRun:
-    fatal_gates = tuple(sorted({item.fatal_gate for item in predictions if item.fatal_gate}))
+    detected_gates = tuple(sorted({item.fatal_gate for item in predictions if item.fatal_gate}))
+    fatal_gates = tuple(sorted(set(fatal_gates) | set(detected_gates)))
     draft = BenchmarkRun(
         manifest_id=manifest.record_id,
         manifest_sha256=manifest.manifest_sha256,

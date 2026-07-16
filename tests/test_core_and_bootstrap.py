@@ -129,27 +129,6 @@ def test_same_scope_lexically_unrelated_persona_abstains_without_receipts() -> N
     assert result.question is not None
 
 
-def test_relevant_confirmed_or_proposed_candidate_can_support_prediction() -> None:
-    candidate = ClaimCandidate(
-        claim_holder=ClaimHolder.REPRESENTED_USER,
-        kind=CandidateKind.PREFERENCE,
-        proposition="For tenant isolation changes decision:reject",
-        confidence=0.8,
-        status=CandidateStatus.PROPOSED,
-        scope=ScopeRef(project="pilot"),
-        origin_cluster_ids=("synthetic-cluster",),
-    )
-    result = mirror_predict(
-        FakeMemory(candidates=[candidate]),
-        task="Review tenant isolation changes",
-        scope=ScopeRef(project="pilot"),
-        reasoner=DeterministicReasoner(),
-    )
-    assert result.answer == f"Predicted decision: {DecisionLabel.REJECT.value}."
-    assert result.personal_fit == "known"
-    assert result.evidence_receipts == (str(candidate.record_id),)
-
-
 def test_select_evidence_ignores_inactive_candidate() -> None:
     candidate = ClaimCandidate(
         claim_holder=ClaimHolder.REPRESENTED_USER,

@@ -83,6 +83,13 @@ class Database:
                        current_user AS database_user,
                        (SELECT rolsuper FROM pg_roles
                         WHERE rolname = current_user) AS database_user_is_superuser,
+                       EXISTS (
+                           SELECT 1 FROM pg_class c
+                           JOIN pg_namespace n ON n.oid = c.relnamespace
+                           WHERE n.nspname = 'ynoy'
+                             AND c.relname IN ('audit_receipts', 'schema_migrations')
+                             AND pg_get_userbyid(c.relowner) = current_user
+                       ) AS owns_protected_table,
                        has_table_privilege(current_user, 'ynoy.audit_receipts', 'UPDATE')
                            AS audit_can_update,
                        has_table_privilege(current_user, 'ynoy.audit_receipts', 'DELETE')
@@ -125,7 +132,11 @@ class Database:
             bool(status.get(name))
             for name in ("audit_can_update", "audit_can_delete", "audit_can_truncate")
         )
-        if bool(status.get("database_user_is_superuser")) or unsafe_audit_privilege:
+        if (
+            bool(status.get("database_user_is_superuser"))
+            or bool(status.get("owns_protected_table"))
+            or unsafe_audit_privilege
+        ):
             raise PolicyViolation(
                 "database_superuser_blocked_for_real_data",
                 "Real data requires a restricted runtime role without audit mutation rights.",

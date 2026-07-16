@@ -3,14 +3,21 @@
 from __future__ import annotations
 
 import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+from pydantic import ValidationError
 
 from ynoy.cli.context import CommandContext
 from ynoy.errors import DataValidationError
+from ynoy.models import PersonaAnnotationJudgment
 from ynoy.persona_study.artifacts import PersonaStudyStore
 from ynoy.persona_study.assisted_review_submission import (
     record_proposal_review_decisions,
     submit_proposal_review,
 )
+from ynoy.policy import assert_outside_git
 
 
 def record_proposal_review(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
@@ -20,6 +27,7 @@ def record_proposal_review(args: argparse.Namespace, context: CommandContext) ->
         confirm_orders=_orders(args.confirm),
         not_mine_orders=_orders(args.not_mine),
         correct_orders=_orders(args.correct),
+        corrected_judgments=_corrections(args.corrections_file),
     )
     ready = result.pending_count == 0
     return {
@@ -94,6 +102,31 @@ def _orders(raw: str | None) -> tuple[int, ...]:
             "persona_proposal_review_order_invalid", "Review card orders must be between 1 and 32."
         )
     return values
+
+
+def _corrections(path_value: str | None) -> dict[int, PersonaAnnotationJudgment]:
+    if path_value is None:
+        return {}
+    path = Path(path_value).expanduser().resolve()
+    assert_outside_git(path)
+    try:
+        raw: Any = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            raise TypeError
+        return {
+            int(order): PersonaAnnotationJudgment.model_validate(value)
+            for order, value in raw.items()
+        }
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError) as exc:
+        raise DataValidationError(
+            "persona_proposal_review_corrections_invalid",
+            "The corrections file must be a UTF-8 JSON object keyed by card order.",
+        ) from exc
+    except ValidationError as exc:
+        raise DataValidationError(
+            "persona_proposal_review_corrections_invalid",
+            "A corrected judgment does not match the persona annotation schema.",
+        ) from exc
 
 
 def _store(args: argparse.Namespace, context: CommandContext) -> PersonaStudyStore:

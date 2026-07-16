@@ -120,6 +120,74 @@ def test_partial_seal_failure_rolls_back_added_files_and_keeps_draft_mutable(
     assert not store.paths.lock(study_id).exists()
 
 
+def test_source_closure_index_failure_keeps_index_and_files(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    private = tmp_path / "private"
+    store = PersonaStudyStore(private, real_data=False, evaluation_time=_NOW)
+    study_id = canonical_sha256("source-closure-rollback")
+    dependency = canonical_sha256("source-closure-dependency")
+    store.write_run(
+        study_id,
+        (
+            ArtifactPayload("evaluator/keep.json", b"keep", DataClass.PUBLIC_SYNTHETIC, ("other",)),
+            ArtifactPayload(
+                "evaluator/remove.json",
+                b"remove",
+                DataClass.PUBLIC_SYNTHETIC,
+                (dependency,),
+            ),
+        ),
+        created_at=_NOW,
+        expires_at=_NOW + timedelta(days=7),
+    )
+    index_path = store.paths.index(study_id)
+    before_index = index_path.read_bytes()
+    before_files = {
+        path: store.paths.artifact(study_id, path).read_bytes()
+        for path in ("evaluator/keep.json", "evaluator/remove.json")
+    }
+
+    def fail_index(_index: object) -> None:
+        raise OSError("injected index failure")
+
+    monkeypatch.setattr(store, "_write_index", fail_index)
+    with pytest.raises(OSError, match="injected index"):
+        store.delete_source_closure(study_id, dependency)
+
+    assert index_path.read_bytes() == before_index
+    assert {
+        path: store.paths.artifact(study_id, path).read_bytes() for path in before_files
+    } == before_files
+    assert store.read_index(study_id).study_id == study_id
+
+
+def test_run_delete_index_failure_keeps_index_and_files(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store, study_id = _simple_run(
+        tmp_path / "private", now=_NOW, expires_at=_NOW + timedelta(days=7)
+    )
+    index_path = store.paths.index(study_id)
+    artifact_path = store.paths.artifact(study_id, "evaluator/indexed.json")
+    before_index = index_path.read_bytes()
+    before_artifact = artifact_path.read_bytes()
+    original_unlink = Path.unlink
+
+    def fail_index_unlink(path: Path, *args: object, **kwargs: object) -> None:
+        if path == index_path:
+            raise OSError("injected index unlink failure")
+        original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", fail_index_unlink)
+    with pytest.raises(OSError, match="injected index unlink"):
+        store.delete_run(study_id)
+
+    assert index_path.read_bytes() == before_index
+    assert artifact_path.read_bytes() == before_artifact
+    assert store.read_index(study_id).study_id == study_id
+
+
 def test_concurrent_submissions_create_one_immutable_initial_evidence(tmp_path: Path) -> None:
     store, result = _completed_study(tmp_path)
     study_id = result.manifest.study_id

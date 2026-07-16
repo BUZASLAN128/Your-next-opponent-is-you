@@ -1,5 +1,11 @@
 # Research Hub
 
+> 2026-07-17 Gate 0 hardening checkpoint: legacy Mirror admission, benchmark
+> semantics, continuity erasure, private deletion rollback, runtime grants,
+> compact corrections, and serving-model identity checks have deterministic
+> regression coverage. Canonical persisted adoption/source receipts, real-
+> corpus validation, and automatic promotion remain blocked.
+
 > Status: V1.2 deterministic correction lifecycle, proposal-only local
 > extractor, ephemeral Codex content parser, and bounded assisted-label review
 > implemented with compact receipt-bound input; represented-user review remains

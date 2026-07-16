@@ -923,6 +923,27 @@ from silently becoming product authority.
   injected write failure restores the original draft byte for byte; concurrent
   ownership fails closed.
 
+### D-052 — Close the first Gate 0 implementation defects before activation
+
+- **Status:** Implemented checkpoint; receipt-bound storage admission and real
+  corpus activation remain blocked.
+- **Decision:** Mirror inference must ignore proposed, non-represented-user, or
+  empty-provenance candidates; enforce candidate and scope validity windows;
+  abstain on conflicting explicit decision markers; and preserve typed labels
+  in reasoner evidence.
+- **Protocol:** Benchmark freezing rejects interleaved event times, semantic
+  manifest tampering, incomplete partitions, and explicit fatal challenge tags.
+  Erasure covers both continuity endpoints. Private deletion stages files and
+  restores the index on failure. Runtime grants are explicit and protected
+  table ownership is rejected. Compact review accepts a private correction
+  file, and a local proposer checks the serving response model identity.
+- **Evidence:** Synthetic and private-path regression tests plus all 22
+  PostgreSQL integration tests against the disposable loopback `ynoy_test`
+  database. No real-corpus benchmark result, automatic promotion, external
+  egress, or merge is authorized by this checkpoint.
+- **Remaining gap:** `ClaimCandidate` still needs canonical persisted source
+  receipt/adoption binding before it is durable persona evidence.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

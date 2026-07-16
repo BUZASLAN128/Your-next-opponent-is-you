@@ -11,7 +11,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from ynoy.errors import DataValidationError
-from ynoy.models import BenchmarkCase, BenchmarkManifest, EvidenceRegime
+from ynoy.models import BenchmarkCase, BenchmarkManifest, EvidenceRegime, Prediction
 from ynoy.util import canonical_sha256
 
 ALGORITHMS = (
@@ -90,6 +90,11 @@ def split_dependency_clusters(
         raise DataValidationError(
             "benchmark_dependency_leakage", "A dependency cluster crossed the temporal split."
         )
+    if max(item.event_time for item in development) >= min(item.event_time for item in sealed):
+        raise DataValidationError(
+            "benchmark_temporal_leakage",
+            "Every development event must precede every sealed event.",
+        )
     return development, sealed, max(case.event_time for case in development)
 
 
@@ -115,6 +120,7 @@ def freeze_benchmark(
         development_case_ids=tuple(case.case_id for case in development),
         sealed_case_ids=tuple(case.case_id for case in sealed),
         dependency_clusters=tuple(sorted({case.dependency_cluster_id for case in cases})),
+        development_fraction=development_fraction,
         temporal_cutoff=cutoff,
         case_set_sha256=case_digest,
         protocol_sha256=canonical_sha256(_protocol(development_fraction)),
@@ -155,7 +161,69 @@ def verify_benchmark_manifest(manifest: BenchmarkManifest, cases: Sequence[Bench
         raise DataValidationError(
             "benchmark_case_order_changed", "Benchmark case order changed after freezing."
         )
+    if manifest.algorithms != ALGORITHMS or manifest.regimes != REGIMES:
+        raise DataValidationError(
+            "benchmark_protocol_semantics_changed",
+            "Frozen benchmark algorithms and regimes must match the protocol.",
+        )
+    if manifest.protocol_sha256 != canonical_sha256(_protocol(manifest.development_fraction)):
+        raise DataValidationError(
+            "benchmark_protocol_digest_mismatch",
+            "Frozen benchmark protocol does not match the implementation protocol.",
+        )
+    _assert_partition_complete(manifest, cases)
     _assert_clusters_separate(manifest, cases)
+    _assert_temporal_cutoff(manifest, cases)
+
+
+def evaluate_fatal_gates(
+    case: BenchmarkCase, prediction: Prediction | None = None
+) -> tuple[str, ...]:
+    """Return explicit protocol violations marked on a synthetic challenge case."""
+    del prediction
+    return tuple(sorted(set(case.challenge_tags) & set(FATAL_GATES)))
+
+
+def _assert_partition_complete(manifest: BenchmarkManifest, cases: Sequence[BenchmarkCase]) -> None:
+    case_ids = tuple(case.case_id for case in cases)
+    development = manifest.development_case_ids
+    sealed = manifest.sealed_case_ids
+    if len(set(case_ids)) != len(case_ids):
+        raise DataValidationError(
+            "benchmark_case_id_duplicate", "Benchmark case IDs must be unique."
+        )
+    if len(set(development)) != len(development) or len(set(sealed)) != len(sealed):
+        raise DataValidationError(
+            "benchmark_partition_duplicate", "Frozen benchmark partitions cannot repeat cases."
+        )
+    if set(development) | set(sealed) != set(case_ids) or set(development) & set(sealed):
+        raise DataValidationError(
+            "benchmark_partition_incomplete",
+            "Frozen benchmark partitions must cover each case once.",
+        )
+    actual_clusters = {case.dependency_cluster_id for case in cases}
+    if set(manifest.dependency_clusters) != actual_clusters:
+        raise DataValidationError(
+            "benchmark_cluster_set_changed", "Frozen dependency clusters changed."
+        )
+
+
+def _assert_temporal_cutoff(manifest: BenchmarkManifest, cases: Sequence[BenchmarkCase]) -> None:
+    development = [case for case in cases if case.case_id in manifest.development_case_ids]
+    sealed = [case for case in cases if case.case_id in manifest.sealed_case_ids]
+    if not development or not sealed:
+        raise DataValidationError(
+            "benchmark_partition_empty", "Development and sealed partitions must both be non-empty."
+        )
+    if manifest.temporal_cutoff != max(case.event_time for case in development):
+        raise DataValidationError(
+            "benchmark_cutoff_mismatch", "Frozen temporal cutoff does not match development data."
+        )
+    if manifest.temporal_cutoff >= min(case.event_time for case in sealed):
+        raise DataValidationError(
+            "benchmark_temporal_leakage",
+            "Every development event must precede every sealed event.",
+        )
 
 
 def _assert_clusters_separate(manifest: BenchmarkManifest, cases: Sequence[BenchmarkCase]) -> None:

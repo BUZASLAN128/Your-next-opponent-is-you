@@ -93,7 +93,7 @@ class LocalPersonaProposer:
             max_response_bytes=MAX_PERSONA_RESPONSE_BYTES,
             error_prefix="persona_proposer",
         )
-        return _parse_response(raw, presentation.focus.content)
+        return _parse_response(raw, presentation.focus.content, self.model)
 
 
 def _request_payload(
@@ -187,10 +187,15 @@ def _nullable(schema: dict[str, object]) -> dict[str, object]:
     return {"anyOf": [schema, {"type": "null"}]}
 
 
-def _parse_response(value: object, focus: str) -> PersonaAnnotationJudgment:
+def _parse_response(value: object, focus: str, expected_model: str) -> PersonaAnnotationJudgment:
     try:
         if not isinstance(value, dict):
             raise TypeError
+        if value.get("model") != expected_model:
+            raise AdapterError(
+                "persona_proposer_identity_mismatch",
+                "The serving endpoint did not return the configured model identity.",
+            )
         content = value["choices"][0]["message"]["content"]
         parsed = json.loads(content) if isinstance(content, str) else content
         candidate = _PersonaCandidate.model_validate(parsed)

@@ -641,3 +641,18 @@ discriminator is unchanged: collect the small assisted audit, then complete
 the independent 24+8 gold labels before opening or scoring the protected
 holdout. The compact audit cannot promote a proposal or stand in for that gold
 set.
+
+## Gate 0 Remediation Checkpoint — 2026-07-17
+
+The first implementation pass closes the previously observed operational
+defects around Mirror admission, validity windows, exact-marker conflict
+abstention, benchmark temporal/manifest semantics, executable synthetic fatal
+gates, continuity erasure, private deletion rollback, runtime grants, compact
+correction input, and serving-model identity checks. These are protocol and
+boundary improvements, not evidence of persona fidelity.
+
+The convergence map therefore remains technology-neutral for the unresolved
+core admission question. A canonical persisted source-receipt/adoption binding
+for every durable claim candidate is still required before the reviewed path
+can feed a real Mirror holdout or any automatic promotion. Real corpus access,
+model comparison, external egress, and action authority remain closed.

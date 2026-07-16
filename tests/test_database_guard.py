@@ -209,3 +209,26 @@ def test_database_connect_pins_psycopg_to_literal_loopback_hostaddr(
     assert connect.call_count == 1
     assert connect.call_args.args == (database_url,)
     assert connect.call_args.kwargs["hostaddr"] == expected_hostaddr
+
+
+def test_restricted_runtime_rejects_protected_table_owner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    database = Database.__new__(Database)
+    monkeypatch.setattr(
+        database,
+        "status",
+        lambda: {
+            "database_user_is_superuser": False,
+            "owns_protected_table": True,
+            "audit_can_update": False,
+            "audit_can_delete": False,
+            "audit_can_truncate": False,
+            "audit_can_insert": True,
+        },
+    )
+
+    with pytest.raises(PolicyViolation) as blocked:
+        database.require_restricted_runtime()
+
+    assert blocked.value.code == "database_superuser_blocked_for_real_data"

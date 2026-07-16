@@ -94,38 +94,6 @@ def append_artifacts_locked(
         raise
 
 
-def delete_source_closure(store: MutationStore, study_id: str, source_dependency: str) -> int:
-    index = store._read_index_unchecked(study_id)
-    selected = tuple(
-        item for item in index.entries if source_dependency in item.source_dependencies
-    )
-    if not selected:
-        raise DataValidationError(
-            "persona_study_dependency_unknown", "No derived artifact depends on that source."
-        )
-    store._verify_entries(study_id, selected)
-    store._remove_entries(study_id, selected)
-    remaining = tuple(item for item in index.entries if item not in selected)
-    if remaining:
-        store._write_index(artifact_index(study_id, index.created_at, index.expires_at, remaining))
-    else:
-        store.paths.index(study_id).unlink()
-    store.paths.remove_empty_run(study_id)
-    if not remaining:
-        store.require_absent(study_id)
-    return len(selected)
-
-
-def delete_run_locked(store: MutationStore, study_id: str) -> int:
-    index = store._read_index_unchecked(study_id)
-    store._verify_entries(study_id, index.entries)
-    store._remove_entries(study_id, index.entries)
-    store.paths.index(study_id).unlink()
-    store.paths.remove_empty_run(study_id)
-    store.require_absent(study_id)
-    return len(index.entries)
-
-
 def seal_mutable_locked(
     store: MutationStore,
     study_id: str,

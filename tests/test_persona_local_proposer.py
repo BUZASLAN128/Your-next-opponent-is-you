@@ -103,6 +103,22 @@ def test_local_proposer_requests_seven_fields_and_materializes_safe_judgment(
     assert direct.evidence_demand_spans == () and direct.notes is None
 
 
+def test_local_proposer_rejects_serving_model_identity_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    card = presentation()
+    raw = response(judgment(card.focus.content))
+    raw["model"] = "unexpected-model"
+    monkeypatch.setattr(
+        "ynoy.persona_study.local_proposer.post_json", lambda *_args, **_kwargs: raw
+    )
+
+    with pytest.raises(AdapterError) as blocked:
+        local_proposer().propose(card, pass_name="direct")
+
+    assert blocked.value.code == "persona_proposer_identity_mismatch"
+
+
 def _assert_dependent_fields_absent(schema: dict[str, object]) -> None:
     dependent = {
         "scope",

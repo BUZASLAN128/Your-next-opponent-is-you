@@ -1160,9 +1160,12 @@ Mirror or any durable cognitive core.
 **Observed source conflict:** The new review and assisted-label paths preserve
 represented-user authority and keep model proposals ineligible for core
 promotion. The legacy Mirror path still ranks both `proposed` and `confirmed`
-claim candidates and does not require represented-user claim ownership. Its
-database writer currently has no non-test caller, so the unsafe path is dormant
-rather than absent.
+claim candidates and does not require represented-user claim ownership. The
+first hardening checkpoint now blocks proposed, non-represented-user, inactive,
+future, wrong-scope, and conflicting legacy evidence, but it does not yet
+create a canonical persisted source-receipt/adoption binding for every
+`ClaimCandidate`. Its database writer currently has no non-test caller, so the
+remaining unsafe path is dormant rather than absent.
 
 **Next discriminating check:** Define one typed admission contract and prove
 with adversarial tests that proposed, assistant/third-party, unadopted,
@@ -1170,5 +1173,6 @@ unreceipted, future-valid, expired, wrong-scope, superseded, and duplicate-
 origin claims cannot enter inference. Then connect exactly one reviewed source
 through persist, retrieve, and erase without a second truth owner.
 
-**Unsafe to decide yet:** The database procedure shape, migration, automatic
-promotion policy, or real-corpus activation.
+**Unsafe to claim yet:** Canonical-claim effectiveness, automatic promotion
+safety, real-corpus benchmark quality, or product readiness before the
+approved round-trip and benchmark evidence exists.

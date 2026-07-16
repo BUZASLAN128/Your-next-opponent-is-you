@@ -5,7 +5,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from support.persona_assisted_review import ActiveReviewStudy, active_review_study
+from support.persona_assisted_review import (
+    ActiveReviewStudy,
+    active_review_study,
+    corrected_judgment,
+)
 
 from ynoy.cli.main import main
 from ynoy.persona_study import assisted_labels as assisted_module
@@ -75,3 +79,38 @@ def test_review_cli_emits_only_aggregate_lifecycle_status(
     assert submit["result"]["automatic_core_promotion"] is False
     assert private_focus not in submit_output and study.study_id not in submit_output
     assert receipt["receipt_sha256"] not in submit_output
+
+
+def test_review_cli_accepts_correction_judgment_file(tmp_path: Path) -> None:
+    study = active_review_study(tmp_path, evaluation_time=datetime.now(UTC))
+    target, *remaining = study.selected_orders()
+    corrections = tmp_path / "corrections.json"
+    corrections.write_text(
+        json.dumps({str(target): corrected_judgment(study, target).model_dump(mode="json")}),
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "--indent",
+            "0",
+            "--private-root",
+            str(study.store.root),
+            "study",
+            "record-proposal-review",
+            study.study_id,
+            "--synthetic",
+            "--correct",
+            str(target),
+            "--confirm",
+            ",".join(str(item) for item in remaining),
+            "--corrections-file",
+            str(corrections),
+        ]
+    )
+
+    assert exit_code == 0
+    draft = study.draft()
+    action = next(item for item in draft["actions"] if item["order"] == target)
+    assert action["action"] == "correct"
+    assert action["corrected_judgment"] is not None

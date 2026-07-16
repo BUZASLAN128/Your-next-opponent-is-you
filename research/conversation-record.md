@@ -2126,3 +2126,27 @@ burden and strengthens transaction evidence only. It does not measure proposal
 agreement, persona quality, model superiority, the full 24+8 annotation set,
 or protected-holdout performance. Public Git receives code, synthetic tests,
 and categorical research claims only.
+
+## Event 043 — Begin Gate 0 Defect Remediation
+
+### User Direction
+
+The user approved the V1.3-V1.6 implementation plan, including the first
+Gate 0 fixes, staged corpus work, canonical claims, benchmark isolation, local
+model comparison, CI, and checkpoint pushes on the existing feature branch.
+No merge was requested.
+
+### Implemented Boundary
+
+The first remediation checkpoint hardens legacy Mirror evidence admission,
+candidate and scope validity windows, explicit conflict abstention, benchmark
+temporal and manifest checks, executable synthetic fatal gates, continuity
+erasure closure, private artifact deletion rollback, runtime table grants,
+compact correction-file input, and local serving-model identity checks.
+
+### Evidence Status
+
+Synthetic and private-path regression tests pass for the changed behaviors.
+The work does not establish real-user annotation agreement, a canonical
+persisted source-receipt/adoption binding for every claim candidate, model
+superiority, automatic persona promotion, or external action authority.

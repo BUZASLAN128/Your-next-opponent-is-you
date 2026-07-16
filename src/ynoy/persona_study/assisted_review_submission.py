@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -7,6 +8,7 @@ from ynoy.errors import DataValidationError
 from ynoy.models import (
     CompletedPersonaProposalReview,
     DataClass,
+    PersonaAnnotationJudgment,
     PersonaProposalReviewDraft,
     PersonaProposalReviewReceipt,
     StudyArtifactIndex,
@@ -57,37 +59,66 @@ def record_proposal_review_decisions(
     confirm_orders: tuple[int, ...] = (),
     not_mine_orders: tuple[int, ...] = (),
     correct_orders: tuple[int, ...] = (),
+    corrected_judgments: Mapping[int, PersonaAnnotationJudgment] | None = None,
 ) -> ProposalReviewRecordResult:
     """Atomically record compact user decisions in the mutable private review draft."""
     requested = _requested_actions(confirm_orders, not_mine_orders, correct_orders)
+    corrections = _validated_corrections(correct_orders, corrected_judgments)
     store.read_index(study_id)
     with store.study_lock(study_id):
-        index = store._read_index_unchecked(study_id)
-        attempt, proposal_path, draft_path = active_review_draft(index)
-        mutable_entry(index, draft_path)
-        bundle = load_proposal_bundle(store, index, study_id, proposal_path)
-        cards = load_review_presentations(store, index, study_id)
-        draft, draft_sha256 = load_review_draft(store, study_id, draft_path)
-        validate_review_draft_contract(draft, bundle, cards)
-        by_order = {item.order: item for item in draft.actions}
-        _validate_requested_actions(requested, by_order)
-        updated_actions = tuple(
-            item.model_copy(update={"action": requested[item.order]})
-            if item.order in requested and item.action is None
-            else item
-            for item in draft.actions
+        return _record_review_locked(store, study_id, requested, corrections)
+
+
+def _validated_corrections(
+    correct_orders: tuple[int, ...],
+    judgments: Mapping[int, PersonaAnnotationJudgment] | None,
+) -> dict[int, PersonaAnnotationJudgment]:
+    corrections = dict(judgments or {})
+    if set(corrections) - set(correct_orders):
+        raise DataValidationError(
+            "persona_proposal_review_correction_unexpected",
+            "A corrected judgment must target a card marked correct.",
         )
-        updated = PersonaProposalReviewDraft.model_validate(
-            {**draft.model_dump(mode="python"), "actions": updated_actions}
+    return corrections
+
+
+def _record_review_locked(
+    store: PersonaStudyStore,
+    study_id: str,
+    requested: dict[int, str],
+    corrections: Mapping[int, PersonaAnnotationJudgment],
+) -> ProposalReviewRecordResult:
+    index = store._read_index_unchecked(study_id)
+    attempt, proposal_path, draft_path = active_review_draft(index)
+    mutable_entry(index, draft_path)
+    bundle = load_proposal_bundle(store, index, study_id, proposal_path)
+    cards = load_review_presentations(store, index, study_id)
+    draft, draft_sha256 = load_review_draft(store, study_id, draft_path)
+    validate_review_draft_contract(draft, bundle, cards)
+    by_order = {item.order: item for item in draft.actions}
+    _validate_requested_actions(requested, by_order)
+    updated_actions = tuple(
+        item.model_copy(
+            update={
+                "action": requested[item.order],
+                "corrected_judgment": corrections.get(item.order),
+            }
         )
-        replace_mutable_draft_locked(
-            store,
-            study_id,
-            draft_path,
-            canonical_json_bytes(updated.model_dump(mode="json")),
-            draft_sha256,
-        )
-        return _record_result(attempt, updated)
+        if item.order in requested and item.action is None
+        else item
+        for item in draft.actions
+    )
+    updated = PersonaProposalReviewDraft.model_validate(
+        {**draft.model_dump(mode="python"), "actions": updated_actions}
+    )
+    replace_mutable_draft_locked(
+        store,
+        study_id,
+        draft_path,
+        canonical_json_bytes(updated.model_dump(mode="json")),
+        draft_sha256,
+    )
+    return _record_result(attempt, updated)
 
 
 def submit_proposal_review(store: PersonaStudyStore, study_id: str) -> ProposalReviewSubmission:

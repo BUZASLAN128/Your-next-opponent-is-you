@@ -49,6 +49,7 @@ class BenchmarkManifest(RecordBase):
     development_case_ids: tuple[str, ...]
     sealed_case_ids: tuple[str, ...]
     dependency_clusters: tuple[str, ...]
+    development_fraction: float = Field(ge=0.5, le=0.9)
     temporal_cutoff: datetime
     case_set_sha256: str
     protocol_sha256: str

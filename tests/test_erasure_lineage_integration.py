@@ -10,6 +10,7 @@ from conftest import synthetic_audit
 from ynoy.bootstrap import load_bootstrap
 from ynoy.models import CandidateKind, ClaimCandidate, ClaimHolder, DataClass, ScopeRef
 from ynoy.storage import Database, ErasureRepository, MemoryMutationRepository
+from ynoy.util import utc_now
 
 pytestmark = pytest.mark.integration
 
@@ -39,6 +40,30 @@ def _audit_count(database: Database, plan_id: UUID, reason_code: str) -> int:
         ).fetchone()
     assert row is not None
     return int(row["count"])
+
+
+def _insert_continuity_events(database: Database, subject_id: str, target_record_id: UUID) -> None:
+    event_rows = ((uuid4(), target_record_id, uuid4()), (uuid4(), uuid4(), target_record_id))
+    with database.connect() as connection:
+        for record_id, earlier_record_id, later_record_id in event_rows:
+            connection.execute(
+                """
+                INSERT INTO ynoy.continuity_events (
+                    record_id, subject_id, event_type, earlier_record_id,
+                    later_record_id, explanation, effective_at, created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    record_id,
+                    subject_id,
+                    "synthetic_transition",
+                    earlier_record_id,
+                    later_record_id,
+                    "synthetic continuity edge",
+                    utc_now(),
+                    utc_now(),
+                ),
+            )
 
 
 def test_source_record_erasure_removes_all_bootstrap_declarations_and_source(
@@ -105,3 +130,34 @@ def test_direct_derived_record_erasure_removes_claim_and_leaves_tombstone(
         ).fetchone()
     assert row is not None and row["count"] == 0
     assert _audit_count(test_database, plan_id, "local_dependency_cascade_deleted") == 1
+
+
+def test_erasure_removes_continuity_events_referencing_target_record(
+    test_database: Database,
+) -> None:
+    subject_id = f"erasure-continuity-{uuid4()}"
+    candidate = ClaimCandidate(
+        subject_id=subject_id,
+        claim_holder=ClaimHolder.REPRESENTED_USER,
+        kind=CandidateKind.PREFERENCE,
+        proposition=f"continuity target {uuid4()}",
+        scope=ScopeRef(person_id=subject_id),
+        confidence=0.7,
+        origin_cluster_ids=(f"cluster-{uuid4()}",),
+    )
+    audit = synthetic_audit().model_copy(update={"data_classes": (DataClass.DERIVED_IDENTITY,)})
+    MemoryMutationRepository(test_database).add_claim_candidates([candidate], audit)
+    _insert_continuity_events(test_database, subject_id, candidate.record_id)
+
+    plan = ErasureRepository(test_database).plan(source_id=str(candidate.record_id))
+    assert plan["target_counts"]["continuity_events"] == 2
+    _confirm_and_finalize(test_database, plan)
+    with test_database.connect() as connection:
+        row = connection.execute(
+            """
+            SELECT count(*) AS count FROM ynoy.continuity_events
+            WHERE earlier_record_id = %s OR later_record_id = %s
+            """,
+            (candidate.record_id, candidate.record_id),
+        ).fetchone()
+    assert row is not None and row["count"] == 0
