@@ -86,12 +86,13 @@ def select_evidence(
     )
     ranked = [*declarations, *candidates]
     ranked.sort(key=lambda item: (-item[0], -item[1].timestamp(), item[2].receipt_id))
-    relevant = [item for score, _, item in ranked if score > 0][:limit]
+    scored = [item for score, _, item in ranked if score > 0]
+    relevant = scored[:limit]
     return SelectedEvidence(
         items=tuple(relevant),
         wrong_scope_count=declaration_scope + candidate_scope,
         stale_count=declaration_stale + candidate_stale,
-        conflict_count=_conflict_count(relevant),
+        conflict_count=_conflict_count(scored),
     )
 
 

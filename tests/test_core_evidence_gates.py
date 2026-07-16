@@ -130,3 +130,41 @@ def test_conflicting_active_declarations_abstain_without_reasoner_call() -> None
     assert result.confidence == 0.0
     assert result.evidence_receipts == ()
     assert "conflicting_active_decisions" in result.unknowns
+
+
+def test_conflict_outside_evidence_limit_still_abstains() -> None:
+    now = datetime.now(UTC)
+    declarations = [
+        BootstrapDeclaration(
+            kind=CandidateKind.PREFERENCE,
+            statement="tenant decision:accept",
+            decision_label=DecisionLabel.ACCEPT,
+            source_name="fixture.json",
+            data_class=DataClass.PUBLIC_SYNTHETIC,
+            synthetic=True,
+            created_at=now + timedelta(seconds=index),
+        )
+        for index in range(12)
+    ]
+    declarations.append(
+        BootstrapDeclaration(
+            kind=CandidateKind.PREFERENCE,
+            statement="tenant decision:reject",
+            decision_label=DecisionLabel.REJECT,
+            source_name="fixture.json",
+            data_class=DataClass.PUBLIC_SYNTHETIC,
+            synthetic=True,
+            created_at=now - timedelta(days=1),
+        )
+    )
+
+    result = mirror_predict(
+        FakeMemory(declarations=declarations),
+        task="tenant",
+        scope=ScopeRef(),
+        reasoner=DeterministicReasoner(),
+    )
+
+    assert result.personal_fit == "unknown"
+    assert result.confidence == 0.0
+    assert "conflicting_active_decisions" in result.unknowns
