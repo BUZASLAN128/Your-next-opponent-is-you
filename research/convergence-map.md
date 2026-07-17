@@ -662,3 +662,32 @@ This does not establish a persona. The five-strata preview is a projection of
 explicitly admitted claims, not an inferred identity summary. Real corpus
 vaulting, annotation agreement, model comparison, target-isolated holdout,
 external egress, automatic promotion, and action authority remain closed.
+
+## V1.7 Formal-Safety Convergence Checkpoint — 2026-07-17
+
+The formal track now separates four answer bases and replaces scope ordering
+with concrete query-environment membership. This removes two unsafe shortcuts:
+unknown risk does not inherit a high-risk rule, and an uncalibrated model score
+cannot become a personal prediction. Same-key conflict is three-valued, so an
+unknown relation abstains instead of being silently treated as compatible.
+
+Learning and privacy now have implementation-independent concurrency and
+information-flow contracts. Review appends bind event ID, stream, expected
+revision, payload hash, and causation; paired writers at one head have one
+winner. Privacy compares the complete external observer trace across private
+states. Erasure additionally requires producer-registry parity, post-delete
+noninfluence, and a tombstone fence. D2-D3 identity data remains prohibited
+from model parameters without separate unlearning evidence.
+
+The evaluation center is now risk at matched coverage with paired
+source-cluster bootstrap intervals. AURC is diagnostic and AUGRC secondary.
+Chronological future, unseen project, low evidence, conflict/provenance, and
+model/extractor version are separate shift strata, with worst-stratum risk
+reported. This strengthens the falsification protocol but creates no persona
+evidence: numeric thresholds and sample minima are not frozen.
+
+The implementation/test handoff is deliberately non-authoritative. Candidate
+interfaces and red tests are specified, but no source, test, schema, corpus,
+model, provider, migration, or dependency was changed. The next implementation
+gate is to make those tests fail against the current code, map each contract to
+one owner, and seek separate approval before changing runtime behavior.

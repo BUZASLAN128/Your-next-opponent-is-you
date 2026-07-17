@@ -23,19 +23,29 @@ but only adopted represented-user evidence may enter $D$. Model-generated text
 and external documents remain context or quarantined proposals. The system
 must not learn identity from its own previous output.
 
+Every durable correction uses an expected-head event:
+
+$$
+e=(\mathrm{eventId},\mathrm{streamId},\mathrm{expectedRevision},
+\mathrm{type},\mathrm{payloadHash},\mathrm{causationId}).
+$$
+
+The idempotency, stale-head, and concurrent-writer rules are normative in
+[State, Privacy, and Erasure](state-privacy-erasure.md#1-linearizable-review-append).
+
 ## 2. Deletion closure
 
 Let $a\rightarrow b$ mean that artifact $b$ derives from artifact $a$. For a
 source $s$, the deletion closure is
 
 $$
-D^+(s)=\{s\}\cup\{v:\exists\text{ path }s\rightarrow^+v\}.
+D^+(s)=\{s\}\cup\{v:\exists\mathrm{\ path\ }s\rightarrow^+v\}.
 $$
 
-A deletion succeeds only if every member of $D^+(s)$ is absent from active
-storage, the source is no longer retrievable, and a non-content-bearing audit
-receipt remains. A deletion plan that removes only the source file is not a
-valid closure proof.
+A deletion succeeds only when the dependency closure is inactive, the erasure
+registry covers every private producer, later behavior is independent of the
+deleted content, and a tombstone prevents resurrection. The complete invariant
+is in [State, Privacy, and Erasure](state-privacy-erasure.md#3-erasure-registry).
 
 ## 3. Privacy and egress
 
@@ -45,15 +55,18 @@ $$
 \mathrm{Egress}(d,z)=I[d=D0]I[z\in\mathcal{Z}_{\mathrm{allowed}}].
 $$
 
-For an external adapter, private non-interference requires
+For an external observer $o$, private noninterference requires
 
 $$
-\mathrm{Request}_{\mathrm{external}}(D0,D_{1:5})
-=\mathrm{Request}_{\mathrm{external}}(D0,\varnothing).
+\pi_o(\mathrm{Trace}(P,\ell,h_1))
+=
+\pi_o(\mathrm{Trace}(P,\ell,h_2)).
 $$
 
-In words: adding private identity data must not change bytes sent to an
-external provider. If it does, the boundary has failed.
+The trace includes destination, model, payload digest and size, allowed header
+classes, call order and count, retries, error paths, logs, and telemetry.
+Request-byte equality alone is insufficient. See
+[State, Privacy, and Erasure](state-privacy-erasure.md#2-observer-indexed-noninterference).
 
 ## 4. Temporal evaluation
 
@@ -84,7 +97,8 @@ L_{\mathrm{scope}},L_{\mathrm{provenance}},
 L_{\mathrm{privacy}},L_{\mathrm{promotion}},C_{\mathrm{review}}).
 $$
 
-A structured model supports the thesis only if it beats simple baselines on
-the declared primary measures while all fatal-gate counts remain zero. Weights
-may be introduced later only through a recorded decision made before sealed
-evaluation.
+A structured model supports the thesis only if it beats simple baselines at
+matched coverage while all fatal-gate counts remain zero. The primary risk
+difference, paired cluster bootstrap, calibration rules, shift strata, and
+inconclusive status are defined in
+[Evaluation Contract](evaluation-contract.md). Numeric values remain open.

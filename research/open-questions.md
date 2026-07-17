@@ -1190,3 +1190,42 @@ create a local-only rollback reference, construct a privacy-clean snapshot,
 and compare the resulting tree before requesting explicit authorization for a
 `--force-with-lease` replacement. Do not rewrite history from this research
 request alone.
+
+### RQ-028 — Which authenticator can prove independent user adoption?
+
+**Status:** Open; no implementation selected.
+
+**Known boundary:** V1 trusts the authenticated operating-system user and a
+separate approval channel. Models, reasoners, extractors, and ordinary runtime
+code cannot write adoption. Hashes prove integrity, not human presence, and
+administrator or root compromise is outside the V1 guarantee.
+
+**Decision needed later:** Select the real channel, freshness mechanism,
+subject/review/head binding, recovery behavior, and replay window after a
+threat-model review. This requires separate implementation authorization.
+
+### RQ-029 — What numeric matched-coverage acceptance protocol is adequate?
+
+**Status:** Open; results remain `not_calibrated/inconclusive`.
+
+**Unknown values:** Coverage grid, minimum answered cases, minimum independent
+clusters, minimum risk improvement, bootstrap repetitions, interval level,
+tie treatment tolerance, and per-stratum support.
+
+**Next discriminating check:** Use a pilot without opening sealed targets to
+estimate feasible support, then freeze all values and versions before the
+paired cluster evaluation. Values must not be chosen after seeing the sealed
+comparison.
+
+### RQ-030 — Which observations belong to the privacy trace?
+
+**Status:** Logical egress events are specified; timing semantics remain open.
+
+**Current minimum:** Destination, model, payload digest and size, permitted
+header classes, call sequence and count, retries, error paths, logs, telemetry,
+and termination are observer-visible.
+
+**Next discriminating check:** Decide whether timing, scheduling, cache state,
+resource contention, or power side channels belong in the supported threat
+model. If they do, select an observational or distributional equivalence and a
+testable tolerance before claiming noninterference.

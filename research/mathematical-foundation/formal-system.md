@@ -7,10 +7,11 @@
 Let the represented person be $u$, the evaluation time be $t$, and a request be
 
 $$
-q=(x,s,t,m),
+q=(x,\omega,t,u,m),
 $$
 
-where $x$ is task context, $s$ is the requested scope, and $m$ is the operating
+where $x$ is task context, $\omega$ is the concrete query environment, $t$ is
+evaluation time, $u$ is the represented subject, and $m$ is the operating
 mode. The first supported modes are Mirror and Advisor. A mode changes the
 objective, never the evidence history or action authority.
 
@@ -64,9 +65,11 @@ $$
 
 The indicators mean:
 
-- $I_{\mathrm{user}}$: the adoption actor is the user;
+- $I_{\mathrm{user}}$: the adoption actor is the authenticated operating-
+  system user in the V1 trust model;
 - $I_{\mathrm{holder}}$: the claim holder is the represented user;
-- $I_{\mathrm{adopted}}$: one explicit correction/adoption action exists;
+- $I_{\mathrm{adopted}}$: one fresh, subject/review/claim/head-bound approval
+  verifies through the separate adoption channel;
 - $I_{\mathrm{source}}$: literal spans still match immutable source evidence;
 - $I_{\mathrm{receipt}}$: the complete review and receipt chain verifies;
 - $I_{\mathrm{class}}$: data-class transitions are allowed;
@@ -75,30 +78,28 @@ The indicators mean:
 
 Because this is a product invariant rather than a learned probability,
 `Admit(c)` is Boolean and fail-closed. Repetition, embedding similarity, model
-confidence, or recency cannot replace a missing factor.
+confidence, or recency cannot replace a missing factor. The independent
+adoption mechanism is a V1.7 target and is not implemented in the reviewed
+base. Its trust boundary and hash limitation are defined in
+[Decision Semantics](decision-semantics.md#5-verified-adoption-boundary).
 
 ## 3. Applicability at query time
 
-For a query $q$, a canonical claim is applicable only when
+Scope is a predicate over the concrete query environment, not a total or
+partial ordering between stored and requested scopes:
 
 $$
-\mathrm{Use}(c,q)=
-\mathrm{Admit}(c)
-\cdot I[s_c\preceq s_q]
-\cdot I[b_c\le t_q\le e_c]
-\cdot I[u_c=u_q]
-\cdot I[\neg\mathrm{revoked}(c)].
+\mathrm{Applies}(c,q)=
+\mathrm{Admit}(c)\,
+I[\omega_q\models s_c]\,
+I[t_q\in[b_c,e_c]]\,
+I[u_c=u_q]\,
+I[\neg\mathrm{revoked}(c)].
 $$
 
-Here $s_c\preceq s_q$ means that the stored scope is compatible with, and not
-broader than, the requested person, project, role, audience, risk, and time.
-Missing bounds are explicit unbounded values, not inferred defaults.
-
-The eligible set is
-
-$$
-\mathcal{E}(q)=\{c\in C_t:\mathrm{Use}(c,q)=1\}.
-$$
+The exact matching semantics, including the distinction between `any`,
+`unknown`, and an absent constraint, are normative in
+[Decision Semantics](decision-semantics.md#1-query-and-scope).
 
 ## 4. Supersession and conflict
 
@@ -106,20 +107,22 @@ Let $c_i\succ c_j$ mean an explicit reviewed event supersedes $c_j$ with
 $c_i$. Supersession must be acyclic:
 
 $$
-c_i\succ^{+}c_i\quad\text{is forbidden}.
+c_i\succ^{+}c_i\quad\mathrm{is\ forbidden}.
 $$
 
-Let $c_i\perp c_j$ mean two simultaneously applicable claims prescribe
-incompatible judgments in the same target layer. The unresolved conflict set is
+Conflict is three-valued and assessed only inside a user-reviewed
+`decision_key`:
 
 $$
-\mathcal{K}(q)=
-\{(c_i,c_j)\in\mathcal{E}(q)^2:c_i\perp c_j\land
-\neg(c_i\succ c_j)\land\neg(c_j\succ c_i)\}.
+C(c_i,c_j)\in
+\{\mathrm{compatible},\mathrm{incompatible},\mathrm{unknown}\}.
 $$
 
-If $\mathcal{K}(q)\ne\varnothing$, Mirror must abstain. Neither newest-wins,
-majority vote, nor highest embedding score may silently choose a side.
+For the same key, both `incompatible` and `unknown` force Mirror to abstain
+unless explicit supersession resolves the pair. Different keys do not conflict
+merely because their labels differ. Neither newest-wins, majority vote, nor
+highest embedding score may silently choose a side. See
+[Decision Semantics](decision-semantics.md#3-three-valued-conflict).
 
 ## 5. Relevance without false authority
 
@@ -154,6 +157,15 @@ P(y\mid q,\mathcal{E})=
 \prod_{k=1}^{K}\phi_k(y,q,\mathcal{E}_k).
 $$
 
+The candidate factors satisfy $\phi_k\ge 0$, and the normalizer is
+
+$$
+Z(q,\mathcal{E})=
+\sum_{y\in\mathcal{Y}}
+\prod_{k=1}^{K}\phi_k(y,q,\mathcal{E}_k),
+\qquad 0<Z(q,\mathcal{E})<\infty.
+$$
+
 Candidate factors may represent explicit decisions, scoped preferences,
 mission state, evidence demands, current task context, and contradiction
 signals. This factorization is a model description, not a requirement to use a
@@ -180,10 +192,11 @@ g(q)=I[\mathcal{E}(q)\ne\varnothing]
 I[\mathcal{K}(q)=\varnothing]
 I[\mathrm{provenanceComplete}]
 I[\mathrm{scopeSafe}]
-I[\mathrm{calibratedConfidence}\ge\theta].
+I[\mathrm{calibratedProbability}\ge\tau].
 $$
 
-$\theta$ is not selected yet. It must be calibrated before a real sealed run.
+$\tau$ is not selected yet. A model-provided confidence is only a ranking
+score; it cannot satisfy this term without a frozen calibration profile.
 
 Coverage and selective risk are
 
@@ -251,5 +264,6 @@ $$
 No persona score appears in this equation. In the current V1,
 $I_{\mathrm{capability}}=0$ for sending or autonomous execution.
 
+Judgment bases and adoption continue in [Decision Semantics](decision-semantics.md).
 Learning, deletion, privacy, and evaluation equations continue in
 [Learning, Privacy, and Evaluation](learning-privacy-evaluation.md).

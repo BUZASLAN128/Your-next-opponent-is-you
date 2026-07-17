@@ -25,6 +25,14 @@ one of three roles:
 
 - [formal-system.md](formal-system.md): objects, admission gates, memory state,
   prediction, abstention, and authority.
+- [decision-semantics.md](decision-semantics.md): query-environment scope,
+  judgment basis, three-valued conflict, supersession, and adoption trust.
+- [state-privacy-erasure.md](state-privacy-erasure.md): expected-head append,
+  observer-indexed trace noninterference, registry parity, and tombstone fence.
+- [evaluation-contract.md](evaluation-contract.md): calibrated probability,
+  matched-coverage risk, paired cluster inference, and shift strata.
+- [implementation-test-contract.md](implementation-test-contract.md):
+  candidate interfaces, ownership boundaries, and mandatory red tests.
 - [learning-privacy-evaluation.md](learning-privacy-evaluation.md): append-only
   learning, deletion closure, egress non-interference, and sealed evaluation.
 - [privacy-and-falsification.md](privacy-and-falsification.md): privacy
@@ -38,14 +46,16 @@ the best simpler arm available under the same evidence boundary. The narrow V1
 hypothesis is:
 
 $$
-H_1:\quad
-R_{\mathrm{sel}}(\text{StructuredCore})
-< R_{\mathrm{sel}}(\text{Baseline})
+H_1(\kappa):\quad
+\Delta R(\kappa)=
+R_{\mathrm{YNOY}}(\kappa)-R_{\mathrm{Baseline}}(\kappa)<-\delta
 $$
 
-subject to zero fatal provenance, scope, privacy, authority, and temporal-
-leakage violations. Lower prediction error without those constraints does not
-support the product thesis.
+at pre-registered matched coverage, with a paired cluster-level confidence
+interval wholly below $-\delta$, and subject to zero fatal provenance, scope,
+privacy, authority, and temporal-leakage violations. Until the coverage grid,
+sample minima, $\delta$, and interval rule are frozen, the hypothesis result is
+`not_calibrated/inconclusive`.
 
 ## External research used as form, not authority
 
@@ -58,6 +68,16 @@ support the product thesis.
   does not establish a personal identity model.
 - [Selective classification](https://papers.neurips.cc/paper/7073-selective-classification-for-deep-neural-networks.pdf)
   supplies the risk-coverage language used for abstention.
+- [AURC evaluation analysis](https://proceedings.neurips.cc/paper_files/paper/2024/file/047c84ec50bd8ea29349b996fc64af4b-Paper-Conference.pdf)
+  motivates keeping AURC diagnostic and using matched-coverage risk as the
+  primary comparison.
+- [Confidence calibration](https://proceedings.mlr.press/v70/guo17a.html) and
+  [distribution shift](https://proceedings.neurips.cc/paper/2019/hash/8558cb408c1d76621371888657d2eb1d-Abstract.html)
+  motivate separating ranking scores from calibrated probabilities and
+  reporting shift strata.
+- [Hyperproperties](https://www.cs.cornell.edu/fbs/publications/Hyperproperties.JCS.pdf)
+  and [linearizability](https://www.cs.cmu.edu/~wing/publications/HerlihyWing90.pdf)
+  motivate whole-trace privacy and expected-head concurrency contracts.
 - [Factor graphs and the sum-product algorithm](https://www.mit.edu/~6.454/www_fall_2002/lizhong/factorgraph.pdf)
   motivate local factors for a global conditional model, while explicitly
   warning that cyclic message passing need not be exact.

@@ -1,5 +1,12 @@
 # Research Hub
 
+> 2026-07-17 V1.7 formal-safety checkpoint: applicability is now query-
+> environment membership, output basis and conflict are explicit, adoption is
+> bound to a separate trusted channel, privacy covers the complete observer
+> trace, erasure requires registry parity and a tombstone fence, and persona
+> evaluation is risk at matched coverage. This is a research and test handoff;
+> thresholds, authenticator, implementation, and persona evidence remain open.
+
 > 2026-07-17 canonical Gate 0 checkpoint: Mirror and persona preview now read
 > only receipt-bound canonical claims with exact source links, scope, time,
 > plane, and lifecycle validation. Synthetic loopback PostgreSQL proves admit,
@@ -104,7 +111,7 @@ The shortest current distinction is:
 | No real-person benchmark, annotation study, or user-audited temporal holdout has been run. | Observed project state | Conversation content has not been sampled for those experiments |
 | Public research records must use neutral user language and attribute procedure or interpretation failures to the responsible apparatus. | Confirmed documentation policy | [Decision D-044](decision-log.md#d-044--require-neutral-and-accountable-public-research-language) and [Event 031](conversation-record.md#event-031--correct-public-record-tone-and-replace-feature-history) |
 | The implemented V1 remains a scientific prototype and must not be presented as a faithful virtual self or production system. | Confirmed scope boundary | [V1 implementation record](v1-implementation-record-2026-07-15.md) |
-| The current system hypothesis has a technology-neutral mathematical contract for admission, applicability, conflict, abstention, authority, deletion, privacy, and temporal evaluation. | Research specification; parameters and model family remain unselected | [Mathematical foundation](mathematical-foundation/README.md) |
+| The V1.7 mathematical contract defines query-environment scope, four judgment bases, ternary conflict, channel-bound adoption, expected-head review append, observer-indexed trace privacy, registry-complete erasure, and matched-coverage evaluation. | Research and implementation-test handoff; runtime, authenticator, thresholds, and persona validation remain unselected | [Mathematical foundation](mathematical-foundation/README.md) and [implementation/test contract](mathematical-foundation/implementation-test-contract.md) |
 | Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents

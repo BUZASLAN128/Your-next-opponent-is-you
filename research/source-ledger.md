@@ -1858,6 +1858,126 @@ infrastructure.
   normalized ingestion, then rerun the admission invariants on bounded private
   evidence before opening a sealed holdout.
 
+### S-077 — Evaluation of selective prediction and AURC
+
+- **Title:** Overcoming Common Flaws in the Evaluation of Selective
+  Classification Systems
+- **Type:** Peer-reviewed primary NeurIPS paper, 2024
+- **URL:** https://proceedings.neurips.cc/paper_files/paper/2024/file/047c84ec50bd8ea29349b996fc64af4b-Paper-Conference.pdf
+- **Accessed:** 2026-07-17
+- **Supports:** AURC has limitations when a working-point selective-risk
+  quantity is aggregated across thresholds; the paper proposes AUGRC for
+  multi-threshold evaluation.
+- **Does not establish:** A YNOY acceptance threshold, sample size, or persona
+  improvement.
+- **Next check:** Pre-register matched-coverage risk as primary and retain AURC
+  only as a diagnostic comparison.
+
+### S-078 — Confidence calibration
+
+- **Title:** On Calibration of Modern Neural Networks
+- **Type:** Peer-reviewed primary ICML paper, 2017
+- **URL:** https://proceedings.mlr.press/v70/guo17a.html
+- **Accessed:** 2026-07-17
+- **Supports:** Predictive accuracy and probability calibration are distinct;
+  post-hoc calibration must be measured on held-out data.
+- **Does not establish:** That an LLM's verbal confidence is a calibrated
+  probability or that one calibration transfers across YNOY shifts.
+- **Next check:** Version calibration profiles and evaluate them separately
+  from ranking scores.
+
+### S-079 — Predictive uncertainty under distribution shift
+
+- **Title:** Can You Trust Your Model's Uncertainty? Evaluating Predictive
+  Uncertainty Under Dataset Shift
+- **Type:** Peer-reviewed primary NeurIPS paper, 2019
+- **URL:** https://proceedings.neurips.cc/paper/2019/hash/8558cb408c1d76621371888657d2eb1d-Abstract.html
+- **Accessed:** 2026-07-17
+- **Supports:** In-distribution calibration does not establish reliable
+  uncertainty after dataset shift; shift conditions require separate reports.
+- **Does not establish:** Which YNOY shift strata or thresholds are sufficient.
+- **Next check:** Report chronological, unseen-project, low-evidence,
+  conflict/provenance, and version strata separately.
+
+### S-080 — Noninterference as a hyperproperty
+
+- **Title:** Hyperproperties
+- **Type:** Peer-reviewed primary Journal of Computer Security paper, 2010
+- **URL:** https://www.cs.cornell.edu/fbs/publications/Hyperproperties.JCS.pdf
+- **Accessed:** 2026-07-17
+- **Supports:** Information-flow security relates sets of execution traces,
+  rather than properties of one request or one trace in isolation.
+- **Does not establish:** Which timing, scheduler, or telemetry observations
+  belong in the YNOY threat model.
+- **Next check:** Freeze the external observer projection and test every
+  logical egress event across paired private states.
+
+### S-081 — Linearizability
+
+- **Title:** Linearizability: A Correctness Condition for Concurrent Objects
+- **Type:** Peer-reviewed primary ACM TOPLAS paper, 1990
+- **URL:** https://www.cs.cmu.edu/~wing/publications/HerlihyWing90.pdf
+- **Accessed:** 2026-07-17
+- **Supports:** Concurrent operations can be specified as if each took effect
+  atomically between invocation and response while respecting real-time order.
+- **Does not establish:** Which database isolation or event-store mechanism
+  YNOY should choose.
+- **Next check:** Test one-winner expected-head appends and idempotent retries
+  independently of storage implementation.
+
+### S-082 — Event sourcing pattern
+
+- **Title:** Event Sourcing pattern
+- **Type:** Official Microsoft architecture documentation
+- **URL:** https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing
+- **Accessed:** 2026-07-17
+- **Supports:** Append-only events, deterministic projections, version checks,
+  and idempotent event handling are established event-sourcing concerns.
+- **Does not establish:** An Azure dependency, a YNOY schema, or correctness of
+  a particular implementation.
+- **Next check:** Keep the event contract technology-neutral and map it to the
+  existing owner only during implementation review.
+
+### S-083 — PostgreSQL serializable transactions
+
+- **Title:** Transaction Isolation
+- **Type:** Official PostgreSQL 18 documentation
+- **URL:** https://www.postgresql.org/docs/current/transaction-iso.html
+- **Accessed:** 2026-07-17
+- **Supports:** Serializable transactions may abort operations that cannot be
+  placed in a valid serial order, requiring retry handling.
+- **Does not establish:** That serializable isolation alone provides event ID
+  idempotency, payload binding, or an erasure fence.
+- **Next check:** If PostgreSQL is selected for the append owner, prove the
+  contract under concurrent integration tests rather than assuming it.
+
+### S-084 — W3C PROV constraints
+
+- **Title:** Constraints of the PROV Data Model
+- **Type:** W3C Recommendation
+- **URL:** https://www.w3.org/TR/prov-constraints/
+- **Accessed:** 2026-07-17
+- **Supports:** Provenance graphs have formal validity, ordering, uniqueness,
+  and inference constraints.
+- **Does not establish:** Truth, represented-user adoption, registry-complete
+  deletion, or post-delete noninfluence.
+- **Next check:** Preserve provenance validation while keeping adoption and
+  erasure as independent proof obligations.
+
+### L-032 — V1.7 formal-safety research checkpoint (2026-07-17)
+
+- **Type:** Local research synthesis and implementation/test handoff
+- **Provenance:** D-055, Event 047, S-075, and S-077 through S-084; no private
+  corpus, runtime, schema, model, or test artifact was used.
+- **Supports:** The public research contract now has explicit query-scope,
+  basis, conflict, adoption, concurrency, trace-privacy, erasure, calibration,
+  and matched-coverage obligations plus mandatory red tests.
+- **Does not establish:** Implemented behavior, a real authenticator, timing
+  noninterference, unlearning, numeric acceptance thresholds, calibration, or
+  persona quality.
+- **Next check:** Implement the red tests in a separately approved change,
+  then choose numeric evaluation values before opening a sealed benchmark.
+
 ## Evidence Gaps
 
 The current ledger lacks:

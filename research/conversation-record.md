@@ -2223,3 +2223,39 @@ The live GitHub page reported that the `operatorname` macro was not allowed.
 All occurrences in the mathematical-foundation documents were replaced with
 the supported `mathrm` form without changing the equations' semantics. The
 result remains a research specification, not proof of persona fidelity.
+
+## Event 047 — Harden the V1.7 Mathematical Safety Contract
+
+### User Direction
+
+The user authorized a research-only implementation pass for the mathematical
+safety contract. The paused corpus work must remain untouched. Source code,
+tests, migrations, corpus processing, models, providers, and runtime behavior
+are outside this task; the resulting interface and red-test definitions are a
+handoff for a later separately authorized implementation.
+
+### Confirmed Boundaries
+
+The V1 adoption model trusts the authenticated operating-system user and a
+separate approval channel while denying adoption-write authority to models,
+reasoners, extractors, and the ordinary application runtime. Hashes are
+integrity evidence, not proof of human presence. Administrator or root
+compromise remains an explicit V1 out-of-scope threat. No concrete
+authenticator was selected.
+
+### Research Result
+
+The documents now define scope through concrete query-environment membership;
+four mutually exclusive judgment bases; three-valued same-key conflict;
+expected-head and idempotent event append; observer-indexed logical trace
+noninterference; registry-complete, post-delete-independent, tombstone-fenced
+erasure; and paired cluster evaluation at matched coverage. A separate handoff
+lists candidate interfaces and mandatory red tests without claiming they are
+implemented.
+
+### Unresolved Decisions
+
+Numeric acceptance thresholds, minimum cases and clusters, interval settings,
+the real authenticator, timing threat semantics, migrations, dependencies, and
+runtime ownership remain open. Until those values and a sealed experiment
+exist, persona results are `not_calibrated/inconclusive`.

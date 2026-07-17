@@ -52,7 +52,8 @@ Let $G$ be the set of Git-visible artifacts. Then
 
 $$
 \forall x\in G:\quad
-\mathrm{class}(x)\in\{D0,\text{public source},\text{redacted category}\}.
+\mathrm{class}(x)\in
+\{D0,\mathrm{public\ source},\mathrm{redacted\ category}\}.
 $$
 
 Raw corpus, derived identity, private task content, credentials, third-party
@@ -87,12 +88,16 @@ but cannot support Mirror.
 
 $$
 \mathrm{DeleteSuccess}(s)=1
-\Rightarrow
-\forall v\in D^+(s),\ \mathrm{active}(v)=0.
+=
+I[\mathrm{closureAbsent}(D^+(s))]
+I[\mathrm{registryComplete}]
+I[\mathrm{postDeleteIndependent}(s)]
+I[\mathrm{tombstoneFence}(s)].
 $$
 
 This includes derived reports, embeddings, claims, continuity edges, indexes,
-and private presentation artifacts.
+and private presentation artifacts. D2-D3 identity data is forbidden from
+model parameters until a separate unlearning proof exists.
 
 ### P5 — Authority independence
 
@@ -114,14 +119,14 @@ approve, or impersonate.
 | Structured memory adds value beyond RAG | It does not beat retrieval, recent-context, static-profile, or no-personalization baselines | Same cases, same evidence boundary, sealed targets |
 | Learning tracks the current user | Later corrections fail to supersede stale rules, or old evidence dominates after explicit change | Longitudinal change-event holdout |
 | Deletion is complete | Any descendant remains retrievable or influences an output after source deletion | Disposable source-to-output deletion round-trip |
-| Private data never reaches an external adapter | Adapter request bytes differ when D1-D5 state is added | Transport spy and non-interference test |
+| Private data never influences an external adapter | The observer-indexed logical trace changes when only D1-D5 state changes | Complete egress-trace spy across requests, retries, errors, logs, and telemetry |
 | Persona does not grant authority | Higher personal-fit confidence unlocks an action without a separate grant | Authorization-state transition test |
 
 ## Open mathematical gaps
 
 - The decision-label distribution and rationale representation are not yet
   validated on a randomized represented-user sample.
-- No calibrated threshold $\theta$ exists for Mirror abstention.
+- No calibrated threshold $\tau$ exists for Mirror abstention.
 - The relevance weights $w$ are unselected and may be unnecessary if a simpler
   deterministic order performs as well.
 - Semantic conflict beyond exact or explicitly linked oppositions remains an
@@ -133,6 +138,11 @@ approve, or impersonate.
   vector objective.
 - Real deletion, recovery, backup, and history-replacement evidence remains
   absent.
+- The concrete independent adoption authenticator and administrator-compromise
+  treatment beyond the explicit V1 threat boundary remain unselected.
+- Coverage-grid values, minimum cases and clusters, minimum effect size, and
+  interval level remain unfrozen; persona results therefore remain
+  `not_calibrated/inconclusive`.
 
 The next discriminating experiment is a small, source-linked, chronologically
 sealed represented-user set where simple baselines, the structured core,

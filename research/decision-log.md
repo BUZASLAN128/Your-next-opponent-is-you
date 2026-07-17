@@ -982,6 +982,27 @@ from silently becoming product authority.
   comparison, target-isolated holdout, and real-user quality evidence remain
   open.
 
+### D-055 — Harden the mathematical safety contract before runtime changes
+
+- **Date:** 2026-07-17
+- **Status:** Confirmed research and documentation decision
+- **Decision:** Define applicability as query-environment membership; separate
+  explicit policy, inferred persona, generic advice, and abstention; use
+  three-valued same-key conflict; bind adoption to a separate trusted channel;
+  require expected-head idempotent review append, complete observer-indexed
+  egress traces, registry-complete tombstone-fenced erasure, and persona
+  comparison at matched coverage.
+- **Trust boundary:** The operating-system user and separate approval channel
+  are trusted in V1. Models, reasoners, extractors, and ordinary runtime code
+  cannot author verified adoption. A hash proves integrity only. Administrator
+  or root compromise remains outside the V1 guarantee.
+- **Privacy boundary:** D2-D3 identity data cannot enter model parameters until
+  a separate unlearning proof exists. Public records contain no real corpus or
+  behavioral aggregate from this work.
+- **Non-decision:** No authenticator, threshold, sample minimum, interval
+  level, migration, dependency, storage mechanism, or runtime owner is
+  selected. No source or test implementation is authorized by this decision.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
