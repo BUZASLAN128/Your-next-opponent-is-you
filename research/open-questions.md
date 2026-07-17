@@ -92,8 +92,8 @@ inspection and a synthetic smoke test established that `llama-server` build
 9803 can load official Qwen3-8B Q4_K_M revision
 `7c41481f57cb95916b40956ab2f0b139b296d974` in the local test environment.
 The exact 5,027,783,488-byte artifact and SHA-256 are pinned, the endpoint is
-loopback-only with logging disabled, and one two-atom schema-constrained case
-completed successfully. A later private ten-atom proposal run also completed;
+loopback-only with logging disabled, and one bounded synthetic schema-constrained case
+completed successfully. A later bounded private proposal run also completed;
 its represented-user correction chain is now complete, but the selected sample
 does not establish model quality.
 
@@ -123,7 +123,7 @@ baselines should trigger schema simplification, not capability expansion.
 
 ### RQ-019 — How should a data-free session produce the first persona candidate?
 
-**Status: first real ten-atom correction chain replayed with zero pending.**
+**Status: first bounded real correction chain replayed to completion.**
 The Manager
 still auto-generates only non-personal operating memory. A provisional,
 unsealed interaction receipt now preserves exact available prompt and response
@@ -138,10 +138,10 @@ subject changes, attribution laundering, dishonest data classes, missing null
 reasons, and attempted confirmation or core promotion. A proposal-only local
 extractor can now populate this same contract from an attested loopback model;
 deterministic source-span and scope checks remain authoritative. It performs no
-database write and grants no authority. Five earlier current-thread statements
-produced 20 D3 proposals only in memory and their exact private mapping was
+database write and grants no authority. Earlier current-thread statements
+produced a bounded D3 proposal set only in memory and their exact private mapping was
 intentionally not persisted. A later fresh private receipt has now produced
-ten new proposals; it is a distinct review, not a reconstruction of the
+a distinct bounded proposal set; it is a new review, not a reconstruction of the
 historical set.
 
 A typed V1.2 correction receipt now supports confirmation, rejection, split,
@@ -152,14 +152,12 @@ projection, conflict abstention, and deletion dependency closure pass synthetic
 tests without persistence or a model. This answers how the interaction can be
 represented, not whether any historical or fresh interpretation is correct.
 
-The represented user first reviewed five atoms through a sequence-one receipt,
-then explicitly approved the remaining bounded batch through a linked
-sequence-two receipt. The complete private state contains six split, three
-rejected, one confirmed, and zero pending source atoms. Two full-chain CLI
-replays agreed. The dependency-only projection contains 26 records and
-performed no deletion. Because the second receipt addressed pending atoms, no
-earlier decision required supersession. This is real correction-loop evidence,
-not a persona claim.
+The represented user reviewed a bounded subset and later approved the
+remaining bounded batch through a linked receipt. The selected private state
+reached completion and full-chain CLI replays agreed. Deletion remained a
+dependency-only projection and no earlier decision required supersession.
+Exact proposal, outcome, and dependency counts remain private. This is real
+correction-loop evidence, not a persona claim.
 
 **Next check:** use the
 [privacy-safe correction procedure](atomic-correction-form-2026-07-15.md) to
@@ -228,16 +226,15 @@ the deterministic baseline without increasing false conflicts or scope leaks.
 
 ### RQ-024 — What does the first real correction batch reveal about extractor quality?
 
-**Status: all ten selected user decisions collected through two receipts.** One
-private current-thread receipt yielded ten exact-segment proposals. The first
+**Status: one bounded selected review completed through linked receipts.** One
+private current-thread receipt yielded a bounded exact-segment proposal set. The first
 attempt failed closed on a non-exact model span. Manual inspection of the
 successful batch found interpretations that extended beyond their cited source
-text. The first five actions were applied before approval and later ratified by
-the user; the remaining five were authorized before application. Across the
-complete selected review, six split outcomes, three rejections, and one
-confirmation were recorded. Nine of ten source atoms therefore required
-structural correction or rejection, but the ordered sample was not random and
-is too small for a model-quality estimate.
+text. The first bounded actions were applied before approval and later ratified
+by the user; the remaining actions were authorized before application. The
+complete selected review required material correction, but its exact outcome
+distribution remains private. The ordered sample was not random and is too
+small for a model-quality estimate.
 
 **Next check:** freeze a larger randomized, repeat-labeled sample before
 reporting precision or general correction burden. Keep confirmation, split,
@@ -1154,25 +1151,42 @@ These are candidates, not decisions:
     implemented, and verified are different states.
 ### RQ-026 — What is the minimum canonical-claim gate before durable persona activation?
 
-**Status:** Open and blocking before the reviewed annotation path can feed
-Mirror or any durable cognitive core.
+**Status:** Resolved for the synthetic apparatus by D-054; still unverified on
+real corpus evidence.
 
-**Observed source conflict:** The new review and assisted-label paths preserve
-represented-user authority and keep model proposals ineligible for core
-promotion. The legacy Mirror path still ranks both `proposed` and `confirmed`
-claim candidates and does not require represented-user claim ownership. The
-first hardening checkpoint now blocks proposed, non-represented-user, inactive,
-future, wrong-scope, and conflicting legacy evidence, but it does not yet
-create a canonical persisted source-receipt/adoption binding for every
-`ClaimCandidate`. Its database writer currently has no non-test caller, so the
-remaining unsafe path is dormant rather than absent.
+**Observed resolution:** `CanonicalClaim`, `ClaimAdmissionReceipt`, and
+`ClaimSourceLink` now form the sole real inference contract. Mirror and persona
+preview do not expose a legacy candidate reader. The repository requires
+active represented-user claims with explicit adoption, complete source links,
+matching scope and data plane, valid time, and intact lifecycle state.
 
-**Next discriminating check:** Define one typed admission contract and prove
-with adversarial tests that proposed, assistant/third-party, unadopted,
-unreceipted, future-valid, expired, wrong-scope, superseded, and duplicate-
-origin claims cannot enter inference. Then connect exactly one reviewed source
-through persist, retrieve, and erase without a second truth owner.
+**Observed check:** Synthetic and loopback-PostgreSQL tests reject proposed,
+assistant or third-party, unadopted, unreceipted, future-valid, expired,
+wrong-scope, superseded, conflicting, and broken-source states. One reviewed
+source completed persist, retrieve, supersede, and erase without a second
+inference truth owner.
 
-**Unsafe to claim yet:** Canonical-claim effectiveness, automatic promotion
-safety, real-corpus benchmark quality, or product readiness before the
-approved round-trip and benchmark evidence exists.
+**Next discriminating check:** Reproduce these invariants through lossless
+private corpus ingestion and a target-isolated, user-adjudicated benchmark.
+
+**Unsafe to claim yet:** Persona effectiveness, automatic promotion safety,
+real-corpus benchmark quality, or product readiness.
+
+### RQ-027 — Should the public feature history be replaced again for privacy?
+
+**Status:** Open and ask-first. The current tree no longer publishes exact
+aggregate outcomes or dependency cardinalities from the private correction
+session. Repository-history scanning shows that earlier reachable commits
+still contain those prior values and a generic local workspace path.
+
+**Risk:** The path is low-sensitivity host metadata, while exact private
+correction aggregates are behavioral metadata. Neither finding is a credential
+or raw corpus disclosure, but current-tree edits alone cannot remove them from
+public history.
+
+**Next discriminating check:** Enumerate every reachable occurrence by commit
+and path without printing private values, capture the exact remote branch SHA,
+create a local-only rollback reference, construct a privacy-clean snapshot,
+and compare the resulting tree before requesting explicit authorization for a
+`--force-with-lease` replacement. Do not rewrite history from this research
+request alone.

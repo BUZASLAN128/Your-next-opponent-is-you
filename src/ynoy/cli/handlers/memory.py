@@ -6,15 +6,25 @@ from pathlib import Path
 from ynoy.bootstrap import load_bootstrap
 from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.common import build_audit_receipt, parse_uuid
+from ynoy.cli.handlers.memory_admission import admit_canonical_claim
 from ynoy.errors import DataValidationError, PolicyViolation
-from ynoy.models import BootstrapDeclaration, ClaimCandidate, DataClass
+from ynoy.models import (
+    BootstrapDeclaration,
+    CanonicalClaim,
+    ClaimCandidate,
+    DataClass,
+)
 from ynoy.policy import assert_outside_git
-from ynoy.storage import MemoryInspectionRepository, MemoryMutationRepository, MemoryRepository
+from ynoy.storage import (
+    MemoryInspectionRepository,
+    MemoryMutationRepository,
+    MemoryRepository,
+)
 from ynoy.util import new_id
 
 
 def handle_memory(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
-    handlers = {"inspect": _inspect, "correct": _correct}
+    handlers = {"inspect": _inspect, "correct": _correct, "admit": admit_canonical_claim}
     return handlers[args.memory_command](args, context)
 
 
@@ -35,12 +45,17 @@ def _inspect(args: argparse.Namespace, context: CommandContext) -> dict[str, obj
         subject_id=args.subject_id,
         include_inactive=bool(args.include_inactive),
     )
+    canonical = repository.inspect_canonical_claims(
+        subject_id=args.subject_id,
+        include_inactive=bool(args.include_inactive),
+    )
     include_content = bool(args.include_content)
     return {
         "status": "inspected",
         "content_included": include_content,
         "declarations": [_declaration_view(item, include_content) for item in declarations],
         "candidates": [_candidate_view(item, include_content) for item in candidates],
+        "canonical_claims": [_canonical_view(item, include_content) for item in canonical],
         "automatic_core_promotion": False,
     }
 
@@ -74,6 +89,23 @@ def _candidate_view(item: ClaimCandidate, include_content: bool) -> dict[str, ob
     }
     if include_content:
         result["proposition"] = item.proposition
+    return result
+
+
+def _canonical_view(item: CanonicalClaim, include_content: bool) -> dict[str, object]:
+    result: dict[str, object] = {
+        "record_id": str(item.record_id),
+        "admission_receipt_id": str(item.admission_receipt_id),
+        "claim_type": item.claim_type.value,
+        "target_layer": item.target_layer.value,
+        "status": item.status.value,
+        "scope": item.scope.model_dump(mode="json"),
+        "source_count": len(item.source_link_ids),
+        "data_class": item.data_class.value,
+    }
+    if include_content:
+        result["literal_statement"] = item.literal_statement
+        result["interpretation"] = item.interpretation
     return result
 
 

@@ -208,21 +208,20 @@ remains a pending persona
 candidate with `core_eligible=false`. This checkpoint proves lifecycle
 apparatus, not the truth of any atom, a durable memory, or a persona.
 
-A later fresh private receipt has a distinct ten-atom proposal set. Its first
-five actions were applied before approval and retained after the user's later
-ratification: three source atoms were split and two were rejected, while five
-later atoms remained pending. The correction receipt replayed deterministically
+A later fresh private receipt has a distinct bounded proposal set. Its first
+actions were applied before approval and retained after the user's later
+ratification; the review remained partial at that point. The correction
+receipt replayed deterministically
 and does not inherit the historical slots. No proposal becomes identity
 evidence merely because the local model produced a schema-valid record, and
 post-hoc ratification does not rewrite the initial execution order.
 
-The user later reviewed the remaining bounded batch through a
-second receipt linked to the first. That batch added three split, one rejected,
-and one confirmed outcome. The complete active view now contains six split,
-three rejected, one confirmed, and zero pending source atoms. Two full-chain
-replays agreed, the first receipt remained intact, and the 26-record deletion
-closure remained projection-only. This closes a review workflow, not the
-semantic or scientific validity question.
+The user later reviewed the remaining bounded batch through a receipt linked
+to its predecessor. The selected review reached a complete state, full-chain
+replays agreed, the earlier receipt remained intact, and deletion closure
+remained projection-only. Exact outcome and dependency counts remain private.
+This closes a review workflow, not the semantic or scientific validity
+question.
 
 ### Proposal-only local extraction checkpoint
 
@@ -651,8 +650,15 @@ gates, continuity erasure, private deletion rollback, runtime grants, compact
 correction input, and serving-model identity checks. These are protocol and
 boundary improvements, not evidence of persona fidelity.
 
-The convergence map therefore remains technology-neutral for the unresolved
-core admission question. A canonical persisted source-receipt/adoption binding
-for every durable claim candidate is still required before the reviewed path
-can feed a real Mirror holdout or any automatic promotion. Real corpus access,
-model comparison, external egress, and action authority remain closed.
+The next checkpoint closes the dormant core-admission question at the
+apparatus level. One canonical claim contract now binds represented-user
+ownership, explicit adoption, exact source links, scope, time, data plane, and
+supersession. Mirror and persona preview read this path only; proposal/history
+tables cannot satisfy inference. A synthetic PostgreSQL round trip proves
+admit, retrieve, supersede, and erasure closure, including fail-closed broken
+source and inactive-time cases.
+
+This does not establish a persona. The five-strata preview is a projection of
+explicitly admitted claims, not an inferred identity summary. Real corpus
+vaulting, annotation agreement, model comparison, target-isolated holdout,
+external egress, automatic promotion, and action authority remain closed.

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from ynoy.errors import DataValidationError, PolicyViolation
-from ynoy.models import BootstrapDeclaration, ClaimCandidate, DataClass
+from ynoy.models import BootstrapDeclaration, CanonicalClaim, ClaimCandidate, DataClass
+from ynoy.storage.canonical_repository import CanonicalClaimRepository
 from ynoy.storage.database import Database
 
 _IDENTITY_PLANES = {DataClass.PUBLIC_SYNTHETIC, DataClass.DERIVED_IDENTITY}
@@ -27,10 +30,12 @@ class MemoryRepository:
                 SELECT DISTINCT data_class FROM ynoy.bootstrap_declarations
                 WHERE subject_id = %s
                 UNION SELECT 'D3' FROM ynoy.claim_candidates WHERE subject_id = %s
+                UNION SELECT DISTINCT data_class FROM ynoy.canonical_claims
+                WHERE subject_id = %s
                 UNION SELECT DISTINCT data_class FROM ynoy.source_events
                 WHERE scope ->> 'person_id' = %s
                 """,
-                (subject_id, subject_id, subject_id),
+                (subject_id, subject_id, subject_id, subject_id),
             ).fetchall()
         blocked = sorted(str(row["data_class"]) for row in rows if row["data_class"] != "D0")
         if blocked:
@@ -51,13 +56,16 @@ class MemoryRepository:
                     UNION ALL
                     SELECT 1 FROM ynoy.source_events
                     WHERE scope ->> 'person_id' = %s AND data_class = 'D0'
+                    UNION ALL
+                    SELECT 1 FROM ynoy.canonical_claims
+                    WHERE subject_id = %s AND data_class = 'D0'
                   ) AS has_synthetic,
                   EXISTS (
                     SELECT 1 FROM ynoy.bootstrap_declarations
                     WHERE subject_id = %s AND data_class = 'D3'
                   ) AS has_unverified_declaration
                 """,
-                (subject_id, subject_id, subject_id),
+                (subject_id, subject_id, subject_id, subject_id),
             ).fetchone()
         if row and row["has_synthetic"]:
             raise PolicyViolation(
@@ -83,16 +91,15 @@ class MemoryRepository:
             data_class=DataClass.PUBLIC_SYNTHETIC,
         )
 
-    def list_claim_candidates(
-        self, *, subject_id: str = "self", include_inactive: bool = False
-    ) -> list[ClaimCandidate]:
+    def list_active_canonical_claims(
+        self, *, subject_id: str = "self", evaluation_time: datetime
+    ) -> list[CanonicalClaim]:
         self.assert_inference_ready(subject_id=subject_id)
-        if self.inference_data_class == DataClass.PUBLIC_SYNTHETIC:
-            return []
-        return _load_claim_candidates(
-            self.database,
+        return CanonicalClaimRepository(
+            self.database, data_class=self.inference_data_class
+        ).list_active_canonical_claims(
             subject_id=subject_id,
-            include_inactive=include_inactive,
+            evaluation_time=evaluation_time,
         )
 
 
@@ -120,6 +127,16 @@ class MemoryInspectionRepository:
             return []
         return _load_claim_candidates(
             self.database,
+            subject_id=subject_id,
+            include_inactive=include_inactive,
+        )
+
+    def inspect_canonical_claims(
+        self, *, subject_id: str = "self", include_inactive: bool = False
+    ) -> list[CanonicalClaim]:
+        return CanonicalClaimRepository(
+            self.database, data_class=self.data_class
+        ).inspect_canonical_claims(
             subject_id=subject_id,
             include_inactive=include_inactive,
         )

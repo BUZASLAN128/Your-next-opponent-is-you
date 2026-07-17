@@ -40,7 +40,7 @@ class DeclarationMemory:
     def list_bootstrap_declarations(self, **_: object) -> list[BootstrapDeclaration]:
         return self.declarations
 
-    def list_claim_candidates(self, **_: object) -> list[object]:
+    def list_active_canonical_claims(self, **_: object) -> list[object]:
         return []
 
 

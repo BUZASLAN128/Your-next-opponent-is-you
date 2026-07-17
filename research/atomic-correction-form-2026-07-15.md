@@ -1,8 +1,8 @@
 # Privacy-Safe 20-Atom Correction Form Record
 
 > Date: 2026-07-15
-> Status: historical review slots uncorrected; fresh ten-atom private review
-> completed through two user-review receipts with zero pending
+> Status: historical review slots uncorrected; one bounded private review
+> completed through linked user-review receipts
 > Authority: none
 > Persistence: none
 
@@ -56,20 +56,18 @@ Its opaque label records workflow state only: it does not preserve the private
 claim content, confirm that the candidate is true, or allow a later model
 proposal to inherit its identity or status.
 
-A fresh later review now exists privately with ten proposals. It is not mapped
-to P01-P20 and its content, identifiers, digest, and path remain outside Git.
+A fresh later bounded review exists privately. It is not mapped to P01-P20,
+and its cardinality, content, identifiers, digest, and path remain outside Git.
 The first bounded batch was applied before approval and retained after the
-user's later ratification. The private state contains three split, two rejected,
-and five pending original atoms. The public record tracks only that aggregate
-state and the execution-order correction; exact decisions remain private.
+user's later ratification. The public record retains the execution-order
+correction and only the categorical fact that the review remained partial;
+exact decisions and aggregate outcome counts remain private.
 
-The user later approved the remaining bounded batch. A second
-receipt was appended to the first rather than replacing it. That batch added
-three split, one rejected, and one confirmed outcome. The complete private
-view therefore contains six split, three rejected, one confirmed, and zero
-pending source atoms. Two independent full-chain replays agreed; the
-dependency-only deletion projection contains 26 linked records and performed
-no deletion. The public record still withholds the source-to-decision mapping.
+The user later approved the remaining bounded batch. A later receipt was
+appended rather than replacing its predecessor. Independent full-chain replays
+agreed, the selected review reached a complete state, and deletion remained a
+projection rather than an executed operation. Outcome distributions,
+dependency cardinalities, and source-to-decision mappings remain private.
 
 ## Allowed Per-Atom Decisions
 

@@ -422,9 +422,9 @@ infrastructure.
   [replay projection](../src/ynoy/review_replay.py), and
   [review CLI](../src/ynoy/cli/handlers/review.py)
 - **Authorization chronology:** The first bounded batch was applied before the
-  required user approval. The user then approved A1-A5 and chose to retain the
-  result. The canonical private receipt contains five individual decisions:
-  three split outcomes and two rejections. Five later proposals remain pending.
+  required user approval. The user later approved that bounded set and chose
+  to retain the result. The public record keeps only that the review remained
+  partial; proposal and outcome counts remain private.
 - **Procedure finding:** The later ratification supports retention from that
   point forward but does not make the initial execution pre-authorized. The
   assistant execution-order error remains part of the public protocol record.
@@ -432,10 +432,9 @@ infrastructure.
   represented-user claim holder, explicit-user-statement authority, D3 data
   class, sequence one, no predecessor, no database, no provider, no
   persistence, no authority, and no automatic promotion.
-- **Observed replay:** Two independent CLI replays produced the same state.
-  The private state reports five pending, two rejected, and three split source
-  atoms. Its deletion dependency projection contains eighteen records and did
-  not perform deletion.
+- **Observed replay:** Independent CLI replays produced the same partial state.
+  Its deletion dependency projection was not executed; state and dependency
+  cardinalities remain private.
 - **Privacy disposition:** Exact decisions, source text, replacements,
   reasons, identifiers, hashes, artifact paths, and private runtime files were
   excluded from Git. Only aggregate workflow evidence is recorded publicly.
@@ -454,19 +453,17 @@ infrastructure.
   [application service](../src/ynoy/review_application.py),
   [replay projection](../src/ynoy/review_replay.py), and
   [privacy-safe correction record](atomic-correction-form-2026-07-15.md)
-- **Observed application:** The user approved the remaining
-  bounded five-atom batch. The private sequence-two receipt contains five
-  individual decisions: three split outcomes, one rejection, and one
-  confirmation. The complete ten-atom view contains six split, three rejected,
-  one confirmed, and zero pending source atoms.
+- **Observed application:** The user approved the remaining bounded batch.
+  A linked private receipt completed the selected review. Proposal and outcome
+  cardinalities remain private.
 - **Observed provenance:** The second receipt is linked to the first and
   records an explicit user actor, represented-user claim holder,
   explicit-user-statement authority, D3 data, no database, no provider, no
   persistence, no authority, and no automatic promotion.
-- **Observed replay:** Two independent full-chain CLI replays produced the same
-  reviewed state with two receipts. The dependency-only deletion projection
-  contains 26 records and did not perform deletion. No supersession was needed
-  because the second receipt addressed previously pending atoms.
+- **Observed replay:** Independent full-chain CLI replays produced the same
+  complete reviewed state. The dependency-only deletion projection was not
+  executed and its cardinality remains private. No supersession was needed
+  because the later receipt addressed previously pending atoms.
 - **Validation:** The focused lifecycle and review boundary set passes 23
   tests. The full repository suite passes 272 tests with 82.00 percent measured
   branch coverage, including loopback PostgreSQL integration. Static,
@@ -1741,6 +1738,68 @@ infrastructure.
   enforcement independent of the runtime, and retain deterministic semantic
   validation after schema-constrained generation.
 
+### S-073 — Google preference-based activation steering
+
+- **Title:** Steerable Chatbots: Personalizing LLMs with Preference-Based
+  Activation Steering
+- **Type:** Google Research primary paper and user study, 2025
+- **URL:** https://research.google/pubs/personalizing-llms-with-preference-based-activation-steering/
+- **Accessed:** 2026-07-17
+- **Supports:** A preference profile can be represented as controllable
+  dimensions and applied with a user-visible linear strength; the paper also
+  separates cold-start steering from memory-heavy personalization.
+- **Does not establish:** YNOY source attribution, explicit adoption, temporal
+  scope, conflict handling, decision prediction, privacy, deletion, or action
+  authority. Soft preference steering is not a canonical identity claim.
+- **Next check:** If steering is ever tested, compare it as a separate baseline
+  and keep its parameters outside the provenance and authority gates.
+
+### S-074 — Google DeepMind ReadAgent
+
+- **Title:** A Human-Inspired Reading Agent with Gist Memory of Very Long
+  Contexts
+- **Type:** Google DeepMind primary paper, 2024
+- **URL:** https://deepmind.google/research/publications/74917/
+- **Accessed:** 2026-07-17
+- **Supports:** Long input can be segmented into episodes, compressed into gist
+  memories, and revisited through lookup into original passages; the work
+  compares against retrieval and full-context baselines.
+- **Does not establish:** That a gist is faithful identity evidence, that
+  compression preserves user adoption or scope, or that reading comprehension
+  proves persona fidelity.
+- **Next check:** Treat gist memory only as a context-compression candidate and
+  require every identity claim to retain exact source lineage.
+
+### S-075 — Selective classification risk and coverage
+
+- **Title:** Selective Classification for Deep Neural Networks
+- **Type:** Primary NeurIPS paper, 2017
+- **URL:** https://papers.neurips.cc/paper/7073-selective-classification-for-deep-neural-networks.pdf
+- **Supports:** A predictor can be paired with a selection function and
+  evaluated through the risk-coverage tradeoff, with desired risk and
+  confidence levels calibrated from held-out data.
+- **Does not establish:** A valid YNOY confidence score, a persona-specific
+  abstention threshold, or safety under provenance and scope failures.
+- **Next check:** Report selective risk and coverage together on sealed YNOY
+  cases and treat provenance, privacy, and authority violations as fatal rather
+  than ordinary classification error.
+
+### S-076 — Factor graphs and local factorization
+
+- **Title:** Factor Graphs and the Sum-Product Algorithm
+- **Type:** Peer-reviewed primary tutorial paper, IEEE Transactions on
+  Information Theory, 2001
+- **URL:** https://www.mit.edu/~6.454/www_fall_2002/lizhong/factorgraph.pdf
+- **Supports:** A global function can be represented as a product of local
+  functions; cycle-free graphs permit exact marginal computation under the
+  described conditions, while cyclic message passing is generally
+  approximate.
+- **Does not establish:** That YNOY requires a factor graph, graph database, or
+  belief propagation, or that local persona factors are observable and
+  independent.
+- **Next check:** Use factor notation only as a technology-neutral way to expose
+  dependencies; compare it with simpler deterministic and tabular models.
+
 ### L-029 — Gate 0 remediation checkpoint (2026-07-17)
 
 - **Type:** Local source and synthetic/private regression evidence
@@ -1756,6 +1815,48 @@ infrastructure.
   promotion, external egress safety, or production readiness.
 - **Next check:** Bind one reviewed source through persisted admission,
   retrieval, and deletion while keeping the raw and derived data outside Git.
+
+### L-030 — Public privacy scan and mathematical-foundation checkpoint (2026-07-17)
+
+- **Type:** Current repository and reachable-history inspection plus formal
+  research synthesis
+- **Provenance:** Tracked and non-ignored untracked files, Git history,
+  repository policies, and S-052, S-073 through S-076; no private corpus was
+  read.
+- **Supports:** The current tree contains no detected credential, private key,
+  actual host locator, private network address, or device identity. Exact
+  aggregate private correction outcomes and dependency cardinalities were
+  present in public research prose and have been redacted from the current
+  tree. The system can be expressed as explicit admission, scope, conflict,
+  abstention, authority, deletion, egress, and temporal-evaluation equations.
+- **Does not establish:** Absence of every possible secret pattern, removal
+  from reachable Git history, mathematical correctness of unmeasured factors,
+  persona fidelity, or production privacy.
+- **Next check:** Decide whether to replace public feature history, then build
+  automated repository guards for the approved private-metadata classes and
+  run the first sealed falsification experiment.
+
+### L-031 — Canonical admission and erasure round-trip checkpoint (2026-07-17)
+
+- **Type:** Local source, synthetic tests, and disposable loopback PostgreSQL
+  integration evidence
+- **Provenance:** `CanonicalClaim`, `ClaimAdmissionReceipt`,
+  `ClaimSourceLink`, canonical repository, inference reader, five-strata
+  persona projection, additive migrations, and erasure closure; no private
+  corpus content or identifier was used.
+- **Supports:** One typed route now binds explicit represented-user adoption to
+  exact source spans. Mirror and persona preview read only active canonical
+  records. Synthetic integration proves idempotent admission, provenance
+  retrieval, explicit supersession with history, and source-dependent erasure.
+  Future, expired, conflicting, non-user, unadopted, unreceipted, and broken-
+  source states fail closed. The full local run passed 438 tests at 85.04
+  percent branch coverage with one environment-specific filesystem skip.
+- **Does not establish:** Real corpus reconciliation, annotation agreement,
+  extractor accuracy, persona fidelity, calibration, model superiority,
+  automatic promotion, action authority, or product readiness.
+- **Next check:** Implement lossless content-addressed vaulting and resumable
+  normalized ingestion, then rerun the admission invariants on bounded private
+  evidence before opening a sealed holdout.
 
 ## Evidence Gaps
 

@@ -30,9 +30,21 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
     ynoy.private_reports,
     ynoy.erasure_plans
     TO :"runtime_role";
+GRANT SELECT, INSERT, DELETE ON TABLE
+    ynoy.canonical_claims,
+    ynoy.claim_source_links
+    TO :"runtime_role";
+GRANT UPDATE (status, superseded_by) ON TABLE
+    ynoy.canonical_claims TO :"runtime_role";
+GRANT SELECT, INSERT, DELETE ON TABLE
+    ynoy.claim_admission_receipts TO :"runtime_role";
 GRANT SELECT, INSERT ON TABLE ynoy.audit_receipts TO :"runtime_role";
 GRANT SELECT ON TABLE ynoy.schema_migrations TO :"runtime_role";
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ynoy TO :"runtime_role";
 
 REVOKE UPDATE, DELETE, TRUNCATE ON TABLE ynoy.audit_receipts FROM :"runtime_role";
+REVOKE UPDATE, TRUNCATE ON TABLE
+    ynoy.claim_admission_receipts,
+    ynoy.claim_source_links
+    FROM :"runtime_role";
 REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE ynoy.schema_migrations FROM :"runtime_role";

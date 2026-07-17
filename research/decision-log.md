@@ -642,18 +642,17 @@ from silently becoming product authority.
   application was authorized. The later ratification supports retaining the
   bounded outcomes from that point forward; it does not rewrite the earlier
   execution as pre-authorized.
-- **Private disposition:** The exact source text, atom identifiers,
+- **Private disposition:** The exact source text, proposal cardinality, atom identifiers,
   replacement interpretations, rejection reasons, receipt identifiers,
   digests, and paths remain outside Git. The public record retains only the
-  aggregate result: five explicit decisions produced three splits and two
-  rejections, leaving five later atoms pending.
+  categorical result that the bounded review remained partial.
 - **Authority boundary:** The correction receipt records the represented user
   as actor and claim holder with explicit adoption. It grants no action
   authority, creates no durable persona, performs no database write or
   deletion, and does not promote any core candidate.
-- **Replay result:** The private sequence-one receipt replayed twice to the
-  same partially reviewed state. The dependency projection contains eighteen
-  linked records and remains a plan only; deletion was not performed.
+- **Replay result:** The first private receipt replayed deterministically to
+  the same partially reviewed state. The dependency projection remains a plan
+  only; its cardinality stays private and deletion was not performed.
 - **Scientific qualification:** This is the first genuine correction-loop
   observation and proves that the user can reject and restructure model
   proposals through the typed protocol. It does not establish extractor
@@ -663,23 +662,21 @@ from silently becoming product authority.
 
 - **Date:** 2026-07-15
 - **Status:** Confirmed represented-user correction decision
-- **User authorization:** After the remaining five recommendations were shown,
+- **User authorization:** After the remaining bounded recommendations were shown,
   the user explicitly instructed the system to apply them. The authorization
   covered those bounded atom actions, not a wildcard persona update.
-- **Private disposition:** A sequence-two receipt was appended to the first
-  private receipt. The second batch produced three split, one rejected, and
-  one confirmed outcome. Across the selected ten-atom review, the active view
-  now contains six split, three rejected, one confirmed, and zero pending
-  source atoms. Exact content and mappings remain outside Git.
+- **Private disposition:** A later receipt was appended to its predecessor.
+  The selected bounded review reached a complete active state. Exact proposal
+  counts, outcome distributions, content, and mappings remain outside Git.
 - **Authority boundary:** The second receipt is an explicit D3 represented-user
   correction with no database or provider call, persistence, action authority,
   deletion, or automatic core promotion. Candidate interpretations remain
   scoped and non-authoritative.
-- **Replay result:** Two independent full-chain replays produced the same
-  reviewed state with two receipts and no pending atom. The first receipt
-  remains intact; the second targeted previously pending atoms, so no earlier
-  decision required supersession. The dependency-only deletion projection
-  contains 26 linked records and performed no deletion.
+- **Replay result:** Independent full-chain replays produced the same complete
+  reviewed state. The earlier receipt remains intact; the later receipt
+  targeted previously pending atoms, so no earlier decision required
+  supersession. The dependency-only deletion projection was not executed, and
+  its cardinality remains private.
 - **Scientific qualification:** This closes one selected correction form, not
   the extractor-quality question. The sample is small, ordered, and drawn from
   one interaction; it does not establish annotation agreement, persona
@@ -941,8 +938,49 @@ from silently becoming product authority.
   PostgreSQL integration tests against the disposable loopback `ynoy_test`
   database. No real-corpus benchmark result, automatic promotion, external
   egress, or merge is authorized by this checkpoint.
-- **Remaining gap:** `ClaimCandidate` still needs canonical persisted source
-  receipt/adoption binding before it is durable persona evidence.
+- **Superseded gap:** D-054 replaces the dormant `ClaimCandidate` inference
+  path with a receipt-bound canonical claim path. Real-corpus evidence remains
+  uncollected.
+
+### D-053 — Maintain a falsifiable mathematical system contract
+
+- **Date:** 2026-07-17
+- **Status:** Confirmed documentation and research-process decision
+- **Decision:** Maintain a technology-neutral mathematical foundation that
+  distinguishes hard safety invariants, candidate models, measurable
+  quantities, and evaluation definitions. Use it to expose assumptions and
+  design falsification tests, not to imply that an equation proves persona
+  quality.
+- **Privacy consequence:** Public research may record categorical protocol
+  outcomes but not exact private proposal counts, decision distributions,
+  dependency cardinalities, host locators, or private artifact fingerprints.
+- **Non-decision:** This does not select a graph database, factor-graph runtime,
+  retrieval system, model family, learned weights, abstention threshold, or
+  utility scalarization.
+- **History boundary:** Current-tree redaction is authorized by this decision.
+  Replacing already published Git history remains a separate ask-first action.
+
+### D-054 — Use one receipt-bound canonical claim path for inference
+
+- **Date:** 2026-07-17
+- **Status:** Implemented synthetic and loopback-PostgreSQL checkpoint
+- **Decision:** Mirror and persona preview may read only active
+  `CanonicalClaim` records whose represented-user ownership, explicit user
+  adoption receipt, exact source links, data plane, scope, validity window,
+  and lifecycle bindings validate. Legacy claim and declaration tables remain
+  proposal or inspection history and cannot satisfy the inference reader.
+- **Layer boundary:** Project constitution, protected control, mission,
+  scoped-policy, and persona layers remain distinct. Persona projection uses
+  five explicit strata, and conflicts abstain instead of using recency or
+  repetition.
+- **Erasure:** A source-linked synthetic claim was admitted, retrieved,
+  superseded, and erased through PostgreSQL dependency closure. Missing source
+  links, future or expired scope, and superseded state fail closed.
+- **Authority:** Admission grants no action authority and never performs
+  automatic core promotion. This checkpoint does not validate a real persona.
+- **Remaining gap:** Lossless corpus vaulting, real annotation, model
+  comparison, target-isolated holdout, and real-user quality evidence remain
+  open.
 
 ## Resolved Candidate History
 

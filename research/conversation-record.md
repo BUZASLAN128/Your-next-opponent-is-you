@@ -1,8 +1,8 @@
 # Originating Conversation Record
 
-> Date range covered: 2026-07-15 through 2026-07-16
-> Status: complete substantive record through the first ephemeral real-corpus
-> parser checkpoint
+> Date range covered: 2026-07-15 through 2026-07-17
+> Status: complete substantive record through the privacy scan and
+> mathematical-foundation checkpoint
 > Method: preserves every distinct user intent, product claim, correction,
 > risk, suggestion, research finding, and unresolved question from the
 > conversation. Repetition is consolidated. Tool chatter and hidden internal
@@ -1558,8 +1558,8 @@ dependency-only deletion projection.
 
 ### Authorization Chronology
 
-The first five recommended atom actions were applied before the required user
-approval. The user then explicitly approved A1-A5 and chose to keep the result.
+The first bounded recommended actions were applied before the required user
+approval. The user later explicitly approved that bounded set and chose to keep the result.
 This later ratification authorizes retaining those bounded outcomes from that
 point forward; it does not rewrite the earlier execution as pre-authorized and
 does not grant a wildcard or unbounded persona update.
@@ -1567,10 +1567,9 @@ does not grant a wildcard or unbounded persona update.
 ### Private Application
 
 The exact decisions were written only under the outside-Git private review
-root. Five decisions produced three split outcomes and two rejected outcomes.
-The split replacements remain tied to source ranges inside their original
-atoms. Five unreviewed atoms remain pending; no default decision was invented
-for them.
+root. The review remained partial, split replacements remained tied to source
+ranges inside their original atoms, and no default decision was invented for
+unreviewed items. Proposal and outcome counts remain private.
 
 The resulting canonical sequence-one receipt identifies the actor as the
 user, the claim holder as the represented user, the source authority as an
@@ -1580,10 +1579,9 @@ and no automatic core promotion.
 
 ### Replay and Deletion Evidence
 
-Two independent replay commands produced the same state digest and the same
-partially reviewed status. The state contains five pending, two rejected, and
-three split original atoms. The dependency-only deletion projection contains
-eighteen linked records, but no deletion was performed.
+Independent replay commands produced the same state digest and the same
+partially reviewed status. The dependency-only deletion projection was not
+executed; its cardinality and state distribution remain private.
 
 No private source sentence, corrected interpretation, rejection reason,
 identifier, digest, receipt, reviewed state, dependency projection, or private
@@ -1595,7 +1593,7 @@ records the assistant's execution-order error as protocol evidence.
 
 ### Explicit User Decision
 
-After the remaining five atom recommendations were presented, the represented
+After the remaining bounded recommendations were presented, the represented
 user explicitly instructed the system to apply them. This was treated as
 authorization for those bounded actions only. It did not approve a general
 persona, automatic promotion, persistence, model selection, or action
@@ -1603,11 +1601,10 @@ authority.
 
 ### Private Sequence-Two Receipt
 
-The decisions remained under the outside-Git private review root. The second
-batch produced three split outcomes, one rejected outcome, and one confirmed
-outcome. A sequence-two canonical receipt was bound to the first receipt rather
-than rewriting it. The complete active view now contains six split, three
-rejected, one confirmed, and zero pending source atoms.
+The decisions remained under the outside-Git private review root. A later
+canonical receipt was bound to its predecessor rather than rewriting it, and
+the selected review reached a complete active state. Exact proposal and
+outcome cardinalities remain private.
 
 The correction step records an explicit user actor, represented-user claim
 holder, explicit-user-statement authority, and D3 data. It used no database or
@@ -1617,11 +1614,11 @@ interpretations remain scoped review results rather than product truth.
 
 ### Full-Chain Replay and Limits
 
-Two independent CLI replays of both receipts produced the same reviewed state
-and zero pending atoms. Because the second batch addressed previously pending
-atoms, the historical first receipt remained intact and no earlier decision
-needed supersession. The dependency-only deletion projection contains 26
-linked records and performed no deletion.
+Independent CLI replays of the linked receipts produced the same complete
+reviewed state. Because the later batch addressed previously pending atoms,
+the historical earlier receipt remained intact and no earlier decision needed
+supersession. The dependency-only deletion projection was not executed and
+its cardinality remains private.
 
 The focused correction, projection, review-CLI, and storage-boundary set passed
 23 tests. The full suite passed 272 tests with 82.00 percent measured branch
@@ -2150,3 +2147,65 @@ Synthetic and private-path regression tests pass for the changed behaviors.
 The work does not establish real-user annotation agreement, a canonical
 persisted source-receipt/adoption binding for every claim candidate, model
 superiority, automatic persona promotion, or external action authority.
+
+## Event 044 — Audit Public Privacy and Formalize the System Mathematically
+
+### User Direction
+
+The user asked for a repository-wide check for information about the user or
+the user's computer, with the goal of preventing malicious external leakage.
+The user also asked for a new research subdirectory that describes the system
+mathematically in the style of a technical research specification so that
+hidden design gaps become visible.
+
+### Repository Finding
+
+The current tracked and non-ignored untracked text was scanned without dumping
+potential secret values. No credential, private key, common provider token,
+actual user-profile path, device name, private IP address, MAC address, or SSH
+key was found. Public Windows paths are placeholders or synthetic fixtures.
+
+The scan did identify exact aggregate outcomes and dependency cardinalities
+from a private represented-user correction session in public research records.
+Although they contained no source sentence or identifier, they were derived
+behavioral and operational metadata. The current tree now records only
+categorical lifecycle facts. Reachable Git history still contains earlier
+versions of those aggregates and a generic local workspace path; history
+replacement was not authorized by this request.
+
+### Mathematical Research Result
+
+The new mathematical foundation separates hard invariants from candidate
+models and evaluation definitions. It formalizes canonical admission, scoped
+and temporal applicability, supersession, conflict abstention, relevance,
+conditional judgment prediction, selective risk and coverage, cold start,
+Mirror versus Advisor objectives, independent action authority, append-only
+learning, deletion closure, D0-only external egress, and strict chronological
+holdout. No graph engine, model family, storage technology, threshold, or
+weight was selected by the equations.
+
+## Event 045 — Implement Receipt-Bound Canonical Inference
+
+### User Direction
+
+The user approved the V1.3–V1.6 implementation sequence and required the first
+gate to replace proposal-driven inference with a single source-linked,
+user-adopted canonical claim path before corpus-scale processing.
+
+### Implemented Result
+
+The code now persists canonical claims, explicit admission receipts, and exact
+source links in additive PostgreSQL migrations. Mirror and persona preview no
+longer consume legacy claim candidates. Persona projection separates five
+strata and preserves claim, admission, source-link, scope, time, and layer
+boundaries without granting action authority or automatic core promotion.
+
+### Verification and Qualification
+
+A synthetic source completed review, admission, retrieval, supersession, and
+erasure against disposable loopback PostgreSQL. Adversarial tests cover
+non-user ownership, missing adoption, proposal state, inactive time, conflict,
+and broken lineage. The complete local run passed 438 tests with 85.04 percent
+branch coverage; one environment-specific filesystem case was skipped. This
+verifies apparatus behavior only. No real corpus was read, no real persona was
+produced, and no benchmark quality claim is made.

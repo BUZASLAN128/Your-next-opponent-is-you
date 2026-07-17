@@ -1,15 +1,20 @@
 # Research Hub
 
-> 2026-07-17 Gate 0 hardening checkpoint: legacy Mirror admission, benchmark
-> semantics, continuity erasure, private deletion rollback, runtime grants,
-> compact corrections, and serving-model identity checks have deterministic
-> regression coverage. Canonical persisted adoption/source receipts, real-
-> corpus validation, and automatic promotion remain blocked.
+> 2026-07-17 canonical Gate 0 checkpoint: Mirror and persona preview now read
+> only receipt-bound canonical claims with exact source links, scope, time,
+> plane, and lifecycle validation. Synthetic loopback PostgreSQL proves admit,
+> retrieve, supersede, and erase; real-corpus validation and automatic
+> promotion remain blocked.
 
-> Status: V1.2 deterministic correction lifecycle, proposal-only local
-> extractor, ephemeral Codex content parser, and bounded assisted-label review
-> implemented with compact receipt-bound input; represented-user review remains
-> pending
+> 2026-07-17 mathematical-foundation and privacy checkpoint: the current
+> product hypothesis is expressed as hard invariants, candidate equations, and
+> falsification tests. Current-tree scanning found no credential or actual host
+> locator, while exact private correction aggregates were redacted. Reachable
+> Git history still requires a separate privacy-history decision.
+
+> Status: V1.3 canonical claim apparatus, V1.2 correction lifecycle,
+> proposal-only local extractor, ephemeral Codex parser, and bounded assisted
+> review implemented; real persona evidence and benchmark remain pending
 > Last updated: 2026-07-17
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private
@@ -71,7 +76,7 @@ The shortest current distinction is:
 | A deterministic end-of-conversation script combines all non-ignored repository Markdown into one local generated file. | Implemented documentation utility | [Bundle workflow](#end-of-conversation-markdown-bundle) |
 | The repository now contains a modular local CLI, typed contracts, migrations, private-data policy, synthetic fixtures, and a Mirror benchmark harness. | Implemented prototype; not real-person validation | [V1 implementation record](v1-implementation-record-2026-07-15.md) |
 | The data-free Manager starts without history, PostgreSQL, a private root, or a model provider and generates only an ephemeral D0 system-control seed. | Implemented cold-start slice; not persona evidence | [Decision D-032](decision-log.md) and [V1 implementation record](v1-implementation-record-2026-07-15.md) |
-| The persona preview projects only explicitly adopted declarations, keeps missing views visible, and performs no persistence, provider call, authority grant, or core promotion. | Implemented Layer 2 preview; declared-only and unvalidated | [Decision D-033](decision-log.md) and [progress assessment](progress-gap-assessment-2026-07-15.md) |
+| Persona preview projects only active receipt-bound canonical persona claims into five separate strata, keeps missing strata visible, and grants no provider, action, or promotion authority. | Implemented canonical projection; synthetic apparatus only and unvalidated | [Decision D-054](decision-log.md#d-054--use-one-receipt-bound-canonical-claim-path-for-inference) and [progress assessment](progress-gap-assessment-2026-07-15.md) |
 | The first user-facing declared-only calibration was reproduced in memory without persistence; its current-thread source receipts remain provisional and user correction is pending. | Local calibration checkpoint; not persona validation | [Conversation Event 023](conversation-record.md#event-023--delegated-decision-boundary-and-first-user-facing-calibration) and [Source L-015](source-ledger.md#l-015--delegated-decision-boundary-and-first-persona-calibration-checkpoint) |
 | A provisional interaction receipt can now project one exact response into multiple span-verified atomic proposals while keeping modality, target layer, literal reading, inference, consequence, confidence, and null reasons separate. | Implemented review apparatus; non-persisted and awaiting user correction | [Decision D-036](decision-log.md#d-036--require-atomic-interaction-review-before-persona-promotion), [RQ-019](open-questions.md#rq-019--how-should-a-data-free-session-produce-the-first-persona-candidate), and [Source L-016](source-ledger.md#l-016--atomic-interaction-review-checkpoint) |
 | Per-atom correction receipts now support partial review, deterministic hash-chain replay, explicit supersession, scope/time filtering, deletion dependency projection, and conflict abstention without a database or model. | Implemented V1.2 lifecycle apparatus; synthetic coverage plus one complete private two-receipt represented-user review | [Decision D-037](decision-log.md#d-037--prove-the-decision-lifecycle-before-model-integration), [Event 025](conversation-record.md#event-025--deterministic-correction-lifecycle-and-model-gate), [Source L-017](source-ledger.md#l-017--deterministic-correction-and-decision-lifecycle-checkpoint), and [privacy-safe form](atomic-correction-form-2026-07-15.md) |
@@ -88,7 +93,7 @@ The shortest current distinction is:
 | A private 24+8 annotation pack has immutable first-submission receipts, separate repeat adjudication, and a distinct metadata-only session-start-ordered holdout under the current schema; dialogue, targets, and predictors remain unopened. | Implemented private evaluation apparatus; awaiting labels and not persona-quality evidence | [Pilot checkpoint](persona-annotation-feasibility-pilot-2026-07-16.md), [Decisions D-048](decision-log.md#d-048--freeze-a-distinct-metadata-only-session-start-ordered-mirror-holdout) and [D-049](decision-log.md#d-049--preserve-initial-labels-and-separate-repeat-adjudication), and [Event 036](conversation-record.md#event-036--preserve-the-first-label-submission-and-remove-corpus-dependent-public-counts) |
 | A proposal-only assisted-label path now runs two independent local-model passes, derives dependent safety fields in deterministic code, abstains on oversized focus text, audits blind-repeat consistency, and refuses review when the bounded burden cap is exceeded. One preserved failed attempt was followed by one linked retry that reached the configured review-ready gate; represented-user review remains pending. | Implemented private proposal checkpoint; not labels, persona quality, holdout evidence, or model selection | [Decision D-050](decision-log.md#d-050--replace-full-manual-pre-labeling-with-bounded-model-assisted-review), [Event 040](conversation-record.md#event-040--bound-model-assisted-labeling-and-preserve-the-failed-attempt), and [Source L-026](source-ledger.md#l-026--bounded-model-assisted-label-proposal-checkpoint) |
 | Assisted proposal decisions can now be recorded by card number in resumable, idempotent steps and sealed into an ancestry-bound receipt. Corrections still require exact represented-user input, and the active private review remains undecided. | Implemented interaction and transaction checkpoint; not persona quality or gold labels | [Decision D-051](decision-log.md#d-051--make-assisted-proposal-review-compact-resumable-and-receipt-bound), [Event 042](conversation-record.md#event-042--add-compact-represented-user-proposal-review-and-pr-checkpoint), and [Source L-028](source-ledger.md#l-028--compact-assisted-review-submission-and-transaction-checkpoint) |
-| A user-supplied external evaluation was preserved and audited against current source. It correctly identifies a dormant but unsafe legacy Mirror admission contract, benchmark-instrument gaps, and stale delivery evidence; newer retention and temporal-validity behavior required qualification. | Source-audited external report; authority none, canonical-claim Gate 0 open | [Preserved evaluation](incoming-reports/project-evaluation-2026-07-17.md), [Event 041](conversation-record.md#event-041--audit-an-external-project-evaluation-against-current-head), [RQ-026](open-questions.md#rq-026--what-is-the-minimum-canonical-claim-gate-before-durable-persona-activation), and [Source L-027](source-ledger.md#l-027--user-supplied-project-evaluation-and-current-head-claim-audit) |
+| A user-supplied external evaluation identified a dormant unsafe Mirror admission contract. D-054 now replaces it with receipt-bound canonical inference; benchmark and real-evidence gaps remain. | Source-audited report plus implemented synthetic remediation; no persona validation | [Preserved evaluation](incoming-reports/project-evaluation-2026-07-17.md), [RQ-026](open-questions.md#rq-026--what-is-the-minimum-canonical-claim-gate-before-durable-persona-activation), and [Source L-031](source-ledger.md#l-031--canonical-admission-and-erasure-round-trip-checkpoint-2026-07-17) |
 | A loopback endpoint is transport-local but is not trusted with private identity data until the operator separately attests provider locality. | Implemented fail-closed boundary; local experiment attested and first bounded private proposal run observed | [Decisions D-029](decision-log.md) and [D-038](decision-log.md#d-038--permit-one-pinned-local-extractor-as-a-proposal-only-experiment) |
 | Raw user turns remain unattributed with an unknown claim holder until explicit adoption or span attribution, preventing pasted third-party text from silently becoming persona evidence. | Implemented source-authority rule | [Decision D-027](decision-log.md) |
 | Qwen3-8B Q4_K_M is the first live extractor experiment; gpt-oss-20b and BGE-M3 remain untested candidates. | Local synthetic observation; no model winner selected | [RQ-017](open-questions.md#rq-017--which-exact-model-revisions-fit-the-local-runtime-boundary) and [Source L-018](source-ledger.md#l-018--pinned-proposal-only-local-extractor-checkpoint) |
@@ -99,6 +104,8 @@ The shortest current distinction is:
 | No real-person benchmark, annotation study, or user-audited temporal holdout has been run. | Observed project state | Conversation content has not been sampled for those experiments |
 | Public research records must use neutral user language and attribute procedure or interpretation failures to the responsible apparatus. | Confirmed documentation policy | [Decision D-044](decision-log.md#d-044--require-neutral-and-accountable-public-research-language) and [Event 031](conversation-record.md#event-031--correct-public-record-tone-and-replace-feature-history) |
 | The implemented V1 remains a scientific prototype and must not be presented as a faithful virtual self or production system. | Confirmed scope boundary | [V1 implementation record](v1-implementation-record-2026-07-15.md) |
+| The current system hypothesis has a technology-neutral mathematical contract for admission, applicability, conflict, abstention, authority, deletion, privacy, and temporal evaluation. | Research specification; parameters and model family remain unselected | [Mathematical foundation](mathematical-foundation/README.md) |
+| Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents
 
@@ -114,6 +121,7 @@ The shortest current distinction is:
 | [hivemind-actions-case-study.md](hivemind-actions-case-study.md) | Source-grounded review of the earlier prototype and its control-boundary lessons |
 | [incoming-reports/project-evaluation-2026-07-17.md](incoming-reports/project-evaluation-2026-07-17.md) | Authority-free preservation and current-HEAD audit of the supplied external project evaluation |
 | [model-and-evaluation.md](model-and-evaluation.md) | Technology-neutral research hypothesis for extracting and testing a judgment model |
+| [mathematical-foundation/](mathematical-foundation/README.md) | Formal variables, hard invariants, candidate equations, privacy findings, and falsification tests |
 | [source-ledger.md](source-ledger.md) | Consulted sources, evidence types, findings, and limitations |
 | [decision-log.md](decision-log.md) | Explicitly confirmed, candidate, rejected, and still-open decisions |
 | [open-questions.md](open-questions.md) | Prioritized research questions and deep-research briefs |
@@ -189,17 +197,18 @@ Read the files in the order listed below:
 8. [hivemind-actions-case-study.md](hivemind-actions-case-study.md)
 9. [source-ledger.md](source-ledger.md)
 10. [model-and-evaluation.md](model-and-evaluation.md)
-11. [open-questions.md](open-questions.md)
-12. [deep-research-prompts.md](deep-research-prompts.md)
-13. [report-review-2026-07-15.md](report-review-2026-07-15.md)
-14. [deep-research-round-01-synthesis-2026-07-15.md](deep-research-round-01-synthesis-2026-07-15.md)
-15. [deep-research-round-02-synthesis-2026-07-15.md](deep-research-round-02-synthesis-2026-07-15.md)
+11. [mathematical-foundation/](mathematical-foundation/README.md)
+12. [open-questions.md](open-questions.md)
+13. [deep-research-prompts.md](deep-research-prompts.md)
+14. [report-review-2026-07-15.md](report-review-2026-07-15.md)
+15. [deep-research-round-01-synthesis-2026-07-15.md](deep-research-round-01-synthesis-2026-07-15.md)
+16. [deep-research-round-02-synthesis-2026-07-15.md](deep-research-round-02-synthesis-2026-07-15.md)
 
-16. [v1-implementation-record-2026-07-15.md](v1-implementation-record-2026-07-15.md)
-17. [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md)
-18. [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md)
-19. [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md)
-20. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
+17. [v1-implementation-record-2026-07-15.md](v1-implementation-record-2026-07-15.md)
+18. [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md)
+19. [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md)
+20. [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md)
+21. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

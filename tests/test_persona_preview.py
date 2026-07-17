@@ -3,70 +3,127 @@ from __future__ import annotations
 import json
 from collections.abc import Sequence
 from pathlib import Path
-from uuid import UUID
+from uuid import uuid4
 
 import pytest
+from conftest import synthetic_audit
+from support.canonical_claims import confirmed_admission
 
 from ynoy.cli.main import main
 from ynoy.errors import DataValidationError
 from ynoy.models import (
-    AdoptedPersonaDeclaration,
-    BootstrapDeclaration,
     CandidateKind,
     CandidateStatus,
-    ClaimHolder,
     DataClass,
-    DecisionLabel,
     EvidenceRegime,
     PersonaFacet,
+    PersonaStratum,
     PersonaViewName,
-    ScopeRef,
     SourceAuthority,
-    Speaker,
+    TargetLayer,
 )
 from ynoy.persona import build_persona_preview
+from ynoy.storage import CanonicalClaimRepository, Database
 
-VIEW_KINDS = (
-    (PersonaViewName.BEHAVIORAL_PATTERNS, (CandidateKind.TRAIT,)),
-    (PersonaViewName.VALUES, (CandidateKind.VALUE,)),
-    (PersonaViewName.AUTOBIOGRAPHICAL, (CandidateKind.NARRATIVE,)),
-    (PersonaViewName.PERSONAL_METACOGNITION, (CandidateKind.METACOGNITION,)),
-)
-SCOPED_KINDS = (
-    CandidateKind.BELIEF,
-    CandidateKind.PREFERENCE,
-    CandidateKind.GOAL,
-    CandidateKind.RELATIONSHIP,
-    CandidateKind.SKILL,
+STRATA = (
+    (PersonaStratum.DECISIONS_AND_POLICY, CandidateKind.PREFERENCE),
+    (PersonaStratum.VALUES_AND_BELIEFS, CandidateKind.VALUE),
+    (PersonaStratum.GOALS_AND_CONTINUITY, CandidateKind.GOAL),
+    (PersonaStratum.COMMUNICATION_AND_METACOGNITION, CandidateKind.METACOGNITION),
+    (PersonaStratum.SKILLS_NARRATIVE_AND_RELATIONSHIPS, CandidateKind.SKILL),
 )
 
 
-def _declaration(
-    index: int,
-    kind: CandidateKind = CandidateKind.TRAIT,
-    *,
-    synthetic: bool = True,
-    subject_id: str = "self",
-    status: CandidateStatus = CandidateStatus.CONFIRMED,
-) -> AdoptedPersonaDeclaration:
-    return AdoptedPersonaDeclaration(
-        record_id=UUID(int=index),
-        source_record_id=UUID(int=10_000 + index),
-        subject_id=subject_id,
-        kind=kind,
-        statement=f"Exact declaration {index}: {kind.value}.",
-        scope=ScopeRef(
-            person_id=subject_id,
-            project=f"project-{index}",
-            role="reviewer",
-            risk="high",
-        ),
-        decision_label=DecisionLabel.REJECT,
-        source_name=f"source-{index}.json",
-        data_class=(DataClass.PUBLIC_SYNTHETIC if synthetic else DataClass.DERIVED_IDENTITY),
-        synthetic=synthetic,
-        status=status,
+def _persona_claim(index: int, stratum: PersonaStratum, kind: CandidateKind):
+    return confirmed_admission(
+        offset=index,
+        target_layer=TargetLayer.PERSONA_CANDIDATE,
+        persona_kind=kind,
+        persona_stratum=stratum,
+    )[2].claim
+
+
+def test_preview_has_five_strata_and_is_input_order_independent() -> None:
+    claims = tuple(
+        _persona_claim(index, stratum, kind)
+        for index, (stratum, kind) in enumerate(STRATA, start=1)
     )
+
+    forward = build_persona_preview(claims)
+    reverse = build_persona_preview(tuple(reversed(claims)))
+
+    assert forward == reverse
+    assert tuple(view.name for view in forward.views) == tuple(PersonaViewName)
+    assert tuple(view.facets[0].stratum for view in forward.views) == tuple(
+        item[0] for item in STRATA
+    )
+    assert forward.claim_count == 5
+    assert forward.missing_views == ()
+
+
+def test_preview_preserves_canonical_admission_links_without_summary() -> None:
+    claim = _persona_claim(101, *STRATA[0])
+    preview = build_persona_preview((claim,))
+    facet = preview.views[0].facets[0]
+
+    assert facet.statement == claim.literal_statement
+    assert facet.scope == claim.scope
+    assert facet.record_id == claim.record_id
+    assert facet.admission_receipt_id == claim.admission_receipt_id
+    assert facet.source_link_ids == claim.source_link_ids
+    assert preview.admission_receipts == (claim.admission_receipt_id,)
+    assert preview.source_link_ids == claim.source_link_ids
+    assert '"summary"' not in json.dumps(preview.model_dump(mode="json"))
+
+
+def test_operating_memory_remains_system_control_and_never_a_facet() -> None:
+    preview = build_persona_preview((_persona_claim(201, *STRATA[3]),))
+    facets = tuple(facet for view in preview.views for facet in view.facets)
+    memory = preview.operating_memory
+
+    assert memory.evidence_regime == EvidenceRegime.ZERO
+    assert memory.persona_evidence_count == 0
+    assert all(not isinstance(rule, PersonaFacet) for rule in memory.rules)
+    assert all(rule.source_authority == SourceAuthority.SYSTEM_CONTROL for rule in memory.rules)
+    assert all(
+        facet.source_authority == SourceAuthority.EXPLICIT_USER_STATEMENT for facet in facets
+    )
+
+
+@pytest.mark.parametrize(
+    ("case", "error_code"),
+    [
+        ("empty", "canonical_persona_claims_required"),
+        ("noncanonical", "canonical_persona_claim_required"),
+        ("nonpersona", "canonical_persona_claim_inactive"),
+        ("inactive", "canonical_persona_claim_inactive"),
+        ("mixed_subject", "persona_subject_mismatch"),
+        ("duplicate", "persona_duplicate_claim"),
+    ],
+)
+def test_preview_rejects_noncanonical_or_inactive_sets(case: str, error_code: str) -> None:
+    first = _persona_claim(301, *STRATA[0])
+    second = _persona_claim(302, *STRATA[1])
+    if case == "empty":
+        claims: tuple[object, ...] = ()
+    elif case == "noncanonical":
+        claims = (object(),)
+    elif case == "nonpersona":
+        claims = (confirmed_admission(offset=303)[2].claim,)
+    elif case == "inactive":
+        claims = (
+            first.model_copy(
+                update={"status": CandidateStatus.SUPERSEDED, "superseded_by": uuid4()}
+            ),
+        )
+    elif case == "mixed_subject":
+        claims = (first, second.model_copy(update={"subject_id": "someone-else"}))
+    else:
+        claims = (first, first)
+
+    with pytest.raises(DataValidationError) as blocked:
+        build_persona_preview(claims)  # type: ignore[arg-type]
+    assert blocked.value.code == error_code
 
 
 def _run_cli(
@@ -80,167 +137,46 @@ def _run_cli(
     return exit_code, payload
 
 
-def _remove_optional_dependencies(monkeypatch: pytest.MonkeyPatch) -> None:
-    for variable in (
-        "YNOY_DATABASE_URL",
-        "YNOY_PRIVATE_ROOT",
-        "YNOY_LOCAL_REASONER_URL",
-    ):
-        monkeypatch.delenv(variable, raising=False)
-
-
-def test_preview_has_canonical_views_and_is_independent_of_input_order() -> None:
-    kinds = tuple(kind for _, view_kinds in VIEW_KINDS for kind in view_kinds) + SCOPED_KINDS
-    declarations = tuple(_declaration(index, kind) for index, kind in enumerate(kinds, start=1))
-
-    forward = build_persona_preview(declarations)
-    reverse = build_persona_preview(tuple(reversed(declarations)))
-
-    assert forward == reverse
-    assert (
-        tuple((view.name, tuple(facet.kind for facet in view.facets)) for view in forward.views)
-        == VIEW_KINDS
-    )
-    assert tuple(facet.kind for facet in forward.scoped_objects) == SCOPED_KINDS
-    assert forward.declaration_count == len(kinds)
-    assert forward.missing_views == ()
-
-
-@pytest.mark.parametrize(
-    ("synthetic", "expected_class"),
-    [
-        (True, DataClass.PUBLIC_SYNTHETIC),
-        (False, DataClass.DERIVED_IDENTITY),
-    ],
-)
-def test_preview_preserves_declared_source_fields_without_identity_summary(
-    synthetic: bool,
-    expected_class: DataClass,
-) -> None:
-    declaration = _declaration(101, synthetic=synthetic)
-    preview = build_persona_preview((declaration,))
-    facet = preview.views[0].facets[0]
-
-    assert facet.statement == declaration.statement
-    assert facet.scope == declaration.scope
-    assert facet.decision_label == declaration.decision_label
-    assert facet.record_id == declaration.record_id
-    assert facet.source_record_id == declaration.source_record_id
-    assert facet.source_name == declaration.source_name
-    assert facet.data_class == expected_class and preview.data_class == expected_class
-    assert facet.speaker == Speaker.USER
-    assert facet.claim_holder == ClaimHolder.REPRESENTED_USER
-    assert facet.adopted is True
-    assert facet.evidence_plane == "identity_interpretation"
-    assert facet.source_authority == SourceAuthority.EXPLICIT_USER_STATEMENT
-    assert preview.source_receipts == (declaration.source_record_id,)
-    assert '"summary"' not in json.dumps(preview.model_dump(mode="json"), ensure_ascii=False)
-
-
-def test_operating_memory_is_separate_system_control_and_never_a_facet() -> None:
-    preview = build_persona_preview((_declaration(201, synthetic=False),))
-    facets = tuple(facet for view in preview.views for facet in view.facets)
-    facets += preview.scoped_objects
-    memory = preview.operating_memory
-
-    assert memory.memory_kind == "system_operating_seed"
-    assert memory.source_authority == SourceAuthority.SYSTEM_CONTROL
-    assert memory.data_class == DataClass.PUBLIC_SYNTHETIC
-    assert memory.evidence_regime == EvidenceRegime.ZERO
-    assert memory.persona_memory_state == "empty" and memory.persona_evidence_count == 0
-    assert all(not isinstance(rule, PersonaFacet) for rule in memory.rules)
-    assert all(rule.source_authority == SourceAuthority.SYSTEM_CONTROL for rule in memory.rules)
-    assert all(rule.data_class == DataClass.PUBLIC_SYNTHETIC for rule in memory.rules)
-    assert all(
-        facet.source_authority == SourceAuthority.EXPLICIT_USER_STATEMENT for facet in facets
-    )
-
-
-def _invalid_declarations(case: str) -> tuple[AdoptedPersonaDeclaration, ...]:
-    first = _declaration(301)
-    if case == "empty":
-        return ()
-    if case == "mixed_subject":
-        return first, _declaration(302, subject_id="someone-else")
-    if case == "mixed_data_class":
-        return first, _declaration(302, synthetic=False)
-    if case == "duplicate_record":
-        duplicate = _declaration(302).model_copy(update={"record_id": first.record_id})
-        return first, duplicate
-    inactive = first.model_copy(update={"status": CandidateStatus.INVALIDATED})
-    return (inactive,)
-
-
-@pytest.mark.parametrize(
-    ("case", "error_code"),
-    [
-        ("empty", "persona_declarations_required"),
-        ("mixed_subject", "persona_subject_mismatch"),
-        ("mixed_data_class", "persona_data_class_mismatch"),
-        ("duplicate_record", "persona_duplicate_declaration"),
-        ("inactive", "persona_inactive_declaration"),
-    ],
-)
-def test_preview_rejects_invalid_declaration_sets(case: str, error_code: str) -> None:
-    with pytest.raises(DataValidationError) as blocked:
-        build_persona_preview(_invalid_declarations(case))
-    assert blocked.value.code == error_code
-
-
-def test_preview_rejects_legacy_bootstrap_declaration() -> None:
-    legacy = BootstrapDeclaration(
-        kind=CandidateKind.TRAIT,
-        statement="Legacy declaration without explicit adoption.",
-        source_name="legacy.json",
-    )
-    with pytest.raises(DataValidationError) as blocked:
-        build_persona_preview((legacy,))  # type: ignore[arg-type]
-    assert blocked.value.code == "persona_adopted_declaration_required"
-
-
-def test_persona_cli_synthetic_preview_needs_no_database_root_or_provider(
+@pytest.mark.integration
+def test_persona_cli_reads_only_active_canonical_claims(
+    test_database: Database,
+    test_database_url: str,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    source = tmp_path / "declared-persona.json"
-    source.write_text(
-        json.dumps(
-            [
-                {
-                    "kind": "trait",
-                    "statement": "Prefer evidence.",
-                    "speaker": "user",
-                    "claim_holder": "represented_user",
-                    "source_authority": "explicit_user_statement",
-                    "adopted": True,
-                    "evidence_plane": "identity_interpretation",
-                    "synthetic": True,
-                }
-            ]
-        ),
-        encoding="utf-8",
+    offset = uuid4().int % 1_000_000 + 2_000_000
+    subject_id = f"persona-preview-{uuid4()}"
+    admission = confirmed_admission(
+        offset=offset,
+        subject_id=subject_id,
+        target_layer=TargetLayer.PERSONA_CANDIDATE,
+        persona_kind=CandidateKind.VALUE,
+        persona_stratum=PersonaStratum.VALUES_AND_BELIEFS,
+    )[2]
+    CanonicalClaimRepository(test_database, data_class=DataClass.PUBLIC_SYNTHETIC).admit(
+        admission, synthetic_audit(artifact_id=str(admission.claim.record_id))
     )
-    dependency_calls: list[str] = []
 
-    def forbidden_dependency(*_: object, **__: object) -> None:
-        dependency_calls.append("called")
-        raise AssertionError("persona preview must not call storage or a provider")
-
-    _remove_optional_dependencies(monkeypatch)
-    monkeypatch.setattr("ynoy.storage.database.psycopg.connect", forbidden_dependency)
-    monkeypatch.setattr("ynoy.local_http.build_opener", forbidden_dependency)
-    monkeypatch.setattr("ynoy.config.Settings.require_private_root", forbidden_dependency)
-    exit_code, payload = _run_cli(["persona", "preview", str(source), "--synthetic"], capsys)
+    exit_code, payload = _run_cli(
+        [
+            "--private-root",
+            str(tmp_path),
+            "--database-url",
+            test_database_url,
+            "persona",
+            "preview",
+            "--subject-id",
+            subject_id,
+            "--synthetic",
+        ],
+        capsys,
+    )
 
     assert exit_code == 0 and payload["ok"] is True
     result = payload["result"]
     assert isinstance(result, dict)
-    assert result["persona_state"] == "declared_only"
-    assert result["evidence_regime"] == "declared"
-    assert result["confidence_status"] == "low_unvalidated"
-    assert result["data_class"] == "D0"
-    assert result["database_used"] is False and result["provider_used"] is False
-    assert result["persistence_status"] == "not_persisted"
-    assert result["authority"] == "none" and result["automatic_core_promotion"] is False
-    assert dependency_calls == []
+    assert result["persona_state"] == "canonical_admitted"
+    assert result["database_used"] is True and result["provider_used"] is False
+    assert result["persistence_status"] == "canonical_claims"
+    assert result["claim_count"] == 1
+    assert result["automatic_core_promotion"] is False

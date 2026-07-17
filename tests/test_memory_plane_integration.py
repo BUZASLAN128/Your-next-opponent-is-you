@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
@@ -198,10 +199,16 @@ def test_legacy_d3_bootstrap_is_blocked_from_private_inference(
     _seed_bootstrap_directly(test_database, _declaration(subject_id, synthetic=False))
     reader = MemoryRepository(test_database, inference_data_class=DataClass.DERIVED_IDENTITY)
 
-    for method_name in ("list_bootstrap_declarations", "list_claim_candidates"):
-        with pytest.raises(PolicyViolation) as blocked:
-            getattr(reader, method_name)(subject_id=subject_id)
-        assert blocked.value.code == "real_declaration_provenance_unverified"
+    with pytest.raises(PolicyViolation) as bootstrap_blocked:
+        reader.list_bootstrap_declarations(subject_id=subject_id)
+    with pytest.raises(PolicyViolation) as canonical_blocked:
+        reader.list_active_canonical_claims(
+            subject_id=subject_id, evaluation_time=datetime.now(UTC)
+        )
+
+    assert bootstrap_blocked.value.code == "real_declaration_provenance_unverified"
+    assert canonical_blocked.value.code == "real_declaration_provenance_unverified"
+    assert not hasattr(reader, "list_claim_candidates")
 
 
 def test_inspection_repository_is_plane_filtered_and_not_an_inference_reader(

@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 
+from ynoy.models import CandidateKind, DecisionLabel, PersonaStratum
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ynoy")
@@ -79,7 +81,7 @@ def _persona_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser
     parser = commands.add_parser("persona")
     subcommands = parser.add_subparsers(dest="persona_command", required=True)
     preview = subcommands.add_parser("preview")
-    preview.add_argument("source")
+    preview.add_argument("--subject-id", default="self")
     preview.add_argument("--synthetic", action="store_true")
 
 
@@ -142,6 +144,15 @@ def _memory_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]
     correct.add_argument("--replacement")
     correct.add_argument("--subject-id", default="self")
     correct.add_argument("--synthetic", action="store_true")
+    admit = subcommands.add_parser("admit")
+    admit.add_argument("review")
+    admit.add_argument("--receipt", action="append", required=True)
+    admit.add_argument("--claim-id", required=True)
+    admit.add_argument("--supersedes-claim-id")
+    admit.add_argument("--decision-label", choices=tuple(item.value for item in DecisionLabel))
+    admit.add_argument("--persona-kind", choices=tuple(item.value for item in CandidateKind))
+    admit.add_argument("--persona-stratum", choices=tuple(item.value for item in PersonaStratum))
+    admit.add_argument("--synthetic", action="store_true")
 
 
 def _erase_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:

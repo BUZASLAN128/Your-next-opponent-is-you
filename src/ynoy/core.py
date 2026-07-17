@@ -8,8 +8,7 @@ from typing import Protocol
 from ynoy.models import (
     BootstrapDeclaration,
     CandidateStatus,
-    ClaimCandidate,
-    ClaimHolder,
+    CanonicalClaim,
     DataClass,
     DecisionLabel,
     Mode,
@@ -32,9 +31,9 @@ class MemoryReader(Protocol):
         self, *, subject_id: str = "self", include_inactive: bool = False
     ) -> list[BootstrapDeclaration]: ...
 
-    def list_claim_candidates(
-        self, *, subject_id: str = "self", include_inactive: bool = False
-    ) -> list[ClaimCandidate]: ...
+    def list_active_canonical_claims(
+        self, *, subject_id: str = "self", evaluation_time: datetime
+    ) -> list[CanonicalClaim]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,15 +58,6 @@ def _decision_marker(value: str) -> DecisionLabel | None:
     return DecisionLabel(match.group(1)) if match else None
 
 
-def _validity_is_active(
-    valid_from: datetime | None, valid_until: datetime | None, now: datetime
-) -> bool:
-    return scope_is_active(
-        ScopeRef(valid_from=valid_from, valid_until=valid_until),
-        now,
-    )
-
-
 def select_evidence(
     memory: MemoryReader,
     *,
@@ -81,17 +71,20 @@ def select_evidence(
     declarations, declaration_scope, declaration_stale = _rank_declarations(
         memory.list_bootstrap_declarations(subject_id=subject_id), task_tokens, scope, now
     )
-    candidates, candidate_scope, candidate_stale = _rank_candidates(
-        memory.list_claim_candidates(subject_id=subject_id), task_tokens, scope, now
+    canonical, canonical_scope, canonical_stale = _rank_canonical_claims(
+        memory.list_active_canonical_claims(subject_id=subject_id, evaluation_time=now),
+        task_tokens,
+        scope,
+        now,
     )
-    ranked = [*declarations, *candidates]
+    ranked = [*declarations, *canonical]
     ranked.sort(key=lambda item: (-item[0], -item[1].timestamp(), item[2].receipt_id))
     scored = [item for score, _, item in ranked if score > 0]
     relevant = scored[:limit]
     return SelectedEvidence(
         items=tuple(relevant),
-        wrong_scope_count=declaration_scope + candidate_scope,
-        stale_count=declaration_stale + candidate_stale,
+        wrong_scope_count=declaration_scope + canonical_scope,
+        stale_count=declaration_stale + canonical_stale,
         conflict_count=_conflict_count(scored),
     )
 
@@ -132,40 +125,34 @@ def _rank_declarations(
     return ranked, wrong_scope, stale
 
 
-def _rank_candidates(
-    candidates: list[ClaimCandidate],
+def _rank_canonical_claims(
+    claims: list[CanonicalClaim],
     task_tokens: set[str],
     scope: ScopeRef,
     now: datetime,
 ) -> tuple[list[RankedEvidence], int, int]:
     ranked: list[RankedEvidence] = []
     wrong_scope = stale = 0
-    for candidate in candidates:
-        if candidate.status != CandidateStatus.CONFIRMED:
+    for claim in claims:
+        if claim.status != CandidateStatus.CONFIRMED:
             continue
-        if candidate.claim_holder != ClaimHolder.REPRESENTED_USER:
-            continue
-        if not candidate.origin_cluster_ids:
-            continue
-        if not scope_matches(candidate.scope, scope):
+        if not scope_matches(claim.scope, scope):
             wrong_scope += 1
             continue
-        if not scope_is_active(candidate.scope, now) or not _validity_is_active(
-            candidate.valid_from, candidate.valid_until, now
-        ):
+        if not scope_is_active(claim.scope, now):
             stale += 1
             continue
-        overlap = len(task_tokens & _tokens(candidate.proposition))
+        overlap = len(task_tokens & _tokens(claim.retrieval_text))
         ranked.append(
             (
                 overlap,
-                candidate.created_at,
+                claim.created_at,
                 EvidenceItem(
-                    receipt_id=str(candidate.record_id),
-                    text=candidate.proposition,
-                    data_class=DataClass.DERIVED_IDENTITY,
-                    source_kind=f"candidate:{candidate.status.value}",
-                    decision_label=_decision_marker(candidate.proposition),
+                    receipt_id=str(claim.admission_receipt_id),
+                    text=claim.retrieval_text,
+                    data_class=claim.data_class,
+                    source_kind=f"canonical:{claim.target_layer.value}",
+                    decision_label=claim.decision_label or _decision_marker(claim.retrieval_text),
                 ),
             )
         )

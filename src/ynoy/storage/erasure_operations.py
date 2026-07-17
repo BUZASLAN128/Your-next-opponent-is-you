@@ -37,6 +37,20 @@ WITH RECURSIVE requested(value) AS (VALUES (%s)), seeds(record_id) AS (
     SELECT identity.record_id FROM ynoy.identity_candidates identity, requested
     WHERE identity.record_id::text = requested.value
     UNION
+    SELECT claim.record_id FROM ynoy.canonical_claims claim, requested
+    WHERE claim.record_id::text = requested.value
+       OR claim.admission_receipt_id::text = requested.value
+    UNION
+    SELECT link.record_id FROM ynoy.claim_source_links link, requested
+    WHERE link.record_id::text = requested.value
+       OR link.claim_id::text = requested.value
+       OR link.source_receipt_id::text = requested.value
+    UNION
+    SELECT admission.record_id FROM ynoy.claim_admission_receipts admission, requested
+    WHERE admission.record_id::text = requested.value
+       OR admission.claim_id::text = requested.value
+       OR admission.adoption_receipt_id::text = requested.value
+    UNION
     SELECT report.record_id FROM ynoy.private_reports report, requested
     WHERE report.record_id::text = requested.value
 ), targets(record_id) AS (
@@ -68,8 +82,11 @@ def target_counts(
             "bootstrap_declarations",
             "claim_candidates",
             "identity_candidates",
+            "canonical_claims",
         )
     }
+    for table in ("claim_source_links", "claim_admission_receipts"):
+        counts[table] = _canonical_dependency_count(connection, table, record_ids)
     counts["continuity_events"] = _continuity_count(connection, record_ids)
     for table in ("decision_events", "control_records"):
         counts[table] = _count_any(connection, table, "source_event_id", record_ids)
@@ -104,6 +121,7 @@ def delete_targets(connection: Connection[Row], source_id: str, record_ids: list
         (record_ids, record_ids),
     )
     _delete_primary_records(connection, record_ids)
+    _delete_canonical_records(connection, record_ids)
     connection.execute(
         """
         DELETE FROM ynoy.private_reports
@@ -141,10 +159,44 @@ def _delete_primary_records(connection: Connection[Row], record_ids: list[UUID])
     )
 
 
+def _delete_canonical_records(connection: Connection[Row], record_ids: list[UUID]) -> None:
+    connection.execute(
+        """
+        DELETE FROM ynoy.claim_admission_receipts
+        WHERE record_id = ANY(%s::uuid[]) OR claim_id = ANY(%s::uuid[])
+        """,
+        (record_ids, record_ids),
+    )
+    connection.execute(
+        """
+        DELETE FROM ynoy.claim_source_links
+        WHERE record_id = ANY(%s::uuid[]) OR claim_id = ANY(%s::uuid[])
+        """,
+        (record_ids, record_ids),
+    )
+    connection.execute(
+        "DELETE FROM ynoy.canonical_claims WHERE record_id = ANY(%s::uuid[])",
+        (record_ids,),
+    )
+
+
 def _count_any(connection: Connection[Row], table: str, column: str, record_ids: list[UUID]) -> int:
     row = connection.execute(
         f"SELECT count(*) AS count FROM ynoy.{table} WHERE {column} = ANY(%s::uuid[])",
         (record_ids,),
+    ).fetchone()
+    return int(require_row(row, f"{table} erasure count")["count"])
+
+
+def _canonical_dependency_count(
+    connection: Connection[Row], table: str, record_ids: list[UUID]
+) -> int:
+    row = connection.execute(
+        f"""
+        SELECT count(*) AS count FROM ynoy.{table}
+        WHERE record_id = ANY(%s::uuid[]) OR claim_id = ANY(%s::uuid[])
+        """,
+        (record_ids, record_ids),
     ).fetchone()
     return int(require_row(row, f"{table} erasure count")["count"])
 

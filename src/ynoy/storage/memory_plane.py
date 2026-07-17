@@ -20,30 +20,7 @@ def require_subject_plane(
             "identity_subject_busy",
             "Identity subject is being updated; retry the complete operation.",
         )
-    row = connection.execute(
-        """
-        SELECT
-          EXISTS (
-            SELECT 1 FROM ynoy.bootstrap_declarations
-            WHERE subject_id = %s AND data_class = 'D0'
-            UNION ALL
-            SELECT 1 FROM ynoy.source_events
-            WHERE scope ->> 'person_id' = %s AND data_class = 'D0'
-          ) AS has_synthetic,
-          EXISTS (
-            SELECT 1 FROM ynoy.bootstrap_declarations
-            WHERE subject_id = %s AND data_class <> 'D0'
-            UNION ALL
-            SELECT 1 FROM ynoy.claim_candidates WHERE subject_id = %s
-            UNION ALL
-            SELECT 1 FROM ynoy.source_events
-            WHERE scope ->> 'person_id' = %s AND data_class <> 'D0'
-          ) AS has_private
-        """,
-        (subject_id, subject_id, subject_id, subject_id, subject_id),
-    ).fetchone()
-    has_synthetic = bool(row and row["has_synthetic"])
-    has_private = bool(row and row["has_private"])
+    has_synthetic, has_private = _identity_plane_state(connection, subject_id)
     if data_class == DataClass.PUBLIC_SYNTHETIC and has_private:
         raise PolicyViolation(
             "synthetic_subject_contains_private_identity",
@@ -54,3 +31,43 @@ def require_subject_plane(
             "private_subject_contains_synthetic_identity",
             "Private identity data cannot enter a subject with synthetic identity records.",
         )
+
+
+def _identity_plane_state(connection: Connection[Row], subject_id: str) -> tuple[bool, bool]:
+    row = connection.execute(
+        """
+        SELECT
+          EXISTS (
+            SELECT 1 FROM ynoy.bootstrap_declarations
+            WHERE subject_id = %s AND data_class = 'D0'
+            UNION ALL
+            SELECT 1 FROM ynoy.source_events
+            WHERE scope ->> 'person_id' = %s AND data_class = 'D0'
+            UNION ALL
+            SELECT 1 FROM ynoy.canonical_claims
+            WHERE subject_id = %s AND data_class = 'D0'
+          ) AS has_synthetic,
+          EXISTS (
+            SELECT 1 FROM ynoy.bootstrap_declarations
+            WHERE subject_id = %s AND data_class <> 'D0'
+            UNION ALL
+            SELECT 1 FROM ynoy.claim_candidates WHERE subject_id = %s
+            UNION ALL
+            SELECT 1 FROM ynoy.source_events
+            WHERE scope ->> 'person_id' = %s AND data_class <> 'D0'
+            UNION ALL
+            SELECT 1 FROM ynoy.canonical_claims
+            WHERE subject_id = %s AND data_class <> 'D0'
+          ) AS has_private
+        """,
+        (
+            subject_id,
+            subject_id,
+            subject_id,
+            subject_id,
+            subject_id,
+            subject_id,
+            subject_id,
+        ),
+    ).fetchone()
+    return bool(row and row["has_synthetic"]), bool(row and row["has_private"])

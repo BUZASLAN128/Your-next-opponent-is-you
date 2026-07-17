@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
+from support.canonical_claims import confirmed_admission
 
 from ynoy.bootstrap import load_bootstrap
 from ynoy.constants import (
@@ -19,8 +20,7 @@ from ynoy.models import (
     BootstrapDeclaration,
     CandidateKind,
     CandidateStatus,
-    ClaimCandidate,
-    ClaimHolder,
+    CanonicalClaim,
     DataClass,
     DecisionLabel,
     ScopeRef,
@@ -31,7 +31,7 @@ from ynoy.reasoner import DeterministicReasoner
 @dataclass
 class FakeMemory:
     declarations: list[BootstrapDeclaration] = field(default_factory=list)
-    candidates: list[ClaimCandidate] = field(default_factory=list)
+    canonical_claims: list[CanonicalClaim] = field(default_factory=list)
 
     def list_bootstrap_declarations(
         self, *, subject_id: str = "self", include_inactive: bool = False
@@ -39,11 +39,11 @@ class FakeMemory:
         del include_inactive
         return [item for item in self.declarations if item.subject_id == subject_id]
 
-    def list_claim_candidates(
-        self, *, subject_id: str = "self", include_inactive: bool = False
-    ) -> list[ClaimCandidate]:
-        del include_inactive
-        return [item for item in self.candidates if item.subject_id == subject_id]
+    def list_active_canonical_claims(
+        self, *, subject_id: str = "self", evaluation_time: datetime
+    ) -> list[CanonicalClaim]:
+        del evaluation_time
+        return [item for item in self.canonical_claims if item.subject_id == subject_id]
 
 
 def test_zero_data_mirror_asks_one_high_value_question() -> None:
@@ -129,16 +129,14 @@ def test_same_scope_lexically_unrelated_persona_abstains_without_receipts() -> N
     assert result.question is not None
 
 
-def test_select_evidence_ignores_inactive_candidate() -> None:
-    candidate = ClaimCandidate(
-        claim_holder=ClaimHolder.REPRESENTED_USER,
-        kind=CandidateKind.PREFERENCE,
-        proposition="tenant decision:accept",
-        confidence=0.9,
-        status=CandidateStatus.INVALIDATED,
-        origin_cluster_ids=("cluster",),
+def test_select_evidence_ignores_inactive_canonical_claim() -> None:
+    _, _, admission = confirmed_admission()
+    inactive = admission.claim.model_copy(update={"status": CandidateStatus.INVALIDATED})
+    selected = select_evidence(
+        FakeMemory(canonical_claims=[inactive]),
+        task="evidence rollback",
+        scope=ScopeRef(project="synthetic-canonical"),
     )
-    selected = select_evidence(FakeMemory(candidates=[candidate]), task="tenant", scope=ScopeRef())
     assert selected.items == ()
 
 

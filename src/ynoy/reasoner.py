@@ -119,12 +119,14 @@ class DeterministicReasoner:
     is_local: bool = True
 
     def complete(self, request: ReasonerRequest) -> ReasonerResponse:
-        labels = [
-            label
-            for item in request.evidence
-            for label in DecisionLabel
-            if f"decision:{label.value}" in item.text.casefold()
-        ]
+        labels = [item.decision_label for item in request.evidence if item.decision_label]
+        if not labels:
+            labels = [
+                label
+                for item in request.evidence
+                for label in DecisionLabel
+                if f"decision:{label.value}" in item.text.casefold()
+            ]
         if not labels:
             return ReasonerResponse(
                 answer="Insufficient personal evidence for a decision prediction.",

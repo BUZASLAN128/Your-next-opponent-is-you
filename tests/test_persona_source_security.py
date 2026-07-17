@@ -1,15 +1,12 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
 from io import BytesIO
 from pathlib import Path
 
 import pytest
 
-from ynoy.cli.main import main
 from ynoy.errors import DataValidationError
-from ynoy.persona import build_persona_preview
 from ynoy.persona_source import load_adopted_persona_source
 
 
@@ -30,26 +27,6 @@ def _write_source(path: Path, item: dict[str, object]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps([item]), encoding="utf-8")
     return path
-
-
-def _run_cli(
-    arguments: Sequence[str], capsys: pytest.CaptureFixture[str]
-) -> tuple[int, dict[str, object]]:
-    exit_code = main(["--indent", "0", *arguments])
-    captured = capsys.readouterr()
-    assert captured.err == ""
-    payload = json.loads(captured.out)
-    assert isinstance(payload, dict)
-    return exit_code, payload
-
-
-def _remove_optional_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    for variable in (
-        "YNOY_DATABASE_URL",
-        "YNOY_PRIVATE_ROOT",
-        "YNOY_LOCAL_REASONER_URL",
-    ):
-        monkeypatch.delenv(variable, raising=False)
 
 
 @pytest.mark.parametrize(
@@ -129,17 +106,15 @@ def test_subject_defaults_to_scope_person_at_parser_boundary(tmp_path: Path) -> 
     assert declaration.scope.person_id == "alice"
 
 
-def test_preview_preserves_exact_statement_whitespace_from_loader(tmp_path: Path) -> None:
+def test_loader_preserves_exact_statement_whitespace(tmp_path: Path) -> None:
     statement = " \tExact declaration with whitespace. \r\n"
     item = _persona_item(synthetic=True)
     item["statement"] = statement
     source = _write_source(tmp_path / "exact-statement.json", item)
 
     declaration = load_adopted_persona_source(source, synthetic=True)[0]
-    facet = build_persona_preview((declaration,)).views[0].facets[0]
 
     assert declaration.statement.encode("utf-8") == statement.encode("utf-8")
-    assert facet.statement.encode("utf-8") == statement.encode("utf-8")
 
 
 def test_explicit_subject_scope_mismatch_fails_closed(tmp_path: Path) -> None:
@@ -208,66 +183,3 @@ def test_persona_growth_guard_reads_at_most_limit_plus_one(
         load_adopted_persona_source(source, synthetic=True)
     assert blocked.value.code == "persona_source_too_large"
     assert read_sizes == [9]
-
-
-def test_real_persona_cli_accepts_only_explicit_source_inside_private_root(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    root = tmp_path / "private-root"
-    source = _write_source(root / "persona.json", _persona_item(synthetic=False))
-    _remove_optional_environment(monkeypatch)
-
-    exit_code, payload = _run_cli(
-        ["--private-root", str(root), "persona", "preview", str(source)], capsys
-    )
-
-    assert exit_code == 0 and payload["ok"] is True
-    result = payload["result"]
-    assert isinstance(result, dict)
-    assert result["data_class"] == "D3"
-    assert result["database_used"] is False and result["provider_used"] is False
-    assert result["persistence_status"] == "not_persisted"
-
-
-def test_real_persona_cli_rejects_source_outside_private_root(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    root = tmp_path / "private-root"
-    root.mkdir()
-    source = _write_source(tmp_path / "outside.json", _persona_item(synthetic=False))
-    _remove_optional_environment(monkeypatch)
-
-    exit_code, payload = _run_cli(
-        ["--private-root", str(root), "persona", "preview", str(source)], capsys
-    )
-
-    assert exit_code == 2 and payload["ok"] is False
-    error = payload["error"]
-    assert isinstance(error, dict)
-    assert error["code"] == "private_source_outside_root"
-
-
-def test_real_git_source_is_rejected_before_parser_or_private_root_work(
-    capsys: pytest.CaptureFixture[str],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    calls: list[str] = []
-
-    def forbidden(*_: object, **__: object) -> None:
-        calls.append("called")
-        raise AssertionError("Git-contained input must fail before parser/private-root work")
-
-    _remove_optional_environment(monkeypatch)
-    monkeypatch.setattr("ynoy.cli.handlers.persona.load_adopted_persona_source", forbidden)
-    monkeypatch.setattr("ynoy.config.Settings.require_private_root", forbidden)
-    exit_code, payload = _run_cli(["persona", "preview", __file__], capsys)
-
-    assert exit_code == 2 and payload["ok"] is False
-    error = payload["error"]
-    assert isinstance(error, dict)
-    assert error["code"] == "private_root_inside_git"
-    assert calls == []

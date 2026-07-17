@@ -4,14 +4,20 @@ from collections.abc import Sequence
 
 from ynoy.errors import DataValidationError
 from ynoy.manager import build_operating_memory_seed
-from ynoy.models import AdoptedPersonaDeclaration, CandidateKind, CandidateStatus
+from ynoy.models import CandidateStatus, CanonicalClaim, PersonaStratum
 from ynoy.models.persona import PersonaFacet, PersonaPreview, PersonaView, PersonaViewName
+from ynoy.models.review_vocab import TargetLayer
 
-_VIEW_BY_KIND = {
-    CandidateKind.TRAIT: PersonaViewName.BEHAVIORAL_PATTERNS,
-    CandidateKind.VALUE: PersonaViewName.VALUES,
-    CandidateKind.NARRATIVE: PersonaViewName.AUTOBIOGRAPHICAL,
-    CandidateKind.METACOGNITION: PersonaViewName.PERSONAL_METACOGNITION,
+_VIEW_BY_STRATUM = {
+    PersonaStratum.DECISIONS_AND_POLICY: PersonaViewName.DECISIONS_AND_POLICY,
+    PersonaStratum.VALUES_AND_BELIEFS: PersonaViewName.VALUES_AND_BELIEFS,
+    PersonaStratum.GOALS_AND_CONTINUITY: PersonaViewName.GOALS_AND_CONTINUITY,
+    PersonaStratum.COMMUNICATION_AND_METACOGNITION: (
+        PersonaViewName.COMMUNICATION_AND_METACOGNITION
+    ),
+    PersonaStratum.SKILLS_NARRATIVE_AND_RELATIONSHIPS: (
+        PersonaViewName.SKILLS_NARRATIVE_AND_RELATIONSHIPS
+    ),
 }
 
 _UNKNOWNS = (
@@ -23,113 +29,86 @@ _UNKNOWNS = (
 )
 
 
-def build_persona_preview(declarations: Sequence[AdoptedPersonaDeclaration]) -> PersonaPreview:
-    """Project explicit declarations without inferring or persisting a persona."""
-    items = tuple(declarations)
-    _validate_declarations(items)
-    ordered = tuple(sorted(items, key=_declaration_key))
+def build_persona_preview(claims: Sequence[CanonicalClaim]) -> PersonaPreview:
+    """Project only active canonical persona claims without adding authority."""
+    items = tuple(claims)
+    _validate_claims(items)
+    ordered = tuple(sorted(items, key=_claim_key))
     buckets: dict[PersonaViewName, list[PersonaFacet]] = {name: [] for name in PersonaViewName}
-    scoped_objects: list[PersonaFacet] = []
-    for declaration in ordered:
-        facet = _to_facet(declaration)
-        view_name = _VIEW_BY_KIND.get(declaration.kind)
-        if view_name is None:
-            scoped_objects.append(facet)
-        else:
-            buckets[view_name].append(facet)
+    for claim in ordered:
+        facet = _to_facet(claim)
+        buckets[_VIEW_BY_STRATUM[facet.stratum]].append(facet)
     views = tuple(PersonaView(name=name, facets=tuple(buckets[name])) for name in PersonaViewName)
-    missing_views = tuple(view.name for view in views if not view.facets)
-    source_receipts = tuple(sorted({item.source_record_id for item in ordered}, key=str))
     return PersonaPreview(
         subject_id=ordered[0].subject_id,
         data_class=ordered[0].data_class,
-        source_receipts=source_receipts,
-        declaration_count=len(ordered),
+        admission_receipts=tuple(sorted({item.admission_receipt_id for item in ordered}, key=str)),
+        source_link_ids=tuple(
+            sorted({link_id for item in ordered for link_id in item.source_link_ids}, key=str)
+        ),
+        claim_count=len(ordered),
         views=views,
-        scoped_objects=tuple(scoped_objects),
-        missing_views=missing_views,
+        missing_views=tuple(view.name for view in views if not view.facets),
         operating_memory=build_operating_memory_seed(),
         unknowns=_UNKNOWNS,
     )
 
 
-def _validate_declarations(declarations: tuple[AdoptedPersonaDeclaration, ...]) -> None:
-    if not declarations:
+def _validate_claims(claims: tuple[CanonicalClaim, ...]) -> None:
+    if not claims:
         raise DataValidationError(
-            "persona_declarations_required",
-            "Persona preview requires at least one explicit declaration.",
+            "canonical_persona_claims_required",
+            "Persona preview requires at least one active canonical persona claim.",
         )
-    if any(not isinstance(item, AdoptedPersonaDeclaration) for item in declarations):
+    if any(not isinstance(item, CanonicalClaim) for item in claims):
         raise DataValidationError(
-            "persona_adopted_declaration_required",
-            "Persona preview accepts explicitly adopted persona declarations only.",
+            "canonical_persona_claim_required",
+            "Persona preview accepts canonical claims only.",
         )
-    _validate_declaration_content(declarations)
-    _validate_declaration_set(declarations)
-
-
-def _validate_declaration_content(
-    declarations: tuple[AdoptedPersonaDeclaration, ...],
-) -> None:
-    if any(not item.subject_id.strip() for item in declarations):
+    if any(
+        item.status != CandidateStatus.CONFIRMED
+        or item.target_layer != TargetLayer.PERSONA_CANDIDATE
+        or item.persona_kind is None
+        or item.persona_stratum is None
+        for item in claims
+    ):
         raise DataValidationError(
-            "persona_subject_required",
-            "Persona preview declarations require a non-empty subject.",
+            "canonical_persona_claim_inactive",
+            "Persona preview accepts active classified persona claims only.",
         )
-    if any(not item.source_name.strip() for item in declarations):
-        raise DataValidationError(
-            "persona_source_required",
-            "Persona preview declarations require a named source.",
-        )
-    if any(not item.statement.strip() for item in declarations):
-        raise DataValidationError(
-            "persona_statement_required",
-            "Persona preview declarations require a non-empty statement.",
-        )
-
-
-def _validate_declaration_set(declarations: tuple[AdoptedPersonaDeclaration, ...]) -> None:
-    if any(item.status != CandidateStatus.CONFIRMED for item in declarations):
-        raise DataValidationError(
-            "persona_inactive_declaration",
-            "Persona preview accepts confirmed declarations only.",
-        )
-    if len({item.subject_id for item in declarations}) != 1:
+    if len({item.subject_id for item in claims}) != 1:
         raise DataValidationError(
             "persona_subject_mismatch",
-            "Persona preview cannot combine declarations for different subjects.",
+            "Persona preview cannot combine canonical claims for different subjects.",
         )
-    if len({item.data_class for item in declarations}) != 1:
+    if len({item.data_class for item in claims}) != 1:
         raise DataValidationError(
             "persona_data_class_mismatch",
-            "Persona preview cannot combine public synthetic and private identity data.",
+            "Persona preview cannot combine synthetic and private identity planes.",
         )
-    record_ids = {item.record_id for item in declarations}
-    if len(record_ids) != len(declarations):
+    if len({item.record_id for item in claims}) != len(claims):
         raise DataValidationError(
-            "persona_duplicate_declaration",
-            "Persona preview requires unique declaration records.",
+            "persona_duplicate_claim",
+            "Persona preview requires unique canonical claim records.",
         )
 
 
-def _declaration_key(declaration: AdoptedPersonaDeclaration) -> tuple[str, str]:
-    return str(declaration.source_record_id), str(declaration.record_id)
+def _claim_key(claim: CanonicalClaim) -> tuple[str, str]:
+    return str(claim.admission_receipt_id), str(claim.record_id)
 
 
-def _to_facet(declaration: AdoptedPersonaDeclaration) -> PersonaFacet:
+def _to_facet(claim: CanonicalClaim) -> PersonaFacet:
+    if claim.persona_kind is None or claim.persona_stratum is None:
+        raise AssertionError("validated canonical persona claim lost classification")
     return PersonaFacet(
-        record_id=declaration.record_id,
-        source_record_id=declaration.source_record_id,
-        source_name=declaration.source_name,
-        subject_id=declaration.subject_id,
-        speaker=declaration.speaker,
-        claim_holder=declaration.claim_holder,
-        adopted=declaration.adopted,
-        evidence_plane=declaration.evidence_plane,
-        kind=declaration.kind,
-        statement=declaration.statement,
-        scope=declaration.scope,
-        decision_label=declaration.decision_label,
-        status=CandidateStatus.CONFIRMED,
-        data_class=declaration.data_class,
+        record_id=claim.record_id,
+        admission_receipt_id=claim.admission_receipt_id,
+        source_link_ids=claim.source_link_ids,
+        subject_id=claim.subject_id,
+        kind=claim.persona_kind,
+        stratum=claim.persona_stratum,
+        statement=claim.literal_statement,
+        scope=claim.scope,
+        decision_label=claim.decision_label,
+        data_class=claim.data_class,
     )

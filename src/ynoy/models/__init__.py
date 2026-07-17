@@ -19,6 +19,13 @@ from ynoy.models.benchmark import (
     BenchmarkRun,
     Prediction,
 )
+from ynoy.models.canonical import (
+    CanonicalClaim,
+    CanonicalClaimAdmission,
+    ClaimAdmissionReceipt,
+    ClaimSourceLink,
+    PersonaStratum,
+)
 from ynoy.models.codex_inventory import (
     CodexInventoryEntry,
     CodexMetadataInventory,
@@ -163,11 +170,15 @@ __all__ = [
     "BootstrapDeclaration",
     "CandidateKind",
     "CandidateStatus",
+    "CanonicalClaim",
+    "CanonicalClaimAdmission",
+    "ClaimAdmissionReceipt",
     "ClaimCandidate",
     "ClaimHolder",
     "ClaimModality",
     "ClaimReviewDecision",
     "ClaimReviewEvent",
+    "ClaimSourceLink",
     "CodexContentPilotSummary",
     "CodexInventoryEntry",
     "CodexMetadataInventory",
@@ -234,6 +245,7 @@ __all__ = [
     "PersonaProposalReviewDraft",
     "PersonaProposalReviewReceipt",
     "PersonaProposalRunReceipt",
+    "PersonaStratum",
     "PersonaStudyManifest",
     "PersonaView",
     "PersonaViewName",

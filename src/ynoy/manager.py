@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from ynoy.core import advisor_suggest
 from ynoy.models import (
     BootstrapDeclaration,
-    ClaimCandidate,
+    CanonicalClaim,
     ManagerStartResult,
     OperatingMemorySeed,
     OperatingRule,
@@ -19,10 +21,10 @@ class _EmptyPersonaMemory:
         del subject_id, include_inactive
         return []
 
-    def list_claim_candidates(
-        self, *, subject_id: str = "self", include_inactive: bool = False
-    ) -> list[ClaimCandidate]:
-        del subject_id, include_inactive
+    def list_active_canonical_claims(
+        self, *, subject_id: str = "self", evaluation_time: datetime
+    ) -> list[CanonicalClaim]:
+        del subject_id, evaluation_time
         return []
 
 

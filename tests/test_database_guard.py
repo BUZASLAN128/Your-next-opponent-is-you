@@ -232,3 +232,17 @@ def test_restricted_runtime_rejects_protected_table_owner(
         database.require_restricted_runtime()
 
     assert blocked.value.code == "database_superuser_blocked_for_real_data"
+
+
+def test_runtime_grants_are_explicit_for_canonical_tables() -> None:
+    script = (Path(__file__).parents[1] / "scripts" / "grant-runtime-role.sql").read_text(
+        encoding="utf-8"
+    )
+    normalized = " ".join(script.upper().split())
+
+    assert "ALL TABLES" not in normalized
+    assert "ALTER DEFAULT PRIVILEGES" not in normalized
+    assert "YNOY.CANONICAL_CLAIMS" in normalized
+    assert "YNOY.CLAIM_SOURCE_LINKS" in normalized
+    assert "YNOY.CLAIM_ADMISSION_RECEIPTS" in normalized
+    assert "REVOKE UPDATE, TRUNCATE ON TABLE" in normalized

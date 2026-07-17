@@ -1,9 +1,9 @@
 # Research Progress and Gap Assessment
 
 > Date: 2026-07-15
-> Updated: 2026-07-16
-> Status: deterministic correction lifecycle and proposal-only local extractor
-> implemented; first bounded private user-review chain replayed
+> Updated: 2026-07-17
+> Status: canonical receipt-bound inference apparatus implemented; real corpus
+> and persona benchmark remain unrun
 > Authority: repository source, local tests, confirmed decisions, and the
 > living convergence model; no authority to define user truth
 
@@ -36,18 +36,19 @@ the [convergence map](convergence-map.md). It distinguishes:
 3. a real-user scientific result.
 
 A first bounded observation now exists in the third category, but it is one
-selected ten-atom correction chain rather than a persona evaluation. No
+selected private correction chain rather than a persona evaluation. No
 conversation export, real annotation set, real-person temporal holdout, or
 user-audited fidelity result has been collected or run.
 The V1, V1.1 atomic-review, and V1.2 decision-lifecycle checkpoints are
 represented in the current public snapshot and draft PR 1. A first user-facing
 declared-only calibration was reproduced in memory. One fresh private review
-produced ten proposal-only atoms; the user reviewed all ten through two linked
-canonical private receipts. This creates correction-loop evidence, not
+produced a bounded proposal-only set; the user reviewed the selected set through
+linked canonical private receipts. This creates correction-loop evidence, not
 evidence that the system represents the person accurately.
 
-The final local engineering evidence is 272 passing tests with 82.00 percent
-measured branch coverage, including real loopback PostgreSQL integration. That
+The current local engineering evidence is 438 passing tests with 85.04 percent
+measured branch coverage, including real loopback PostgreSQL integration; one
+environment-specific filesystem case is skipped. That
 number measures implementation regression coverage; it is not a persona
 accuracy score and does not change the absence of real-user evidence.
 
@@ -56,10 +57,10 @@ accuracy score and does not change the absence of real-user evidence.
 | Layer | Implemented apparatus | Persona evidence | Main gap | Next discriminating check |
 | --- | --- | --- | --- | --- |
 | 0 — Private ownership and governance | Git-boundary checks, explicit outside-Git private-root checks, bounded archive handling, D0-D5 policy, transactional D0/private subject-plane isolation, erasure planning, and append-only audit contracts | One checksum-verified local Codex metadata manifest exists outside Git; a later bounded parser run retained no content or claims beyond process exit | Durable ownership proof, third-party exclusion, retention, backup, artifact, and deletion behavior remain untested | Approve the evidence-window governance contract before any content is retained; treat an official account export as a separate source |
-| 1 — Source evidence plane | Speaker, claim holder, source authority, branch, time, scope, origin, review, and correction receipt types exist; a memory-only Codex parser preserves structural speaker, repeated source families, and explicit parent-thread metadata without inventing message parents | One current-thread response has a private source, review, two linked correction receipts, deterministic zero-pending replay, and a 26-record deletion projection; two bounded parser replays matched without retaining content | Quote, pasted text, active-branch semantics, outcome, durable correction, signed integrity, evidence-window reconstruction, and real deletion remain untested | Preserve these checkpoints, then run the governed branch-aware evidence-window and deletion round-trip pilots before durable ingestion |
-| 2 — Interpretation and identity candidates | One receipt can produce multiple proposed atoms; an attested loopback Qwen3-8B path can propose exact-segment candidates; eight per-atom correction actions, partial review, scope/time filtering, target-layer partitioning, and explicit abstention exist | The historical 20 proposals remain uncorrected; all ten fresh proposals were decided through six splits, three rejections, and one confirmation | No randomized labeled extractor benchmark, annotation-agreement study, behavior-based trait evidence, semantic paraphrase conflict detector, or durable candidate | Measure per-action correction burden and agreement on a larger randomized, repeat-labeled set |
+| 1 — Source evidence plane | Speaker, claim holder, source authority, branch, time, scope, origin, review, and correction receipt types exist; a memory-only Codex parser preserves structural speaker, repeated source families, and explicit parent-thread metadata without inventing message parents | One current-thread response has a private source, linked correction receipts, deterministic complete replay, and a deletion projection; bounded parser replays matched without retaining content | Quote, pasted text, active-branch semantics, outcome, durable correction, signed integrity, evidence-window reconstruction, and real deletion remain untested | Preserve these checkpoints, then run the governed branch-aware evidence-window and deletion round-trip pilots before durable ingestion |
+| 2 — Interpretation and identity candidates | One receipt can produce multiple proposed atoms; an attested loopback Qwen3-8B path can propose exact-segment candidates; eight per-atom correction actions, partial review, scope/time filtering, target-layer partitioning, and explicit abstention exist | The historical public control slots remain uncorrected; one fresh bounded review reached a complete state while exact outcome counts remain private | No randomized labeled extractor benchmark, annotation-agreement study, behavior-based trait evidence, semantic paraphrase conflict detector, or durable candidate | Measure per-action correction burden and agreement on a larger randomized, repeat-labeled set |
 | 3 — Consolidation and promotion | Deterministic supersession history and no-promotion core-review requests exist; deletion dependencies can be projected without deletion | None | No consolidation experiment and intentionally no automatic core promotion | Replay declaration-only, no-promotion, and later evidence-gated policies; compare false promotion and scope leakage |
-| 4 — Durable subconscious core | PostgreSQL tables and readers support synthetic declaration and candidate experiments; real declaration persistence is blocked when adoption provenance would be lost | None | No learned or validated durable core, no provenance-preserving real declaration schema, and no proposed-versus-confirmed ablation | First decide and test a lossless adoption receipt or schema; then compare declarations-only, confirmed-only, and proposed-plus-confirmed arms on the same sealed cases |
+| 4 — Durable subconscious core | PostgreSQL persists receipt-bound canonical claims and exact source links; inference and five-strata persona preview read only active canonical claims; synthetic admit/retrieve/supersede/erase is verified | None | No lossless real corpus, user-adjudicated canonical set, learned core, or real temporal ablation | Run governed ingestion and compare simple baselines with the structured canonical core on one sealed target-isolated holdout |
 | 5 — Conscious workspace and mission | Data-free Manager, scoped retrieval, Mirror and Advisor envelopes, and a non-personal operating seed exist; zero-token-overlap fallback was removed | No continuity evidence | No mission stack, restart continuity, session learning, or result-to-lesson loop | Run adversarial retrieval cases for unrelated, wrong-scope, stale, and contradictory evidence before adding mission persistence |
 | 6 — Reasoning modes | Mirror and Advisor exist; a pinned Qwen3-8B local endpoint has live synthetic extraction evidence; Copilot, Learner, and Delegate remain absent | No real-user mode result | The live model has not been evaluated as a reasoner, its extraction quality is unknown, and no smaller-model comparison exists | Build a frozen labeled synthetic extraction suite, then compare Qwen3-8B with one pinned 1–3B proposal-only candidate |
 | 7 — Authority and effects | Canonical authority is none, action status is not performed, receipt is null, and no send, execute, or delegate surface exists | Not applicable | Safe delegation is not implemented; current safety comes partly from absence of capability | Keep actions absent until persona value is demonstrated; later design authority as an independent experiment |
@@ -91,7 +92,7 @@ accuracy score and does not change the absence of real-user evidence.
 - no durable content-bearing corpus inventory or annotation set;
 - no branch-aware annotation guide or agreement measurement;
 - no labeled extraction-quality or smaller-model comparison;
-- only one selected ten-atom interaction has a complete two-receipt user
+- only one selected bounded interaction has a complete linked-receipt user
   correction chain;
 - no consolidation or stability experiment;
 - no durable learned core;
@@ -206,21 +207,18 @@ that extended beyond its cited source text and required correction. No
 validated persona evidence was created.
 
 The first genuine correction batch also exposed an assistant procedure error:
-five actions were applied before approval. The user later approved A1-A5 and
-chose to retain the result. The private receipt produced three split and two
-rejected outcomes, preserved five pending atoms, and replayed twice to the same
-state. The later ratification does not make the initial execution
+a bounded set of actions was applied before approval. The user later approved
+that set and chose to retain the result. The private receipt preserved a
+partial state and replayed deterministically. The later ratification does not make the initial execution
 pre-authorized. This is a useful negative signal about both the selected
 extractor batch and the authorization protocol, but it is too small and
 selectively chosen to estimate model quality or persona fidelity.
 
-The user then approved the remaining five bounded actions through
-a second receipt linked to the first. The complete state contains six split,
-three rejected, one confirmed, and zero pending source atoms. Two full-chain
-replays agreed; the 26-record deletion closure remained projection-only. Nine
-of ten selected atoms required splitting or rejection, which strengthens the
-correction-burden warning but still does not provide a randomized precision or
-persona-fidelity estimate.
+The user then approved the remaining bounded actions through a receipt linked
+to its predecessor. The selected state completed and full-chain replays
+agreed; deletion closure remained projection-only. The review showed material
+correction burden, but its exact distribution remains private and it does not
+provide a randomized precision or persona-fidelity estimate.
 
 ## Recommended Near-Term Sequence
 

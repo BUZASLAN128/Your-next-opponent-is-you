@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 
-import pytest
+from support.canonical_claims import NOW, confirmed_admission
 
 from ynoy.core import mirror_predict, select_evidence
 from ynoy.models import (
     BootstrapDeclaration,
     CandidateKind,
-    CandidateStatus,
-    ClaimCandidate,
-    ClaimHolder,
+    CanonicalClaim,
     DataClass,
     DecisionLabel,
     ScopeRef,
@@ -22,7 +20,7 @@ from ynoy.reasoner import DeterministicReasoner
 @dataclass
 class FakeMemory:
     declarations: list[BootstrapDeclaration] = field(default_factory=list)
-    candidates: list[ClaimCandidate] = field(default_factory=list)
+    canonical_claims: list[CanonicalClaim] = field(default_factory=list)
 
     def list_bootstrap_declarations(
         self, *, subject_id: str = "self", include_inactive: bool = False
@@ -30,66 +28,46 @@ class FakeMemory:
         del include_inactive
         return [item for item in self.declarations if item.subject_id == subject_id]
 
-    def list_claim_candidates(
-        self, *, subject_id: str = "self", include_inactive: bool = False
-    ) -> list[ClaimCandidate]:
-        del include_inactive
-        return [item for item in self.candidates if item.subject_id == subject_id]
+    def list_active_canonical_claims(
+        self, *, subject_id: str = "self", evaluation_time: datetime
+    ) -> list[CanonicalClaim]:
+        del evaluation_time
+        return [item for item in self.canonical_claims if item.subject_id == subject_id]
 
 
-def test_only_confirmed_represented_user_candidate_can_support_prediction() -> None:
-    candidate = ClaimCandidate(
-        claim_holder=ClaimHolder.REPRESENTED_USER,
-        kind=CandidateKind.PREFERENCE,
-        proposition="For tenant isolation changes decision:reject",
-        confidence=0.8,
-        status=CandidateStatus.CONFIRMED,
-        scope=ScopeRef(project="pilot"),
-        origin_cluster_ids=("synthetic-cluster",),
-    )
+def test_only_canonical_admission_can_support_prediction() -> None:
+    _, _, admission = confirmed_admission(decision_label=DecisionLabel.REJECT)
     result = mirror_predict(
-        FakeMemory(candidates=[candidate]),
-        task="Review tenant isolation changes",
-        scope=ScopeRef(project="pilot"),
+        FakeMemory(canonical_claims=[admission.claim]),
+        task="Review evidence-backed rollback changes",
+        scope=ScopeRef(project="synthetic-canonical"),
         reasoner=DeterministicReasoner(),
     )
+
     assert result.answer == f"Predicted decision: {DecisionLabel.REJECT.value}."
     assert result.personal_fit == "known"
-    assert result.evidence_receipts == (str(candidate.record_id),)
+    assert result.evidence_receipts == (str(admission.receipt.record_id),)
 
 
-@pytest.mark.parametrize("holder", [ClaimHolder.ASSISTANT, ClaimHolder.THIRD_PARTY])
-def test_non_user_or_proposed_candidate_is_not_mirror_evidence(holder: ClaimHolder) -> None:
-    candidate = ClaimCandidate(
-        claim_holder=holder,
-        kind=CandidateKind.PREFERENCE,
-        proposition="tenant decision:reject",
-        confidence=1.0,
-        status=CandidateStatus.PROPOSED,
-        origin_cluster_ids=("synthetic-cluster",),
+def test_legacy_candidate_reader_is_never_called() -> None:
+    class PoisonLegacyMemory(FakeMemory):
+        def list_claim_candidates(self, **_: object) -> list[object]:
+            raise AssertionError("legacy claim candidates cannot feed Mirror")
+
+    selected = select_evidence(
+        PoisonLegacyMemory(), task="tenant", scope=ScopeRef(project="synthetic-canonical")
     )
-
-    selected = select_evidence(FakeMemory(candidates=[candidate]), task="tenant", scope=ScopeRef())
 
     assert selected.items == ()
 
 
-def test_future_candidate_and_scope_are_excluded_and_disclosed() -> None:
-    future = datetime.now(UTC) + timedelta(days=1)
-    candidate = ClaimCandidate(
-        claim_holder=ClaimHolder.REPRESENTED_USER,
-        kind=CandidateKind.PREFERENCE,
-        proposition="tenant decision:reject",
-        confidence=1.0,
-        status=CandidateStatus.CONFIRMED,
-        valid_from=future,
-        origin_cluster_ids=("synthetic-cluster",),
-    )
+def test_future_canonical_claim_is_excluded_and_disclosed() -> None:
+    _, _, admission = confirmed_admission(valid_from=NOW + timedelta(days=1))
 
     result = mirror_predict(
-        FakeMemory(candidates=[candidate]),
-        task="tenant",
-        scope=ScopeRef(),
+        FakeMemory(canonical_claims=[admission.claim]),
+        task="evidence rollback",
+        scope=ScopeRef(project="synthetic-canonical"),
         reasoner=DeterministicReasoner(),
     )
 
@@ -97,7 +75,24 @@ def test_future_candidate_and_scope_are_excluded_and_disclosed() -> None:
     assert "stale_evidence_was_excluded" in result.unknowns
 
 
-def test_conflicting_active_declarations_abstain_without_reasoner_call() -> None:
+def test_conflicting_active_canonical_claims_abstain() -> None:
+    _, _, reject = confirmed_admission(offset=1, decision_label=DecisionLabel.REJECT)
+    _, _, accept = confirmed_admission(offset=2, decision_label=DecisionLabel.ACCEPT)
+
+    result = mirror_predict(
+        FakeMemory(canonical_claims=[reject.claim, accept.claim]),
+        task="evidence rollback",
+        scope=ScopeRef(project="synthetic-canonical"),
+        reasoner=DeterministicReasoner(),
+    )
+
+    assert result.personal_fit == "unknown"
+    assert result.confidence == 0.0
+    assert result.evidence_receipts == ()
+    assert "conflicting_active_decisions" in result.unknowns
+
+
+def test_conflicting_synthetic_bootstrap_declarations_abstain() -> None:
     memory = FakeMemory(
         declarations=[
             BootstrapDeclaration(
@@ -127,44 +122,5 @@ def test_conflicting_active_declarations_abstain_without_reasoner_call() -> None
     )
 
     assert result.personal_fit == "unknown"
-    assert result.confidence == 0.0
     assert result.evidence_receipts == ()
-    assert "conflicting_active_decisions" in result.unknowns
-
-
-def test_conflict_outside_evidence_limit_still_abstains() -> None:
-    now = datetime.now(UTC)
-    declarations = [
-        BootstrapDeclaration(
-            kind=CandidateKind.PREFERENCE,
-            statement="tenant decision:accept",
-            decision_label=DecisionLabel.ACCEPT,
-            source_name="fixture.json",
-            data_class=DataClass.PUBLIC_SYNTHETIC,
-            synthetic=True,
-            created_at=now + timedelta(seconds=index),
-        )
-        for index in range(12)
-    ]
-    declarations.append(
-        BootstrapDeclaration(
-            kind=CandidateKind.PREFERENCE,
-            statement="tenant decision:reject",
-            decision_label=DecisionLabel.REJECT,
-            source_name="fixture.json",
-            data_class=DataClass.PUBLIC_SYNTHETIC,
-            synthetic=True,
-            created_at=now - timedelta(days=1),
-        )
-    )
-
-    result = mirror_predict(
-        FakeMemory(declarations=declarations),
-        task="tenant",
-        scope=ScopeRef(),
-        reasoner=DeterministicReasoner(),
-    )
-
-    assert result.personal_fit == "unknown"
-    assert result.confidence == 0.0
     assert "conflicting_active_decisions" in result.unknowns
