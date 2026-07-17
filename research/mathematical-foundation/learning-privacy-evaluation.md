@@ -42,14 +42,14 @@ valid closure proof.
 For data class $d$ and destination $z$, V1 permits adapter egress only when
 
 $$
-\operatorname{Egress}(d,z)=I[d=D0]I[z\in\mathcal{Z}_{\mathrm{allowed}}].
+\mathrm{Egress}(d,z)=I[d=D0]I[z\in\mathcal{Z}_{\mathrm{allowed}}].
 $$
 
 For an external adapter, private non-interference requires
 
 $$
-\operatorname{Request}_{\mathrm{external}}(D0,D_{1:5})
-=\operatorname{Request}_{\mathrm{external}}(D0,\varnothing).
+\mathrm{Request}_{\mathrm{external}}(D0,D_{1:5})
+=\mathrm{Request}_{\mathrm{external}}(D0,\varnothing).
 $$
 
 In words: adding private identity data must not change bytes sent to an
@@ -68,9 +68,9 @@ $$
 and
 
 $$
-\operatorname{Clusters}(\mathcal{D})
+\mathrm{Clusters}(\mathcal{D})
 \cap
-\operatorname{Clusters}(\mathcal{S})=\varnothing.
+\mathrm{Clusters}(\mathcal{S})=\varnothing.
 $$
 
 The predictor may see no hidden target, future correction, later outcome, or

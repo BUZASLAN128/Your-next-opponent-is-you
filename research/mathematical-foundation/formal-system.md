@@ -52,7 +52,7 @@ interpretation look original.
 A claim may enter represented-user memory only when every hard term is true:
 
 $$
-\operatorname{Admit}(c)=
+\mathrm{Admit}(c)=
 I_{\mathrm{user}}
 I_{\mathrm{holder}}
 I_{\mathrm{adopted}}
@@ -82,12 +82,12 @@ confidence, or recency cannot replace a missing factor.
 For a query $q$, a canonical claim is applicable only when
 
 $$
-\operatorname{Use}(c,q)=
-\operatorname{Admit}(c)
+\mathrm{Use}(c,q)=
+\mathrm{Admit}(c)
 \cdot I[s_c\preceq s_q]
 \cdot I[b_c\le t_q\le e_c]
 \cdot I[u_c=u_q]
-\cdot I[\neg\operatorname{revoked}(c)].
+\cdot I[\neg\mathrm{revoked}(c)].
 $$
 
 Here $s_c\preceq s_q$ means that the stored scope is compatible with, and not
@@ -97,7 +97,7 @@ Missing bounds are explicit unbounded values, not inferred defaults.
 The eligible set is
 
 $$
-\mathcal{E}(q)=\{c\in C_t:\operatorname{Use}(c,q)=1\}.
+\mathcal{E}(q)=\{c\in C_t:\mathrm{Use}(c,q)=1\}.
 $$
 
 ## 4. Supersession and conflict
@@ -127,11 +127,11 @@ Eligible claims may be ordered by a candidate feature vector
 
 $$
 \rho(c,q)=
-(\operatorname{semantic}(c,q),
-\operatorname{scopeSpecificity}(c,q),
-\operatorname{temporalFit}(c,q),
-\operatorname{outcomeSupport}(c),
-\operatorname{evidenceQuality}(c)).
+(\mathrm{semantic}(c,q),
+\mathrm{scopeSpecificity}(c,q),
+\mathrm{temporalFit}(c,q),
+\mathrm{outcomeSupport}(c),
+\mathrm{evidenceQuality}(c)).
 $$
 
 No scalar weights are confirmed. A weighted score
@@ -178,9 +178,9 @@ The hard selection gate is
 $$
 g(q)=I[\mathcal{E}(q)\ne\varnothing]
 I[\mathcal{K}(q)=\varnothing]
-I[\operatorname{provenanceComplete}]
-I[\operatorname{scopeSafe}]
-I[\operatorname{calibratedConfidence}\ge\theta].
+I[\mathrm{provenanceComplete}]
+I[\mathrm{scopeSafe}]
+I[\mathrm{calibratedConfidence}\ge\theta].
 $$
 
 $\theta$ is not selected yet. It must be calibrated before a real sealed run.
@@ -188,7 +188,7 @@ $\theta$ is not selected yet. It must be calibrated before a real sealed run.
 Coverage and selective risk are
 
 $$
-\operatorname{Coverage}(g)=\mathbb{E}[g(q)]
+\mathrm{Coverage}(g)=\mathbb{E}[g(q)]
 $$
 
 and
@@ -211,9 +211,9 @@ generic proposal from the replaceable reasoner, but its output is marked as
 non-personal:
 
 $$
-\operatorname{PersonaConfidence}_{0}=0,
+\mathrm{PersonaConfidence}_{0}=0,
 \qquad
-\operatorname{AdvisorCapability}_{0}\ge 0.
+\mathrm{AdvisorCapability}_{0}\ge 0.
 $$
 
 Generic capability and evidence of personal fit are independent axes.
@@ -239,7 +239,7 @@ but must not present $a^*$ as what the user would have chosen.
 Prediction is not permission. An action may execute only when
 
 $$
-\operatorname{Execute}(a)=
+\mathrm{Execute}(a)=
 I_{\mathrm{capability}}
 I_{\mathrm{explicitGrant}}
 I_{\mathrm{scope}}

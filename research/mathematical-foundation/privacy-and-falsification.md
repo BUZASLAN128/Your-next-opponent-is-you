@@ -52,7 +52,7 @@ Let $G$ be the set of Git-visible artifacts. Then
 
 $$
 \forall x\in G:\quad
-\operatorname{class}(x)\in\{D0,\text{public source},\text{redacted category}\}.
+\mathrm{class}(x)\in\{D0,\text{public source},\text{redacted category}\}.
 $$
 
 Raw corpus, derived identity, private task content, credentials, third-party
@@ -62,9 +62,9 @@ not belong to $G$.
 ### P2 — No external private egress
 
 $$
-\forall x:\operatorname{class}(x)\in\{D1,D2,D3,D4,D5\}
+\forall x:\mathrm{class}(x)\in\{D1,D2,D3,D4,D5\}
 \Rightarrow
-\operatorname{externalSend}(x)=0.
+\mathrm{externalSend}(x)=0.
 $$
 
 Loopback is a transport property, not proof of provider locality. Locality and
@@ -73,11 +73,11 @@ artifact identity need independent attestation.
 ### P3 — Provenance completeness
 
 $$
-\operatorname{retrievableIdentity}(c)=1
+\mathrm{retrievableIdentity}(c)=1
 \Rightarrow
-\operatorname{source}(c)\land
-\operatorname{adoption}(c)\land
-\operatorname{receiptChain}(c).
+\mathrm{source}(c)\land
+\mathrm{adoption}(c)\land
+\mathrm{receiptChain}(c).
 $$
 
 If any term is missing, the claim may be inspected as a quarantined proposal
@@ -86,9 +86,9 @@ but cannot support Mirror.
 ### P4 — Deletion completeness
 
 $$
-\operatorname{DeleteSuccess}(s)=1
+\mathrm{DeleteSuccess}(s)=1
 \Rightarrow
-\forall v\in D^+(s),\ \operatorname{active}(v)=0.
+\forall v\in D^+(s),\ \mathrm{active}(v)=0.
 $$
 
 This includes derived reports, embeddings, claims, continuity edges, indexes,
@@ -97,7 +97,7 @@ and private presentation artifacts.
 ### P5 — Authority independence
 
 $$
-\frac{\partial\operatorname{Authority}}{\partial\operatorname{PersonaFit}}=0.
+\frac{\partial\mathrm{Authority}}{\partial\mathrm{PersonaFit}}=0.
 $$
 
 This notation states an architectural independence requirement: increasing

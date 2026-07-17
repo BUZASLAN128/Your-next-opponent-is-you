@@ -2209,3 +2209,17 @@ and broken lineage. The complete local run passed 438 tests with 85.04 percent
 branch coverage; one environment-specific filesystem case was skipped. This
 verifies apparatus behavior only. No real corpus was read, no real persona was
 produced, and no benchmark quality claim is made.
+
+## Event 046 — Repair GitHub Mathematical Rendering
+
+### User Direction
+
+The user reported that some equations in the public GitHub view displayed
+errors and asked for the rendered files to be inspected and corrected.
+
+### Verified Cause and Result
+
+The live GitHub page reported that the `operatorname` macro was not allowed.
+All occurrences in the mathematical-foundation documents were replaced with
+the supported `mathrm` form without changing the equations' semantics. The
+result remains a research specification, not proof of persona fidelity.
