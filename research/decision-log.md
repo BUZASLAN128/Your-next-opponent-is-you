@@ -1058,6 +1058,40 @@ from silently becoming product authority.
   boundary, runtime owner, source/test implementation, schema, dependency,
   corpus, model, provider, action capability, commit, or push is selected.
 
+### D-058 — Implement the V1.8 formal runtime contract
+
+- **Date:** 2026-07-18
+- **Status:** Implemented deterministic and synthetic runtime checkpoint
+- **User direction:** The user explicitly approved the V1.8 plan, including
+  completing the existing corpus/vault package, integrating the reviewed
+  mathematical research, implementing all 40 mandatory contract tests, and
+  publishing green checkpoints to the existing feature branch and draft pull
+  request without merging.
+- **Decision:** Move the reviewed scope, identity, conflict, supersession,
+  judgment-basis, adoption, append, authorization, egress, erasure,
+  parameter-isolation, calibration, and matched-coverage contracts into
+  deterministic runtime owners. Models remain proposal or ranking producers
+  and cannot select basis, adoption, authorization, promotion, or action.
+- **Implemented safety boundary:** Private adoption fails closed without a real
+  authenticator; the append proof is in-memory only; V1 private state produces
+  no external call trace; erasure reports only local or partial results with
+  `universal_success=false`; D1–D5 cannot influence parameter updates; and
+  numeric comparison values are required frozen inputs rather than defaults.
+- **Observed validation:** All 40 mandatory test names are present. The final
+  runtime checkpoint passed 498 tests with one qualified skip and 85.46 percent
+  branch coverage, plus lint, formatting, strict typing, compilation, source
+  limits, and whitespace checks. PostgreSQL integration used only the
+  disposable loopback test database.
+- **Privacy consequence:** No new real corpus, private fixture, personal
+  database migration, model/provider call, credential, machine locator, or
+  identity-bearing aggregate was added to Git.
+- **Non-decision:** No real authenticator, persistent append store,
+  cross-restart tombstone fence, independent producer attestor, backup boundary,
+  unlearning method, timing-observer guarantee, baseline winner, calibration
+  mapping, numeric threshold, automatic promotion, action capability, merge,
+  or persona-quality claim is selected or established.
+- **Durable record:** [V1.8 formal runtime conformance record](v1-8-runtime-record-2026-07-18.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

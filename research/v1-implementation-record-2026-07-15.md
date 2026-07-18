@@ -4,6 +4,11 @@
 > Status: implemented prototype; synthetic validation only
 > Authority: repository source, local runtime observations, and explicit user
 > decisions recorded in D-025 through D-033
+>
+> Update: the later deterministic formal-runtime checkpoint is recorded in
+> [V1.8 Formal Runtime Conformance Record](v1-8-runtime-record-2026-07-18.md).
+> That record supersedes this file's test counts and formal-safety status, but
+> not its historical V1 scope or scientific limitations.
 
 ## Objective
 

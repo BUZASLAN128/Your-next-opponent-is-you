@@ -2346,3 +2346,63 @@ The numeric comparison specification, calibration mapping and threshold,
 primary baseline set, cluster estimand, independent authenticator, append-event
 policy, producer-universe attestation mechanism, recovery/backup boundary,
 timing observer, and all runtime owners remain open or separately gated.
+
+## Event 050 — Implement V1.8 Formal Runtime Conformance
+
+### User Direction
+
+The user explicitly authorized the complete V1.8 implementation plan. The
+approved sequence was to freeze the existing corpus/vault work, integrate the
+reviewed formal research, implement four runtime security checkpoints, run all
+40 mandatory formal tests, update the public research record, and publish only
+green non-force checkpoints to the existing feature branch and draft pull
+request. Merge, new dependencies, a real model, a real authenticator, personal
+database migration, and new private corpus access remained outside scope.
+
+### Implemented Result
+
+The runtime now has deterministic owners for query-scope applicability,
+receipt-bound claim identity, ternary same-key conflict, valid supersession,
+disjoint public judgment basis, calibration gates, adoption challenges,
+expected-head append, unique-or-deny authorization, logical egress trace,
+producer-registry parity, synthetic deletion fences, parameter isolation,
+matched coverage, finite risk, paired cluster bootstrap, and required shift
+strata.
+
+Legacy evidence without a reviewed decision key remains inspectable but cannot
+become Mirror proof. An uncalibrated reasoner score cannot become persona
+confidence, reasoner action-completion text is not echoed, and all V1 send,
+execute, promote, and action-claim capability flags remain false.
+
+The real erasure path no longer says `complete` or `erased`. It reports
+`local_database_deleted` or `partial`, explicitly keeps
+`universal_success=false`, and lists the missing independent attestation,
+post-delete, and persistent-fence proofs.
+
+### Validation Evidence
+
+The final runtime checkpoint passed 498 tests with one qualified skip and
+85.46 percent branch coverage. Ruff, formatting, strict mypy, source and test
+compilation, source modularity limits, and Git whitespace checks also passed.
+An automated comparison found all 40 mandatory formal test names and no
+missing test. Database integration used only the disposable loopback test
+database; no model or provider was called.
+
+### Evidence Boundary
+
+This is deterministic, synthetic, and disposable-integration contract
+evidence. It is not evidence that the system imitates the user, predicts later
+decisions, calibrates persona probabilities, erases backups, resists an
+administrator, or safely executes actions. The synthetic verifier and
+producer attestation are protocol fixtures, not production authenticators.
+
+### Remaining Decisions
+
+Numeric comparison values, primary baseline and cluster manifests, calibration
+mapping, real authenticator, persistent append storage, independent producer
+attestation, backup and restore boundary, cross-restart fence, timing privacy,
+unlearning, model comparison, real sealed evaluation, automatic promotion, and
+every action capability remain open or separately gated.
+
+The detailed checkpoint record is
+[V1.8 Formal Runtime Conformance Record](v1-8-runtime-record-2026-07-18.md).

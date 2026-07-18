@@ -1,7 +1,7 @@
 # Implementation and Test Handoff
 
-> Status: candidate interfaces and mandatory failing tests; no implementation
-> or schema change is authorized by this document
+> Status: all 40 mandatory contracts implemented as deterministic/synthetic
+> runtime regression tests on 2026-07-18; production proof gaps remain
 
 ## 1. Ownership rule
 
@@ -41,8 +41,10 @@ versions, malformed canonicalization, and incomplete provenance.
 
 ## 3. Mandatory red tests
 
-These tests must fail before implementation and pass only when the specified
-behavior exists.
+These tests formed the pre-implementation red handoff. They now remain
+mandatory regression tests and may pass only while the specified behavior
+exists. The implementation evidence and limitations are recorded in the
+[V1.8 runtime record](../v1-8-runtime-record-2026-07-18.md).
 
 | Test | Required assertion |
 | --- | --- |
@@ -126,3 +128,6 @@ real authenticator security, database linearizability, external-provider
 privacy, backup erasure, unlearning, calibrated persona quality, or adequate
 sample size. Those require later integration, live, and sealed-evaluation
 evidence under separately approved changes.
+
+As of 2026-07-18, all 40 named tests are present and green. That result does
+not change this acceptance boundary.

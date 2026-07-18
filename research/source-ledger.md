@@ -2066,6 +2066,31 @@ infrastructure.
 - **Next check:** In a separately approved runtime change, map each interface to
   one owner and make the new red tests fail before implementing their behavior.
 
+### L-035 — V1.8 formal runtime conformance checkpoint (2026-07-18)
+
+- **Type:** Local source, synthetic test, and disposable integration evidence
+- **Provenance:** D-058, Event 050, commits `ad0da86`, `750a41f`, `193b582`,
+  `a5575c6`, `4c14996`, `f1f5b2f`, and `e021fc8`; the 40-test handoff in
+  [implementation-test-contract.md](mathematical-foundation/implementation-test-contract.md).
+- **Observed:** Deterministic runtime owners now implement scope, identity,
+  conflict, supersession, public judgment basis, adoption, expected-head
+  append, authorization tuple selection, no-egress trace, erasure parity,
+  parameter isolation, matched selection, finite risk, paired cluster
+  bootstrap, and shift-stratum gating. The final checkpoint passed 498 tests
+  with one qualified skip and 85.46 percent branch coverage; all 40 mandatory
+  test names were present.
+- **Supports:** The reviewed V1.7 mathematical contract has executable
+  synthetic conformance tests, no-action output projection, honest local or
+  partial erasure reporting, and fail-closed evaluation when frozen evidence
+  is absent.
+- **Does not establish:** Real authenticator or attestor security, persistent
+  append linearizability, backup erasure, cross-restart fencing, timing
+  noninterference, unlearning, selected numeric thresholds, calibration on real
+  decisions, persona quality, automatic promotion, or product readiness.
+- **Next check:** Freeze a user-approved numeric comparison specification only
+  after annotation support is known, then run the protected chronological
+  evaluation without allowing sealed outcomes to alter its manifests.
+
 ## Evidence Gaps
 
 The current ledger lacks:

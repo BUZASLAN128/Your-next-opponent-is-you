@@ -1,5 +1,11 @@
 # Mathematical Foundation
 
+> Runtime status update, 2026-07-18: the 40-test deterministic and synthetic
+> handoff is implemented. See the
+> [V1.8 conformance record](../v1-8-runtime-record-2026-07-18.md). Numeric
+> calibration, real authentication, universal erasure, timing privacy, and
+> persona quality remain unproved.
+
 > Date: 2026-07-17
 > Status: research specification; not an implemented architecture or a proof
 > of persona fidelity

@@ -747,3 +747,46 @@ These refinements create no implementation or proof. Numeric values, the real
 authenticator, append-event policy, attestation mechanism, complete recovery and
 backup boundary, runtime owners, timing channels, unlearning, and represented-
 user persona evidence remain open.
+
+## V1.8 Formal Runtime Conformance Checkpoint — 2026-07-18
+
+The V1.7 handoff is now executable rather than documentation-only. The 40
+mandatory tests map to deterministic owners for scope and decision identity,
+conflict and supersession, public judgment basis, adoption and append,
+authorization and logical egress, erasure and parameter isolation, and frozen
+matched-coverage evaluation.
+
+This closes several apparatus gaps. Unknown risk no longer broadens to high
+risk; missing same-key relations abstain; internal argmax cannot bypass basis;
+uncalibrated ranking has no persona confidence; ambiguous trusted tuples deny;
+append retries bind their original actor, subject, review, adoption, event, and
+policy context; and model prose cannot claim a V1 action was performed.
+
+Erasure convergence remains deliberately partial. The registry covers all
+migration 001–006 tables and declared private artifact producer classes, and a
+synthetic fence proves post-delete blocking. The real path now reports local or
+partial status with `universal_success=false` because an independent producer
+attestor, complete backup boundary, and persistent cross-restart fence do not
+exist.
+
+Evaluation convergence also remains pre-empirical. The runtime can freeze and
+enforce case, baseline, cluster, selector, coverage, support, risk, bootstrap,
+familywise, and shift-stratum parameters, but supplies none of their acceptance
+values. A protected result can therefore be evaluated later without post-hoc
+selection; no current result establishes calibration or persona quality.
+
+The next discriminating sequence is unchanged at the evidence layer:
+
+1. obtain adequate represented-user annotation and blind-repeat support;
+2. compare the proposal-only 8B extractor with manual labels and a pinned
+   smaller candidate without granting either model authority;
+3. freeze the baseline, cluster, coverage, support, calibration, and shift
+   specification before opening chronological targets;
+4. run the sealed comparison and report matched coverage plus worst-stratum
+   risk;
+5. revisit persistence, retrieval, model adaptation, or promotion only if a
+   measured failure justifies the added mechanism.
+
+Thus the project is materially further ahead in safety-contract execution but
+not further ahead in real persona evidence. The apparatus is ready to reject
+more invalid claims; it has not yet earned a positive persona claim.

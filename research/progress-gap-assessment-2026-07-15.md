@@ -282,3 +282,19 @@ dedicated synthetic coverage.
 This reduces interaction burden without changing the evidence layer. The
 active private review still has no represented-user decisions, the full 24+8
 labels remain empty, and no holdout target or persona-quality score exists.
+
+## V1.8 Formal Runtime Update — 2026-07-18
+
+The safety apparatus has advanced from a research handoff to deterministic and synthetic runtime
+conformance. All 40 mandatory contracts now have tests for scope, identity, conflict, supersession,
+basis, adoption, append concurrency, authorization, logical egress, erasure parity, parameter
+isolation, calibration binding, matched coverage, finite risk, bootstrap inference, and required
+shift strata. The final checkpoint passed 498 tests with one qualified skip and 85.46 percent
+branch coverage.
+
+This does not change the evidence-layer conclusion. The implementation can now reject more invalid
+persona and safety claims, but no sealed represented-user comparison, numeric acceptance
+specification, calibration mapping, smaller-model comparison, real authenticator, independent
+erasure attestor, or durable cross-restart fence exists. The project is therefore ahead of the
+earlier assessment in formal runtime safety and unchanged in measured persona quality: still
+`not_calibrated/inconclusive`.

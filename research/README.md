@@ -1,5 +1,13 @@
 # Research Hub
 
+> 2026-07-18 V1.8 runtime-conformance checkpoint: the 40-test formal
+> handoff is implemented for deterministic and synthetic execution across
+> decision basis, adoption, append concurrency, authorization, logical egress,
+> erasure parity, parameter isolation, and matched-coverage evaluation. The
+> final runtime checkpoint passed 498 tests with one qualified skip and 85.46
+> percent branch coverage. This is not persona-quality, real-authenticator,
+> universal-erasure, or real calibration evidence.
+>
 > 2026-07-17 deterministic-contract checkpoint: canonical subject/key identity,
 > active conflict groups, target-bound calibration, operational matched
 > coverage, trusted append context, authorization-tuple selection, attested
@@ -32,10 +40,11 @@
 > locator, while exact private correction aggregates were redacted. Reachable
 > Git history still requires a separate privacy-history decision.
 
-> Status: V1.3 canonical claim apparatus, V1.2 correction lifecycle,
-> proposal-only local extractor, ephemeral Codex parser, and bounded assisted
-> review implemented; real persona evidence and benchmark remain pending
-> Last updated: 2026-07-17
+> Status: V1.8 deterministic formal-runtime conformance, V1.3 canonical claim
+> apparatus, V1.2 correction lifecycle, proposal-only local extractor,
+> ephemeral Codex parser, and bounded assisted review implemented; real persona
+> evidence, sealed comparison, and production security proofs remain pending
+> Last updated: 2026-07-18
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private
 > proposal evidence, while assisted-review decisions, correction quality,
@@ -127,6 +136,7 @@ The shortest current distinction is:
 | The V1.7 mathematical contract defines query-environment scope, four judgment bases, deterministic required-decision closure, ternary conflict, channel-bound adoption, expected-head review append, observer-indexed trace privacy, registry-complete erasure, private-derivative parameter isolation, and matched-coverage evaluation. | Research and implementation-test handoff; runtime, authenticator, thresholds, and persona validation remain unselected | [Mathematical foundation](mathematical-foundation/README.md) and [implementation/test contract](mathematical-foundation/implementation-test-contract.md) |
 | A supplied formula-and-flow audit correctly challenged ungrounded thresholds and one authority notation, but its numeric score, authorization implication, execution flow, and snapshot prescriptions are unsafe. Independent review exposed and corrected additional V1.7 specification gaps. | Authority-free report intake plus research-contract hardening; no runtime implementation | [Preserved report](incoming-reports/formula-flow-defect-analysis-2026-07-17.md) and [local review](formula-flow-defect-review-2026-07-17.md) |
 | A follow-up formal review now binds claim subject/key identity, valid supersession, exact-target calibration, deterministic comparison manifests, authorized append context, authorization tuple selection, attested erasure, and gated public output. | Confirmed research-contract closure and future red-test handoff; no implemented V1.7 behavior | [Decision D-057](decision-log.md#d-057--close-deterministic-formal-contract-bindings-before-implementation), [Event 049](conversation-record.md#event-049--close-residual-formal-contract-ambiguity), and [Source L-034](source-ledger.md#l-034--deterministic-formal-contract-closure-checkpoint-2026-07-17) |
+| V1.8 implements the complete 40-test formal handoff with deterministic runtime types and synthetic protocol stores; public outputs remain no-action and uncalibrated without frozen evidence. | Implemented contract conformance; not persona validation or production security proof | [V1.8 runtime record](v1-8-runtime-record-2026-07-18.md), [Decision D-058](decision-log.md#d-058--implement-the-v18-formal-runtime-contract), and [Event 050](conversation-record.md#event-050--implement-v18-formal-runtime-conformance) |
 | Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents
@@ -154,6 +164,7 @@ The shortest current distinction is:
 | [deep-research-round-01-synthesis-2026-07-15.md](deep-research-round-01-synthesis-2026-07-15.md) | Ordered synthesis and primary-source audit of the first report in the next research batch |
 | [deep-research-round-02-synthesis-2026-07-15.md](deep-research-round-02-synthesis-2026-07-15.md) | Plain-language judgment, candidate identity ontology, and primary-source audit of the second report in the next research batch |
 | [v1-implementation-record-2026-07-15.md](v1-implementation-record-2026-07-15.md) | Confirmed V1 boundary, implemented modules, local runtime evidence, scientific status, and remaining gates |
+| [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md) | Deterministic V1.8 formal-runtime implementation, checkpoint commits, validation evidence, and remaining proof gaps |
 | [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md) | V1 protected assets, trust boundaries, threat controls, required evidence tiers, and stop conditions |
 | [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md) | Layer 0-8 implementation-versus-evidence matrix, competing hypotheses, corrected gaps, and next discriminating sequence |
 | [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md) | Git-safe 20-slot correction control record; private atom content and runtime identifiers remain local |
@@ -234,6 +245,7 @@ Read the files in the order listed below:
 20. [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md)
 21. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
 22. [formula-flow-defect-review-2026-07-17.md](formula-flow-defect-review-2026-07-17.md)
+23. [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

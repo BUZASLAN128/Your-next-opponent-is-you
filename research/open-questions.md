@@ -1201,7 +1201,8 @@ request alone.
 
 ### RQ-028 — Which authenticator can prove independent user adoption?
 
-**Status:** Open; no implementation selected.
+**Status:** Synthetic binding and replay protocol implemented; real
+authenticator remains open and private adoption fails closed.
 
 **Known boundary:** V1 trusts the authenticated operating-system user and a
 separate approval channel. Models, reasoners, extractors, and ordinary runtime
@@ -1217,7 +1218,9 @@ separate implementation authorization.
 
 ### RQ-029 — What numeric matched-coverage acceptance protocol is adequate?
 
-**Status:** Open; results remain `not_calibrated/inconclusive`.
+**Status:** Frozen-spec, matched-selection, finite-risk, bootstrap, familywise,
+and shift gates are implemented; all numeric values and real results remain
+open, so results stay `not_calibrated/inconclusive`.
 
 **Unknown values:** Coverage grid, one primary coverage point versus a declared
 familywise primary subset, simultaneous or familywise error control and pass
@@ -1239,7 +1242,8 @@ frozen absolute safety ceiling in a required stratum.
 
 ### RQ-030 — Which observations belong to the privacy trace?
 
-**Status:** Logical egress events are specified; timing semantics remain open.
+**Status:** Logical egress events and the V1 no-private-egress projection are
+implemented and synthetically tested; timing semantics remain open.
 
 **Current minimum:** Destination, model, payload digest and size, permitted
 header classes, call sequence and count, retries, error paths, logs, telemetry,
@@ -1252,9 +1256,9 @@ testable tolerance before claiming noninterference.
 
 ### RQ-031 — Could any private class ever enter model parameters after V1?
 
-**Status:** V1 resolved as no; any later D1-D3 exception remains open and
-ask-first. D4 credentials and D5 third-party personal data have no proposed
-training path.
+**Status:** V1 resolved and enforced as no through the formal parameter-update
+contract; any later D1-D3 exception remains open and ask-first. D4 credentials
+and D5 third-party personal data have no proposed training path.
 
 **Current invariant:** D1-D5 and their transformed labels, rewards, summaries,
 selectors, hyperparameters, adapters, and steering artifacts cannot influence
@@ -1269,8 +1273,9 @@ threat decision. Until then, the external-memory design is mandatory.
 
 ### RQ-032 — What proves the private-producer universe is complete enough?
 
-**Status:** Open; the invariant is specified but no attestation mechanism or
-operational boundary is selected.
+**Status:** Migration 001–006 and declared private-artifact registry parity plus
+a synthetic attestation/fence protocol are implemented. A real independent
+attestor, complete operational boundary, and persistent fence remain open.
 
 **Known boundary:** Deletion success now requires a current attestation binding
 the declared product boundary, producer inventory, registry, handler/parity
