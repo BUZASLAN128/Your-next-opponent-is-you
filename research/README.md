@@ -194,6 +194,7 @@ The shortest current distinction is:
 | [persona-etiketleme-kilavuzu-tr.md](persona-etiketleme-kilavuzu-tr.md) | Özel 24+8 etiketleme paketi için Türkçe adımlar, sabit değer sözlüğü ve kör tekrar uzlaştırma akışı |
 | [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md) | Exact private authorship-only receipt contract and its semantic authority boundary |
 | [incoming-reports/](incoming-reports/README.md) | User-supplied inputs preserved verbatim when safe or hash-linked and redacted when identity-bearing; all remain non-authoritative |
+| [observable-action-pilot-2026-07-19.md](observable-action-pilot-2026-07-19.md) | First real target-isolated action pilot, its recency-baseline correction, and the remaining persona-evidence gap |
 
 ## End-of-Conversation Markdown Bundle
 
@@ -269,6 +270,7 @@ Read the files in the order listed below:
 23. [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md)
 24. [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md)
 25. [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md)
+26. [observable-action-pilot-2026-07-19.md](observable-action-pilot-2026-07-19.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

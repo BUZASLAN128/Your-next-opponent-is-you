@@ -1182,6 +1182,23 @@ from silently becoming product authority.
   remain unapproved and unresolved.
 - **Durable record:** [Exact private authorship receipt](authorship-receipt-2026-07-18.md)
 
+## D-063 — Require Trivial Baseline Dominance for an Observable-Action Win
+
+- **Date:** 2026-07-19
+- **Status:** Confirmed decision
+- **Decision:** Continue local, bounded processing until the system produces a
+  falsifiable output, but do not count an apparent personalized-model gain as
+  positive unless it also beats frozen history-majority and history-recent
+  controls on the identical sealed cases.
+- **Reason:** The first private directional gain over a generic model was fully
+  explained by the most-recent-history control. The public implementation must
+  preserve that negative result and prevent the same overclaim in future runs.
+- **Boundary:** The pilot measures observable action categories only. It does
+  not establish persona similarity, semantic adoption, calibration, core
+  promotion, or action authority.
+- **Durable record:**
+  [Observable-action pilot](observable-action-pilot-2026-07-19.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

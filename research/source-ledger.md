@@ -2177,6 +2177,40 @@ infrastructure.
 - **Next check:** Freeze an atomic semantic-review rubric and collect separate
   represented-user judgment labels before decision-atom projection.
 
+### L-040 — First Target-Isolated Observable-Action Pilot (2026-07-19)
+
+- **Type:** Private local experiment plus public synthetic contract evidence
+- **Provenance:** D-063, Event 055, and
+  [observable-action-pilot-2026-07-19.md](observable-action-pilot-2026-07-19.md)
+- **Observed:** The exact authorship-bound surface supported a disjoint
+  chronological history/case split. The same pinned local model produced
+  target-free generic and personalized predictions. A post-run audit found
+  that the apparent generic-relative gain did not beat the strongest trivial
+  history control and superseded the result to `inconclusive`.
+- **Supports:** The apparatus can produce, audit, and correct a real private
+  comparative result without publishing the underlying identity data.
+- **Does not establish:** Persona similarity, structured-memory advantage,
+  calibration, semantic label validity, generalization, or action authority.
+- **Next check:** Increase source-disjoint authored support and predeclare a
+  retrieval-static baseline plus uncertainty rule before target access.
+
+### L-041 — Formal Comparison Runtime Binding Audit (2026-07-19)
+
+- **Type:** Public source-code audit and focused synthetic reproduction
+- **Provenance:** Event 055 and RQ-035; local runtime modules and formal
+  comparison tests on the V1 scientific-core branch
+- **Observed:** A favorable inference can be supplied at a coverage point that
+  differs from the inference payload and still reach a win state. Selection,
+  support, arm, baseline, manifest, fatal-gate, and matched bootstrap bindings
+  are incomplete.
+- **Supports:** Formal comparison output must remain support evidence until one
+  receipt chain validates every estimand input.
+- **Does not establish:** That the mathematical contract is wrong or that a
+  corrected comparator cannot support a later persona experiment.
+- **Next check:** Add cross-coverage, cross-baseline, support, hard-gate, and
+  matched-selected-set rejection tests before using the comparator on private
+  targets.
+
 ## Evidence Gaps
 
 The current ledger lacks:

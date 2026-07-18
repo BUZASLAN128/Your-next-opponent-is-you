@@ -873,3 +873,21 @@ automatic decision-atom projection. Label meanings and acceptance rules must
 be frozen before extractor suggestions or benchmark comparison. Private
 receipt identifiers, hashes, paths, content, and aggregates remain outside the
 public repository.
+
+## Observable-Action Baseline Correction — 2026-07-19
+
+The evidence chain now reaches a real target-isolated comparative run. An exact
+authorship receipt supplies the earlier examples, the later structural targets
+remain outside predictor input, and generic and personalized arms share one
+pinned local model and one sealed case manifest.
+
+The first apparent gain did not survive a trivial recency baseline. The
+immutable audit therefore supersedes the initial directional interpretation
+with `inconclusive`. This is convergence progress: the project now rejects a
+history-conditioned output that can be explained without a structured persona.
+
+The next gate is not a larger model. It is more independent authored support,
+a frozen retrieval-static control, and a structured representation that beats
+generic, majority, recency, and retrieval on the same future cases. Until that
+gate is passed, the implemented capability is an observable-action research
+pilot rather than a personal cognitive model.

@@ -1333,3 +1333,40 @@ earlier bucketed sample.
 **Next discriminating check:** Freeze a separate atomic judgment rubric and
 collect represented-user semantic labels for the authorship-confirmed review.
 Measure signal usefulness without a model before invoking another extractor.
+
+### RQ-034 — Can Personal Structure Beat Recency on Later Observable Actions?
+
+**Status:** Open. The first target-isolated private pilot was corrected to
+`inconclusive` because its apparent improvement over a generic model tied the
+most-recent-history control.
+
+**Known boundary:** The current result demonstrates executable chronology,
+target isolation, identical-arm case binding, and sensitivity to personal
+history. It does not distinguish a structured personal representation from a
+simple recency heuristic.
+
+**Remaining unknowns:** Minimum trustworthy authored support; semantic signal
+precision; the appropriate retrieval-static control; dependency-cluster
+support; a predeclared uncertainty rule; and whether a structured arm retains
+an advantage under future-project and low-evidence strata.
+
+**Next discriminating check:** Expand only with independently authored,
+source-disjoint chronological cases. Freeze recent, majority, lexical
+retrieval, and structured arms before target access. Treat ties and inadequate
+support as inconclusive.
+
+### RQ-035 — How Will Formal Comparison Inputs Share One Receipt Chain?
+
+**Status:** Open implementation defect. The current formal evaluator can
+consume coverage and inference values that are not proven to describe the same
+selected cases, arms, baseline artifact, support, or coverage point.
+
+**Known boundary:** Rehashing a comparison specification proves payload
+integrity but does not resolve referenced manifests or prove that a supplied
+bootstrap interval was calculated from the matched selected set.
+
+**Next discriminating check:** Add one validated comparison receipt binding
+case and cluster selections, arm identities, baseline and dependency
+artifacts, hard gates, coverage, support counts, estimator version, invalid
+replicate rate, and bootstrap samples. A cross-coverage or cross-baseline
+inference must fail closed at the public API.

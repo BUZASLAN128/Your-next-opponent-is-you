@@ -256,6 +256,15 @@ def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser])
     submit_review = subcommands.add_parser("submit-proposal-review")
     submit_review.add_argument("study_id")
     submit_review.add_argument("--synthetic", action="store_true")
+    _action_pilot_parser(subcommands)
+
+
+def _action_pilot_parser(
+    commands: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    parser = commands.add_parser("run-action-pilot")
+    parser.add_argument("run_id")
+    parser.add_argument("--synthetic", action="store_true")
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

@@ -2571,3 +2571,41 @@ recorded in Git.
 Design a separate, atomic represented-user judgment review for the
 authorship-confirmed cards. Freeze the label meanings and acceptance rule
 before projecting decision atoms or running any extractor comparison.
+
+## Event 055 — Run and Correct the First Observable-Action Pilot
+
+### User Direction
+
+The user requested that the prepared local corpus and runtime finally produce
+a falsifiable result, while keeping resource use bounded and private data out
+of the public repository.
+
+### Implemented Experiment
+
+The system ordered the exact authorship-confirmed review by event time, used
+the earlier half as history, and hid the later focus responses and structural
+action targets from both predictor inputs. Generic and personalized arms used
+the same pinned, loopback-only model and identical sealed cases. Source,
+conversation, chronology, model identity, case order, target visibility, and
+repeat-execution violations fail closed.
+
+### Negative Result and Correction
+
+The first private result appeared directionally positive against the generic
+arm. A stronger audit then showed that the apparent gain tied a trivial
+most-recent-history control. The initial interpretation was superseded by an
+immutable `inconclusive` audit. The public scoring contract now requires the
+personalized arm to beat generic, history-majority, and history-recent
+controls.
+
+No private content, identifiers, paths, hashes, dates, predictions, labels,
+counts, or behavioral aggregates were added to Git. The result does not claim
+persona quality, calibration, semantic adoption, promotion, or action
+authority.
+
+### Next Discriminating Check
+
+Increase independent authored chronological support and freeze retrieval plus
+recency controls before target access. Do not call a future result positive
+unless the structured arm beats every predeclared control under sufficient
+support.
