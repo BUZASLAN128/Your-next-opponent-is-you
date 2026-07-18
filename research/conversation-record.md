@@ -2406,3 +2406,50 @@ every action capability remain open or separately gated.
 
 The detailed checkpoint record is
 [V1.8 Formal Runtime Conformance Record](v1-8-runtime-record-2026-07-18.md).
+
+## Event 051 — Resume Bounded Real Corpus Processing
+
+### User Direction
+
+The user explicitly asked to continue from V1.8, begin processing the large
+local conversation history, and produce a tangible persona result. The user
+clarified that software must process the corpus incrementally and must not load
+it into memory or destabilize the remotely operated machine.
+
+### Implemented Result
+
+The existing ephemeral Codex parser completed under its fixed public caps. The
+first real study-preparation attempt then failed closed because one canonical
+session referenced a parent absent from the selected source universe.
+
+The runtime now preserves such a relationship through a domain-separated
+opaque parent anchor. It groups siblings sharing the missing parent without
+reading absent content, rejects cycles and malformed lineage, and recomputes
+combined annotation/holdout closure before freezing. Stale source or component
+bindings fail closed. The corrected bounded study preparation produced a
+private review package and protected-holdout artifacts outside Git.
+
+The already cached pinned 8B model ran locally with reduced context and one
+parallel slot. Its primary proposal receipt exceeded the deterministic review-
+burden gate and was retained as unreliable negative evidence. A bounded retry
+was stopped after abnormal duration rather than occupying the remote machine;
+no retry receipt was created. Both model processes were stopped, and no persona
+candidate was promoted.
+
+### Evidence Boundary
+
+This event proves bounded real parsing, private study preparation, conservative
+missing-parent lineage, private proposal generation, rejection, and cleanup on
+the current machine. It does not prove user similarity, prediction accuracy,
+calibration, annotation quality, full-corpus ingestion, or product readiness.
+
+No real path, identifier, corpus count, source hash, model output, inferred
+trait, or behavioral aggregate is recorded in Git. The detailed public-safe
+record is [Bounded Private Persona Pilot](bounded-private-persona-pilot-2026-07-18.md).
+
+### Next Discriminating Check
+
+The current bucketed sample did not justify lowering the proposal gate. The
+next candidate is a resumable, streaming, fixed-memory selector for explicitly
+judgment-bearing user turns, followed by a small represented-user precision
+audit before any wider corpus expansion.

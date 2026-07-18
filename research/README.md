@@ -1,5 +1,12 @@
 # Research Hub
 
+> 2026-07-18 bounded private persona pilot: a real Codex slice was processed
+> under fixed parser and study caps, a missing-parent lineage defect was fixed
+> with opaque anchors, and private review artifacts were produced. The pinned
+> local 8B proposal run failed its deterministic review-burden gate and remains
+> negative evidence only. No private content, identifier, aggregate, model
+> output, persona claim, or promotion entered Git.
+>
 > 2026-07-18 V1.8 runtime-conformance checkpoint: the 40-test formal
 > handoff is implemented for deterministic and synthetic execution across
 > decision basis, adoption, append concurrency, authorization, logical egress,
@@ -41,9 +48,10 @@
 > Git history still requires a separate privacy-history decision.
 
 > Status: V1.8 deterministic formal-runtime conformance, V1.3 canonical claim
-> apparatus, V1.2 correction lifecycle, proposal-only local extractor,
-> ephemeral Codex parser, and bounded assisted review implemented; real persona
-> evidence, sealed comparison, and production security proofs remain pending
+> apparatus, V1.2 correction lifecycle, bounded real private study preparation,
+> proposal-only local extractor, and bounded assisted review implemented; the
+> first new private proposal receipt is unreliable, while real persona evidence,
+> sealed comparison, and production security proofs remain pending
 > Last updated: 2026-07-18
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private
@@ -165,6 +173,7 @@ The shortest current distinction is:
 | [deep-research-round-02-synthesis-2026-07-15.md](deep-research-round-02-synthesis-2026-07-15.md) | Plain-language judgment, candidate identity ontology, and primary-source audit of the second report in the next research batch |
 | [v1-implementation-record-2026-07-15.md](v1-implementation-record-2026-07-15.md) | Confirmed V1 boundary, implemented modules, local runtime evidence, scientific status, and remaining gates |
 | [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md) | Deterministic V1.8 formal-runtime implementation, checkpoint commits, validation evidence, and remaining proof gaps |
+| [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md) | First bounded real corpus study, opaque missing-parent lineage repair, private proposal rejection, and next high-signal harvesting gate |
 | [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md) | V1 protected assets, trust boundaries, threat controls, required evidence tiers, and stop conditions |
 | [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md) | Layer 0-8 implementation-versus-evidence matrix, competing hypotheses, corrected gaps, and next discriminating sequence |
 | [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md) | Git-safe 20-slot correction control record; private atom content and runtime identifiers remain local |
@@ -246,6 +255,7 @@ Read the files in the order listed below:
 21. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
 22. [formula-flow-defect-review-2026-07-17.md](formula-flow-defect-review-2026-07-17.md)
 23. [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md)
+24. [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

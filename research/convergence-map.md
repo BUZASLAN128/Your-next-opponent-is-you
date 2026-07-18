@@ -790,3 +790,25 @@ The next discriminating sequence is unchanged at the evidence layer:
 Thus the project is materially further ahead in safety-contract execution but
 not further ahead in real persona evidence. The apparatus is ready to reject
 more invalid claims; it has not yet earned a positive persona claim.
+
+## Bounded Private Corpus Checkpoint — 2026-07-18
+
+The first post-V1.8 real corpus checkpoint confirms that safety apparatus and
+evidence quality are now the limiting factors rather than basic file access.
+The software prepared a bounded private study and protected holdout without
+loading the full history. Missing parent sessions are represented as opaque
+dependency anchors, so partial local history no longer erases lineage or
+silently splits related sources.
+
+The first new local 8B proposal receipt did not pass the deterministic review-
+burden gate. This negative result strengthens the case for preserving model
+output as a proposal rather than a persona. Lowering the gate would create an
+appearance of progress while weakening the measurement target.
+
+The next convergence step is therefore not a larger model, full raw-vault
+snapshot, vector database, GraphRAG layer, or fine-tune. It is a resumable,
+fixed-memory selector for high-signal user judgments, corrections, evidence
+demands, scope changes, and outcome feedback. The selector must be deterministic
+and label-blind, retain exact provenance, quarantine attribution, and expose a
+small audit set. Only measured audit precision can justify increasing the
+private corpus window or repeating the model comparison.

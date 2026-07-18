@@ -1,24 +1,29 @@
 from __future__ import annotations
 
-import json
 from collections import defaultdict
-from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any, cast
 
 from ynoy.constants import (
-    DEFAULT_CODEX_INVENTORY_MAX_FIRST_RECORD_BYTES,
     PERSONA_HOLDOUT_MAX_FILES,
     PERSONA_HOLDOUT_MAX_TOTAL_BYTES,
     PERSONA_HOLDOUT_MIN_FILES,
     PERSONA_STUDY_MAX_FILE_BYTES,
 )
 from ynoy.corpus.codex_discovery import DiscoveredCodexFile
-from ynoy.corpus.codex_reader import open_stable_codex_file
 from ynoy.errors import DataValidationError
 from ynoy.models import DataClass, HoldoutSourceReceipt, ProtectedHoldoutFreeze
-from ynoy.util import canonical_sha256, sha256_text
+from ynoy.persona_study.lineage import LineageFile as _LineageFile
+from ynoy.persona_study.lineage import component_lineages as _component_lineages
+from ynoy.persona_study.lineage import (
+    file_receipt,
+    read_lineage,
+    session_start_ns,
+)
+from ynoy.util import canonical_sha256
+
+_read_lineage = read_lineage
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,33 +31,6 @@ class HoldoutPlan:
     annotation_candidates: tuple[DiscoveredCodexFile, ...]
     holdout_sources: tuple[_LineageFile, ...]
     boundary_session_start_ns: int
-
-
-@dataclass(frozen=True, slots=True)
-class _LineageFile:
-    item: DiscoveredCodexFile
-    source_receipt: str
-    thread_receipt: str
-    parent_receipt: str | None
-    session_start_ns: int
-    component_receipt: str = ""
-
-
-class _UnionFind:
-    def __init__(self) -> None:
-        self.parent: dict[str, str] = {}
-
-    def find(self, value: str) -> str:
-        self.parent.setdefault(value, value)
-        while self.parent[value] != value:
-            self.parent[value] = self.parent[self.parent[value]]
-            value = self.parent[value]
-        return value
-
-    def union(self, first: str, second: str) -> None:
-        left, right = self.find(first), self.find(second)
-        if left != right:
-            self.parent[max(left, right)] = min(left, right)
 
 
 def plan_protected_holdout(
@@ -132,110 +110,37 @@ def _validate_disjoint(
     plan: HoldoutPlan, annotation_files: tuple[DiscoveredCodexFile, ...]
 ) -> None:
     annotation_receipts = {file_receipt(item) for item in annotation_files}
-    annotation_components = {
-        item.component_receipt
-        for item in _component_lineages(tuple(_read_lineage(item) for item in annotation_files))
-    }
-    if annotation_receipts & {item.source_receipt for item in plan.holdout_sources}:
+    holdout_receipts = {item.source_receipt for item in plan.holdout_sources}
+    if annotation_receipts & holdout_receipts:
         raise DataValidationError(
             "persona_holdout_source_overlap", "An annotation source crossed into holdout."
         )
-    if annotation_components & {item.component_receipt for item in plan.holdout_sources}:
+    combined = _component_lineages(
+        tuple(
+            _read_lineage(item)
+            for item in (*annotation_files, *(source.item for source in plan.holdout_sources))
+        )
+    )
+    component_by_source = {item.source_receipt: item.component_receipt for item in combined}
+    if (annotation_receipts | holdout_receipts) - component_by_source.keys():
+        raise DataValidationError(
+            "persona_holdout_plan_binding_invalid",
+            "A holdout plan source no longer matches its canonical metadata binding.",
+        )
+    if any(
+        source.component_receipt != component_by_source[source.source_receipt]
+        for source in plan.holdout_sources
+    ):
+        raise DataValidationError(
+            "persona_holdout_plan_binding_invalid",
+            "A holdout plan lineage component no longer matches its source closure.",
+        )
+    annotation_components = {component_by_source[receipt] for receipt in annotation_receipts}
+    holdout_components = {component_by_source[receipt] for receipt in holdout_receipts}
+    if annotation_components & holdout_components:
         raise DataValidationError(
             "persona_holdout_lineage_overlap", "Explicit lineage crossed into holdout."
         )
-
-
-def file_receipt(item: DiscoveredCodexFile) -> str:
-    return canonical_sha256(
-        (
-            item.partition,
-            item.relative.as_posix(),
-            item.file_bytes,
-            item.modified_ns,
-            item.device,
-            item.inode,
-        )
-    )
-
-
-def session_start_ns(item: DiscoveredCodexFile) -> int:
-    try:
-        value = datetime.strptime(item.relative.name[8:27], "%Y-%m-%dT%H-%M-%S")
-    except ValueError as exc:
-        raise DataValidationError(
-            "persona_holdout_filename_time_invalid",
-            "A canonical rollout filename does not contain a valid session-start time.",
-        ) from exc
-    return int(value.replace(tzinfo=UTC).timestamp() * 1_000_000_000)
-
-
-def _read_lineage(item: DiscoveredCodexFile) -> _LineageFile:
-    with open_stable_codex_file(item) as stream:
-        first = stream.readline(DEFAULT_CODEX_INVENTORY_MAX_FIRST_RECORD_BYTES + 1)
-    if len(first) > DEFAULT_CODEX_INVENTORY_MAX_FIRST_RECORD_BYTES:
-        raise DataValidationError(
-            "persona_holdout_metadata_oversized", "A holdout metadata record exceeds its limit."
-        )
-    try:
-        record = json.loads(first)
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise DataValidationError(
-            "persona_holdout_metadata_invalid", "A holdout metadata record is invalid."
-        ) from exc
-    if not isinstance(record, Mapping) or record.get("type") != "session_meta":
-        raise DataValidationError(
-            "persona_holdout_session_meta_required", "Holdout sources require session metadata."
-        )
-    payload = record.get("payload")
-    metadata = payload if isinstance(payload, Mapping) else {}
-    thread = metadata.get("id") or metadata.get("session_id")
-    parent = metadata.get("parent_thread_id")
-    if not isinstance(thread, str) or not thread:
-        raise DataValidationError(
-            "persona_holdout_thread_id_required", "Holdout lineage requires an opaque thread ID."
-        )
-    return _LineageFile(
-        item,
-        file_receipt(item),
-        sha256_text(f"holdout-thread:{thread}"),
-        sha256_text(f"holdout-thread:{parent}") if isinstance(parent, str) and parent else None,
-        session_start_ns(item),
-    )
-
-
-def _component_lineages(values: tuple[_LineageFile, ...]) -> tuple[_LineageFile, ...]:
-    graph = _UnionFind()
-    known_threads = {value.thread_receipt for value in values}
-    missing_parents = {
-        value.parent_receipt
-        for value in values
-        if value.parent_receipt and value.parent_receipt not in known_threads
-    }
-    if missing_parents:
-        raise DataValidationError(
-            "persona_holdout_lineage_parent_missing",
-            "A lineage parent is referenced but absent from the selected source set.",
-        )
-    for value in values:
-        graph.find(value.thread_receipt)
-        if value.parent_receipt:
-            graph.union(value.thread_receipt, value.parent_receipt)
-    groups: dict[str, list[str]] = defaultdict(list)
-    for node in graph.parent:
-        groups[graph.find(node)].append(node)
-    receipts = {root: canonical_sha256(sorted(nodes)) for root, nodes in groups.items()}
-    return tuple(
-        _LineageFile(
-            item=value.item,
-            source_receipt=value.source_receipt,
-            thread_receipt=value.thread_receipt,
-            parent_receipt=value.parent_receipt,
-            session_start_ns=value.session_start_ns,
-            component_receipt=receipts[graph.find(value.thread_receipt)],
-        )
-        for value in values
-    )
 
 
 def _select_holdout_groups(groups: list[list[_LineageFile]]) -> list[_LineageFile]:

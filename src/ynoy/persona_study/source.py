@@ -25,10 +25,9 @@ from ynoy.errors import DataValidationError
 from ynoy.models import DataClass, ProtectedHoldoutFreeze, SourceEvent
 from ynoy.persona_study.holdout import (
     build_protected_holdout,
-    file_receipt,
     plan_protected_holdout,
-    session_start_ns,
 )
+from ynoy.persona_study.lineage import file_receipt, session_start_ns
 from ynoy.util import canonical_sha256
 
 

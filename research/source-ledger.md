@@ -2091,6 +2091,29 @@ infrastructure.
   after annotation support is known, then run the protected chronological
   evaluation without allowing sealed outcomes to alter its manifests.
 
+### L-036 — Bounded private persona pilot and lineage repair (2026-07-18)
+
+- **Type:** Local private runtime evidence plus public synthetic regression
+  evidence
+- **Provenance:** User-authorized Event 051 and D-059; exact private source,
+  artifact, receipt, and model outputs intentionally omitted from Git.
+- **Observed:** The bounded parser and study-preparation paths processed a real
+  explicitly selected Codex source without full-corpus loading. A missing
+  parent lineage initially failed closed; the runtime now uses opaque anchors,
+  combined closure validation, cycle rejection, and exact source/component
+  binding. Private study artifacts were produced. The pinned local 8B proposal
+  run failed its review-burden gate and remained negative evidence; a timed-out
+  retry produced no receipt and its process was stopped.
+- **Supports:** The current software can produce a bounded private evaluation
+  package, reject unreliable model proposals, preserve missing-parent lineage
+  without opening absent content, and release model resources after use.
+- **Does not establish:** Persona similarity, label accuracy, calibration,
+  high-signal corpus selection, full-corpus ingestion, retry reliability,
+  holdout outcomes, automatic promotion, or product acceptance.
+- **Next check:** Implement only after contract review a resumable fixed-memory
+  high-signal selector, then measure its precision through a small represented-
+  user audit before expanding corpus processing.
+
 ## Evidence Gaps
 
 The current ledger lacks:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
 
-from support.canonical_claims import NOW, confirmed_admission
+from support.canonical_claims import confirmed_admission
 
 from ynoy.core import mirror_predict, select_evidence
 from ynoy.models import (
@@ -64,7 +64,7 @@ def test_legacy_candidate_reader_is_never_called() -> None:
 
 
 def test_future_canonical_claim_is_excluded_and_disclosed() -> None:
-    _, _, admission = confirmed_admission(valid_from=NOW + timedelta(days=1))
+    _, _, admission = confirmed_admission(valid_from=datetime(2099, 1, 1, tzinfo=UTC))
 
     result = mirror_predict(
         FakeMemory(canonical_claims=[admission.claim]),

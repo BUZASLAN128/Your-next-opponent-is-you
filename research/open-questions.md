@@ -1293,3 +1293,28 @@ artifact, and configuration manifests; define stale-version behavior; inject an
 unregistered producer; and run deletion through retry, delayed work, import,
 restore, and recovery schedules. Do not claim universal erasure from a green
 synthetic registry test.
+
+### RQ-033 — How should high-signal judgments be harvested incrementally?
+
+**Status:** Open after the first bounded real study. Basic bounded preparation
+works, but the first new 8B proposal receipt was unreliable and cannot seed a
+persona.
+
+**Known boundary:** The harvester must stream canonical files, keep fixed
+memory, use a restart-safe private cursor, preserve branch and source lineage,
+and retain user turns as unattributed until explicit review. Assistant, tool,
+quoted, pasted, and third-party material cannot become represented-user truth.
+Selection features and tie order must be frozen before inspecting holdout
+labels, and corpus instructions remain inert evidence.
+
+**Unknowns:** Per-checkpoint byte/file/record/time budgets; the deterministic
+signal vocabulary; multilingual correction and acceptance cues; duplicate and
+branch handling; how much context each candidate needs; precision target for a
+small represented-user audit; retry timeout; and when a later checkpoint may
+expand its reservoir.
+
+**Next discriminating check:** Build a synthetic streaming selector contract
+with cursor replay, fixed-memory reservoir, source mutation detection,
+attribution exclusions, and deletion closure. Then run one small private audit
+and compare deterministic selection precision with the current bucketed sample
+before invoking another model.

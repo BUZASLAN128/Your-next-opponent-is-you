@@ -21,6 +21,9 @@ self. It supports synthetic and locally authorized experiments around:
 - bounded ChatGPT-export inventory and explicit ingestion approval;
 - a bounded, memory-only local Codex content parser that emits no message text,
   artifact, identity claim, database write, or model request;
+- a bounded private Codex persona-study preparer with deterministic replay,
+  protected temporal holdout, opaque missing-parent lineage anchors, and
+  retention-controlled review artifacts;
 - speaker, claim-holder, branch, scope, time, and source provenance;
 - cold start from no history or explicit user declarations;
 - a data-free Manager that starts without PostgreSQL, a private data root, or
@@ -39,14 +42,15 @@ self. It supports synthetic and locally authorized experiments around:
 - provider-neutral adapters whose transport is restricted to loopback and whose
   private-data access requires a separate local-provider attestation.
 
-The repository has synthetic test evidence plus one bounded private
-current-thread correction observation whose content remains outside Git. A
-pinned Qwen3-8B Q4_K_M endpoint has been validated locally on loopback against
-one synthetic extraction case and used for that proposal-only private review.
-No conversation corpus has been ingested, persisted, annotated, or used for a
-persona benchmark. One bounded local Codex parser pilot ran only in process
-memory. No result establishes extraction quality, persona fidelity, or
-real-user decision prediction.
+The repository has synthetic test evidence plus bounded private correction and
+persona-study observations whose content remains outside Git. A pinned
+Qwen3-8B Q4_K_M endpoint has been validated locally on loopback and used for
+proposal-only private review. A bounded real study package now exists, but its
+first model-proposal receipt failed the deterministic review-burden gate and
+was retained only as negative evidence. No full conversation corpus has been
+ingested into the database, no represented-user annotation has been sealed,
+and no result establishes extraction quality, persona fidelity, or real-user
+decision prediction.
 
 The correction lifecycle is a private-artifact CLI and Python contract, not a
 database schema. The optional model proposes candidates only; correction and
@@ -364,6 +368,38 @@ content artifact, database record, embedding, annotation, claim, or persona
 candidate and invokes no model provider. Process exit discards the transient
 events. A durable annotation sample requires a separate retention and deletion
 decision.
+
+### 2.3 Prepare one bounded private persona study
+
+```powershell
+uv run ynoy --private-root C:\private\ynoy `
+  study prepare C:\private\codex-root
+```
+
+This command does not ingest the complete corpus. It selects exactly 24
+canonical files under a 32 MiB annotation-input cap, reserves a distinct
+metadata-only temporal holdout, parses no more than 2,000 dialogue events, and
+replays the source selection before committing private artifacts. Missing
+parent sessions remain opaque lineage anchors; the runtime never opens or
+synthesizes absent parent content.
+
+The returned `review_path` and `labels_path` point into the explicit private
+root. They contain private identity evidence and must never be copied into Git.
+No database or model is used during preparation.
+
+After starting the exact pinned loopback model described below, proposals can
+be generated with:
+
+```powershell
+uv run ynoy --private-root C:\private\ynoy `
+  study propose-labels STUDY_ID
+```
+
+The model runs direct and skeptical passes and has no adoption, promotion, or
+action authority. If the deterministic review burden exceeds its cap, the
+receipt is retained as `unreliable` and no quick-review artifact is offered.
+Use `--retry-unreliable` only for the one protocol-permitted linked retry; do
+not lower the gate to make a model run pass.
 
 ### 3. Approve an exact manifest
 

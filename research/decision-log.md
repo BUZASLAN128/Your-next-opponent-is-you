@@ -1092,6 +1092,32 @@ from silently becoming product authority.
   or persona-quality claim is selected or established.
 - **Durable record:** [V1.8 formal runtime conformance record](v1-8-runtime-record-2026-07-18.md)
 
+### D-059 — Resume real corpus work through bounded private checkpoints
+
+- **Date:** 2026-07-18
+- **Status:** Confirmed and first bounded checkpoint implemented
+- **User direction:** Begin processing the large local history and produce
+  tangible persona material, while requiring software-controlled streaming and
+  low memory use because the machine is operated remotely.
+- **Decision:** Start with the existing 16 MiB ephemeral parser and 32 MiB
+  private study-preparation limits. Use only explicit outside-Git roots, one
+  local model process, reduced context, sequential proposal calls, deterministic
+  rejection gates, and cleanup after every model run. Do not snapshot or load
+  the complete corpus as the first step.
+- **Observed result:** A conservative opaque-parent lineage repair enabled the
+  bounded private study package. The first new local-model proposal receipt was
+  classified unreliable and remained private negative evidence; the retry was
+  stopped without a receipt after abnormal duration. No persona promotion or
+  quality claim followed.
+- **Privacy consequence:** Real paths, IDs, corpus metadata, private counts,
+  hashes, content, labels, model output, and behavioral aggregates remain
+  outside Git.
+- **Non-decision:** No full-corpus snapshot, database ingestion, high-signal
+  selector, permanent model choice, threshold change, annotation acceptance,
+  calibration mapping, automatic promotion, or persona-quality conclusion is
+  approved by this checkpoint.
+- **Durable record:** [Bounded private persona pilot](bounded-private-persona-pilot-2026-07-18.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
@@ -1131,8 +1157,10 @@ from silently becoming product authority.
 
 No decision has been made for:
 
-- durable corpus acquisition, export, ownership, consent, or retention beyond
-  the ephemeral parser boundary in D-046;
+- durable full-corpus acquisition, export, ownership, consent, or retention
+  beyond the bounded private study checkpoint in D-059;
+- a permanent high-signal streaming selector, cursor format, audit threshold,
+  or corpus-expansion rule;
 - expansion beyond the coding-judgment V1 into a general personal persona;
 - mission hierarchy, conflict resolution, priority, pause, resume, and
   completion semantics;
