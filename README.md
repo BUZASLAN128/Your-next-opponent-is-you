@@ -401,6 +401,39 @@ receipt is retained as `unreliable` and no quick-review artifact is offered.
 Use `--retry-unreliable` only for the one protocol-permitted linked retry; do
 not lower the gate to make a model run pass.
 
+### 2.4 Harvest and confirm one bounded judgment review
+
+The fixed-memory harvester streams canonical Codex records without loading the
+history into memory. It emits a private checkpoint and review package while
+keeping every selected user turn unattributed:
+
+```powershell
+uv run ynoy --private-root C:\private\ynoy `
+  study harvest C:\private\codex-root SOURCE_STUDY_ID
+
+uv run ynoy --private-root C:\private\ynoy `
+  study resume-harvest C:\private\codex-root RUN_ID
+```
+
+When the represented user has inspected the exact current review and confirms
+that every displayed card is their own historical text, seal only that
+authorship fact with the returned revision and checkpoint hash:
+
+```powershell
+uv run ynoy --private-root C:\private\ynoy `
+  study seal-harvest-authorship RUN_ID `
+  --revision REVISION `
+  --checkpoint-sha256 CHECKPOINT_SHA256 `
+  --confirm-all-self
+```
+
+The first seal must target the current checkpoint head. Exact retry is
+idempotent; changed, partial, reordered, stale, or cross-run input fails
+closed. The immutable receipt inherits private retention and source-dependency
+deletion. It does not classify a judgment, establish current adoption, project
+a decision atom, admit persona or benchmark evidence, call a model or database,
+or grant action authority.
+
 ### 3. Approve an exact manifest
 
 ```powershell

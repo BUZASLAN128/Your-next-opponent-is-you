@@ -1,8 +1,8 @@
 # Fixed-Memory Judgment Harvester Checkpoint
 
 > Date: 2026-07-18
-> Status: private represented-user audit package ready
-> Scientific status: selection apparatus proven; persona quality not evaluated
+> Status: one exact private review has represented-user authorship confirmation
+> Scientific status: authorship sealed; judgment and persona quality not evaluated
 
 ## User Direction
 
@@ -120,9 +120,13 @@ configured human-review package is structurally ready.
 
 ## Next Discriminating Check
 
-The represented user should confirm or correct the private review labels. The
-operator audit is sufficient to debug known contamination classes but cannot
-substitute for authorship ground truth. After the labeling rule and acceptance
-threshold are frozen, measure selector precision and false attribution. Only
-that result may justify opening a separately frozen extractor comparison; the
-8B model remains disabled for this checkpoint.
+The represented user confirmed that every card in the current bounded private
+review came from their historical conversations. A dedicated immutable private
+receipt preserves only that authorship fact. It does not alter the label
+template, assign decision meaning, establish current adoption, or admit any
+candidate into a persona, benchmark, or core.
+
+The next check is a separate atomic judgment review. After its label meanings
+and acceptance rule are frozen, measure whether the selector finds useful
+decision signals. Only that result may justify opening a separately frozen
+extractor comparison; the 8B model remains disabled for this checkpoint.

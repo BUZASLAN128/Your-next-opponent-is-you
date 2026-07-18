@@ -1296,10 +1296,10 @@ synthetic registry test.
 
 ### RQ-033 — How should high-signal judgments be harvested incrementally?
 
-**Status:** Apparatus implemented, repeatedly operator-audited, and
-synthetically tested; represented-user precision and expansion criteria remain
-open. The earlier 8B proposal receipt remains unreliable and cannot seed a
-persona.
+**Status:** Apparatus implemented, repeatedly operator-audited, synthetically
+tested, and bound to one exact private represented-user authorship receipt.
+Judgment precision, semantic labels, and expansion criteria remain open. The
+earlier 8B proposal receipt remains unreliable and cannot seed a persona.
 
 **Known boundary:** The harvester must stream canonical files, keep fixed
 memory, use a restart-safe private cursor, preserve branch and source lineage,
@@ -1316,13 +1316,20 @@ provenance, cross-source duplicates, runtime/editor/import wrappers, filename
 false positives, and short low-signal focuses. Cursor replay, source mutation,
 private artifact deletion, and unchanged-source regeneration remain covered.
 
-**Remaining unknowns:** Represented-user precision and false-attribution rate;
-whether the vocabulary misses informal or multilingual cues; branch-complete
-lineage for every eligible source; minimum context adequacy; acceptance and
-expansion thresholds; whether a later phase requires full prior-file rehashing
-or a frozen snapshot; and comparative advantage over the earlier bucketed
-sample.
+**Observed update:** The represented user confirmed authorship for every card
+in one exact bounded private review. The immutable receipt preserves that fact
+without assigning judgment meaning, current adoption, persona truth, benchmark
+eligibility, or core authority. This is stronger than operator inspection but
+is still a single review surface, not a selector precision estimate over a
+frozen sampling frame.
 
-**Next discriminating check:** Obtain represented-user labels for the prepared
-private audit, freeze the precision and false-attribution rule without a model,
-and compare it with the earlier selector before invoking another extractor.
+**Remaining unknowns:** Judgment-signal precision; the correct atomic label
+schema; whether the vocabulary misses informal or multilingual cues;
+branch-complete lineage for every eligible source; minimum context adequacy;
+acceptance and expansion thresholds; whether a later phase requires full
+prior-file rehashing or a frozen snapshot; and comparative advantage over the
+earlier bucketed sample.
+
+**Next discriminating check:** Freeze a separate atomic judgment rubric and
+collect represented-user semantic labels for the authorship-confirmed review.
+Measure signal usefulness without a model before invoking another extractor.

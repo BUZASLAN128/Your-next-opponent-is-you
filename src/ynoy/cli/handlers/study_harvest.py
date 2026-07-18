@@ -65,6 +65,7 @@ def _result(result: PreparedHarvest) -> dict[str, object]:
         "next_step_tr": next_step_tr,
         "run_id": result.manifest.run_id,
         "revision": checkpoint.cursor.revision,
+        "checkpoint_sha256": checkpoint.checkpoint_sha256,
         "candidate_count": len(checkpoint.candidates),
         "audit_card_count": min(12, len(checkpoint.candidates)),
         "review_path": str(result.review_path),

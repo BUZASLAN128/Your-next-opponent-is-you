@@ -175,7 +175,7 @@ def _revision_payloads(
     raw_class = DataClass.PUBLIC_SYNTHETIC if manifest.synthetic else DataClass.RAW_CORPUS
     derived_class = _derived_class(manifest.synthetic)
     checkpoint_bytes = canonical_json_bytes(checkpoint.model_dump(mode="json"))
-    review_bytes = _render_review(checkpoint).encode("utf-8")
+    review_bytes = render_harvest_review(checkpoint).encode("utf-8")
     labels_bytes = canonical_json_bytes(_label_template(checkpoint))
     _require_bounded_output(
         (checkpoint_bytes, review_bytes, labels_bytes), manifest.limits.max_artifact_bytes
@@ -222,7 +222,7 @@ def _prepared(
     )
 
 
-def _render_review(checkpoint: HarvestCheckpoint) -> str:
+def render_harvest_review(checkpoint: HarvestCheckpoint) -> str:
     lines = [
         "# Bounded Judgment Candidate Audit",
         "",

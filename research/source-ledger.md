@@ -2156,6 +2156,27 @@ infrastructure.
 - **Next check:** Freeze the represented-user labeling rubric and acceptance
   threshold before measuring selector precision and false attribution.
 
+### L-039 — Exact represented-user authorship receipt (2026-07-18)
+
+- **Type:** Explicit represented-user confirmation plus public synthetic
+  contract evidence
+- **Provenance:** D-062 and Event 054; the exact private receipt and its source
+  artifacts are intentionally omitted from Git.
+- **Observed:** The user confirmed authorship for the complete current bounded
+  private review. The runtime can bind that confirmation to the exact source,
+  run, checkpoint revision and hash, ordered candidate set, immutable
+  ancestors, source dependencies, and prior artifact index. Exact retry is
+  idempotent; changed, partial, reordered, stale, or cross-bound input fails
+  closed. Retention and source-dependency deletion cover the receipt.
+- **Supports:** Represented-user authorship for one frozen private review can
+  be preserved without mutating the harvest label template or granting model,
+  database, benchmark, persona, core, or action authority.
+- **Does not establish:** Judgment meaning, current adoption, selector
+  precision over a sampling frame, persona similarity, decision prediction,
+  calibration, extractor quality, or full-corpus integrity.
+- **Next check:** Freeze an atomic semantic-review rubric and collect separate
+  represented-user judgment labels before decision-atom projection.
+
 ## Evidence Gaps
 
 The current ledger lacks:

@@ -7,6 +7,7 @@ from pathlib import Path
 from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.study_guidance import status_guidance_tr
 from ynoy.cli.handlers.study_harvest import harvest_judgments, resume_judgment_harvest
+from ynoy.cli.handlers.study_harvest_authorship import seal_harvest_authorship
 from ynoy.cli.handlers.study_proposals import propose_labels
 from ynoy.cli.handlers.study_review import (
     record_proposal_review,
@@ -43,6 +44,7 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "propose-labels": propose_labels,
         "harvest": harvest_judgments,
         "resume-harvest": resume_judgment_harvest,
+        "seal-harvest-authorship": seal_harvest_authorship,
         "record-proposal-review": record_proposal_review,
         "submit-proposal-review": submit_recorded_proposal_review,
     }

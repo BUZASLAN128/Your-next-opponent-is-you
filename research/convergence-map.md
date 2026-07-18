@@ -853,3 +853,23 @@ cannot certify represented-user authorship or convert qualitative inspection
 into a calibrated precision estimate. The next convergence step therefore
 remains frozen user labeling followed by precision and false-attribution
 measurement. Full-source snapshot integrity and model comparison stay separate.
+
+## Authorship-Only Receipt Checkpoint — 2026-07-18
+
+The represented user confirmed that the complete current bounded review came
+from their historical conversations. The implementation records that fact in
+one immutable private receipt bound to the exact source, revision, checkpoint,
+ordered candidate set, ancestor hashes, and prior index. Exact retry is
+idempotent; partial, changed, reordered, stale, or cross-run input fails closed.
+
+This advances the evidence chain from unattributed user-role text to confirmed
+represented-user authorship for one frozen review surface. It does not advance
+semantic adoption or persona quality. Historical authorship cannot answer
+whether a statement was a decision, whether it remains current, which scope it
+applies to, or whether it should guide future output.
+
+The next convergence step is therefore a separate atomic judgment review, not
+automatic decision-atom projection. Label meanings and acceptance rules must
+be frozen before extractor suggestions or benchmark comparison. Private
+receipt identifiers, hashes, paths, content, and aggregates remain outside the
+public repository.

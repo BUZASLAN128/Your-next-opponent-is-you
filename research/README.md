@@ -154,6 +154,7 @@ The shortest current distinction is:
 | A follow-up formal review now binds claim subject/key identity, valid supersession, exact-target calibration, deterministic comparison manifests, authorized append context, authorization tuple selection, attested erasure, and gated public output. | Confirmed research-contract closure and future red-test handoff; no implemented V1.7 behavior | [Decision D-057](decision-log.md#d-057--close-deterministic-formal-contract-bindings-before-implementation), [Event 049](conversation-record.md#event-049--close-residual-formal-contract-ambiguity), and [Source L-034](source-ledger.md#l-034--deterministic-formal-contract-closure-checkpoint-2026-07-17) |
 | V1.8 implements the complete 40-test formal handoff with deterministic runtime types and synthetic protocol stores; public outputs remain no-action and uncalibrated without frozen evidence. | Implemented contract conformance; not persona validation or production security proof | [V1.8 runtime record](v1-8-runtime-record-2026-07-18.md), [Decision D-058](decision-log.md#d-058--implement-the-v18-formal-runtime-contract), and [Event 050](conversation-record.md#event-050--implement-v18-formal-runtime-conformance) |
 | A resumable fixed-memory selector produced and survived repeated private operator review while retaining unknown attribution and denying model, database, benchmark, core, and promotion authority. | Known contamination classes are regression-tested; represented-user precision and persona quality remain pending | [Harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md), [Decision D-061](decision-log.md#d-061--treat-private-card-inspection-as-selector-debugging-not-persona-proof), and [Event 053](conversation-record.md#event-053--audit-and-harden-real-judgment-selection) |
+| One exact bounded private review has represented-user authorship confirmation sealed in an immutable, replay-safe receipt. | Authorship evidence only; judgment meaning, current adoption, persona quality, benchmark admission, and core authority remain pending | [Authorship receipt](authorship-receipt-2026-07-18.md), [Decision D-062](decision-log.md#d-062--seal-the-current-review-as-authorship-only), and [Event 054](conversation-record.md#event-054--confirm-historical-authorship-without-inferring-meaning) |
 | Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents
@@ -191,6 +192,7 @@ The shortest current distinction is:
 | [codex-content-pilot-2026-07-16.md](codex-content-pilot-2026-07-16.md) | Content-free public record of the bounded, memory-only real Codex parser checkpoint and the next annotation gate |
 | [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md) | Current 24+8 label contract, metadata-only protected holdout, synthetic baselines, real aggregate evidence, and remaining user-label gate |
 | [persona-etiketleme-kilavuzu-tr.md](persona-etiketleme-kilavuzu-tr.md) | Özel 24+8 etiketleme paketi için Türkçe adımlar, sabit değer sözlüğü ve kör tekrar uzlaştırma akışı |
+| [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md) | Exact private authorship-only receipt contract and its semantic authority boundary |
 | [incoming-reports/](incoming-reports/README.md) | User-supplied inputs preserved verbatim when safe or hash-linked and redacted when identity-bearing; all remain non-authoritative |
 
 ## End-of-Conversation Markdown Bundle
@@ -266,6 +268,7 @@ Read the files in the order listed below:
 22. [formula-flow-defect-review-2026-07-17.md](formula-flow-defect-review-2026-07-17.md)
 23. [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md)
 24. [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md)
+25. [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

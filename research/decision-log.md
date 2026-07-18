@@ -1157,6 +1157,31 @@ from silently becoming product authority.
   established.
 - **Durable record:** [Fixed-memory judgment harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md)
 
+### D-062 — Seal the current review as authorship only
+
+- **Date:** 2026-07-18
+- **Status:** Confirmed decision
+- **Decision:** The user's explicit confirmation that every card in the current
+  bounded private review came from their historical conversations may be
+  recorded in one exact, immutable, private authorship receipt.
+- **Scope:** The receipt binds one source study, harvest run, checkpoint
+  revision and hash, ordered candidate set, source dependencies, and prior
+  artifact index. It applies only to that frozen review surface.
+- **Authority boundary:** Authorship does not establish the meaning of a
+  statement, its current validity, a decision label, adoption, persona truth,
+  core eligibility, benchmark eligibility, calibration, or action authority.
+  Those fields remain absent or false and require separate review.
+- **Replay boundary:** An exact retry is idempotent. A changed, partial,
+  reordered, stale, cross-run, cross-source, or mixed-attribution submission
+  fails closed. The receipt remains under the existing private retention and
+  source-dependency deletion closure.
+- **Privacy boundary:** No card text, private path, runtime identifier, hash,
+  source date, or private aggregate is published in Git.
+- **Non-decision:** Decision-atom projection, persona promotion, extractor
+  comparison, threshold selection, calibration, and full-corpus expansion
+  remain unapproved and unresolved.
+- **Durable record:** [Exact private authorship receipt](authorship-receipt-2026-07-18.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
