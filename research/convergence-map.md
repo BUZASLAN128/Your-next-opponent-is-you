@@ -812,3 +812,29 @@ demands, scope changes, and outcome feedback. The selector must be deterministic
 and label-blind, retain exact provenance, quarantine attribution, and expose a
 small audit set. Only measured audit precision can justify increasing the
 private corpus window or repeating the model comparison.
+
+## Fixed-Memory Judgment Selection Checkpoint — 2026-07-18
+
+The high-signal selector candidate is now executable. Canonical files are
+discovered without retaining the corpus inventory, records are normalized as a
+stream, and only a fixed candidate reservoir plus bounded context survives a
+checkpoint. Exact file receipts, digests, metadata, byte boundaries, selector
+configuration, holdout freeze, and revision ancestry make resume fail closed.
+
+Two negative observations improved the apparatus before the final private
+package. Windows discovery initially supplied an identity that could not match
+the opened descriptor; using the stable path identity preserved the link-swap
+check. Chronological traversal then concentrated early checkpoints, so the
+source order is now deterministic, label-blind, and distributed by SHA-256
+over the eligible universe.
+
+The private run reached structural `audit_ready` without a model or database.
+This advances the evidence pipeline from corpus access to auditable candidate
+selection, but not to persona evidence. Every focus remains unattributed and
+cannot enter the benchmark or core.
+
+The next convergence gate is represented-user precision. The user audit must
+measure false attribution and signal usefulness before another extractor is
+enabled. A successful selector audit would justify a frozen model comparison;
+an unsuccessful audit should revise the signal vocabulary or source/branch
+contract, not lower the adoption or promotion gates.

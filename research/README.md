@@ -1,5 +1,11 @@
 # Research Hub
 
+> 2026-07-18 fixed-memory judgment-harvester checkpoint: deterministic,
+> resumable, source-bound streaming produced a private `audit_ready` review
+> package under hard resource caps. Focuses remain unattributed and cannot
+> enter the benchmark or persona core. The model and database were not used;
+> represented-user precision and persona quality remain unevaluated.
+>
 > 2026-07-18 bounded private persona pilot: a real Codex slice was processed
 > under fixed parser and study caps, a missing-parent lineage defect was fixed
 > with opaque anchors, and private review artifacts were produced. The pinned
@@ -49,9 +55,11 @@
 
 > Status: V1.8 deterministic formal-runtime conformance, V1.3 canonical claim
 > apparatus, V1.2 correction lifecycle, bounded real private study preparation,
-> proposal-only local extractor, and bounded assisted review implemented; the
-> first new private proposal receipt is unreliable, while real persona evidence,
-> sealed comparison, and production security proofs remain pending
+> fixed-memory private judgment audit, proposal-only local extractor, and
+> bounded assisted review implemented; the private audit awaits represented-
+> user labels and the first new proposal receipt remains unreliable, while real
+> persona evidence, sealed comparison, and production security proofs remain
+> pending
 > Last updated: 2026-07-18
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private
@@ -145,6 +153,7 @@ The shortest current distinction is:
 | A supplied formula-and-flow audit correctly challenged ungrounded thresholds and one authority notation, but its numeric score, authorization implication, execution flow, and snapshot prescriptions are unsafe. Independent review exposed and corrected additional V1.7 specification gaps. | Authority-free report intake plus research-contract hardening; no runtime implementation | [Preserved report](incoming-reports/formula-flow-defect-analysis-2026-07-17.md) and [local review](formula-flow-defect-review-2026-07-17.md) |
 | A follow-up formal review now binds claim subject/key identity, valid supersession, exact-target calibration, deterministic comparison manifests, authorized append context, authorization tuple selection, attested erasure, and gated public output. | Confirmed research-contract closure and future red-test handoff; no implemented V1.7 behavior | [Decision D-057](decision-log.md#d-057--close-deterministic-formal-contract-bindings-before-implementation), [Event 049](conversation-record.md#event-049--close-residual-formal-contract-ambiguity), and [Source L-034](source-ledger.md#l-034--deterministic-formal-contract-closure-checkpoint-2026-07-17) |
 | V1.8 implements the complete 40-test formal handoff with deterministic runtime types and synthetic protocol stores; public outputs remain no-action and uncalibrated without frozen evidence. | Implemented contract conformance; not persona validation or production security proof | [V1.8 runtime record](v1-8-runtime-record-2026-07-18.md), [Decision D-058](decision-log.md#d-058--implement-the-v18-formal-runtime-contract), and [Event 050](conversation-record.md#event-050--implement-v18-formal-runtime-conformance) |
+| A resumable fixed-memory selector produced a private `audit_ready` judgment-review package while retaining unknown attribution and denying model, database, benchmark, core, and promotion authority. | Implemented selection apparatus plus private runtime checkpoint; represented-user precision and persona quality pending | [Harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md), [Decision D-060](decision-log.md#d-060--use-a-fixed-memory-human-audited-judgment-harvester), and [Event 052](conversation-record.md#event-052--produce-the-first-fixed-memory-judgment-audit-package) |
 | Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents
@@ -174,6 +183,7 @@ The shortest current distinction is:
 | [v1-implementation-record-2026-07-15.md](v1-implementation-record-2026-07-15.md) | Confirmed V1 boundary, implemented modules, local runtime evidence, scientific status, and remaining gates |
 | [v1-8-runtime-record-2026-07-18.md](v1-8-runtime-record-2026-07-18.md) | Deterministic V1.8 formal-runtime implementation, checkpoint commits, validation evidence, and remaining proof gaps |
 | [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md) | First bounded real corpus study, opaque missing-parent lineage repair, private proposal rejection, and next high-signal harvesting gate |
+| [fixed-memory-judgment-harvester-2026-07-18.md](fixed-memory-judgment-harvester-2026-07-18.md) | Resumable streaming selector contract, private audit-ready runtime evidence, safety limits, and represented-user review gate |
 | [v1-threat-model-2026-07-15.md](v1-threat-model-2026-07-15.md) | V1 protected assets, trust boundaries, threat controls, required evidence tiers, and stop conditions |
 | [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md) | Layer 0-8 implementation-versus-evidence matrix, competing hypotheses, corrected gaps, and next discriminating sequence |
 | [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md) | Git-safe 20-slot correction control record; private atom content and runtime identifiers remain local |

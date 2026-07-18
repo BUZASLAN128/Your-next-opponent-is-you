@@ -2114,6 +2114,29 @@ infrastructure.
   high-signal selector, then measure its precision through a small represented-
   user audit before expanding corpus processing.
 
+### L-037 — Fixed-memory judgment harvester checkpoint (2026-07-18)
+
+- **Type:** Local source, synthetic test, and private bounded-runtime evidence
+- **Provenance:** D-060 and Event 052; implementation and tests in the current
+  feature branch; exact private sources and outputs intentionally omitted.
+- **Observed:** A deterministic streaming selector with fixed resource limits,
+  exact-source cursor binding, unknown attribution, exclusion gates, private
+  indexed artifacts, and regeneration/deletion behavior reached its structural
+  `audit_ready` state on the selected local source. The focused contract suite
+  passed 32 tests; full validation against disposable loopback `ynoy_test`
+  passed 537 tests with one qualified skip and 85.52 percent branch coverage.
+  No model or provider was used.
+- **Supports:** The project can create a small represented-user judgment audit
+  package without materializing the corpus, using labels, or granting persona
+  authority. Windows file identity and chronological concentration defects
+  were detected fail-closed and corrected without weakening source checks.
+- **Does not establish:** Represented-user precision, branch-complete lineage,
+  persona similarity, calibrated decision prediction, full-corpus completion,
+  extractor quality, benchmark eligibility, or promotion safety.
+- **Next check:** Complete the private represented-user audit and freeze an
+  explicit precision/false-attribution acceptance rule before another model
+  comparison or corpus expansion.
+
 ## Evidence Gaps
 
 The current ledger lacks:

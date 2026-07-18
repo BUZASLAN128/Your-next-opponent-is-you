@@ -1296,9 +1296,9 @@ synthetic registry test.
 
 ### RQ-033 — How should high-signal judgments be harvested incrementally?
 
-**Status:** Open after the first bounded real study. Basic bounded preparation
-works, but the first new 8B proposal receipt was unreliable and cannot seed a
-persona.
+**Status:** Apparatus implemented and synthetically tested; represented-user
+precision and expansion criteria remain open. The earlier 8B proposal receipt
+remains unreliable and cannot seed a persona.
 
 **Known boundary:** The harvester must stream canonical files, keep fixed
 memory, use a restart-safe private cursor, preserve branch and source lineage,
@@ -1307,14 +1307,20 @@ quoted, pasted, and third-party material cannot become represented-user truth.
 Selection features and tie order must be frozen before inspecting holdout
 labels, and corpus instructions remain inert evidence.
 
-**Unknowns:** Per-checkpoint byte/file/record/time budgets; the deterministic
-signal vocabulary; multilingual correction and acceptance cues; duplicate and
-branch handling; how much context each candidate needs; precision target for a
-small represented-user audit; retry timeout; and when a later checkpoint may
-expand its reservoir.
+**Observed apparatus:** Public hard limits now cover bytes, files, records,
+events, time, context, reservoir, output, entries, and revisions. The selector
+has a frozen multilingual signal vocabulary and deterministic source/ranking
+order. Cursor replay, source mutation, structural exclusions, private artifact
+deletion, and unchanged-source regeneration have synthetic coverage. One
+bounded private run reached the structural `audit_ready` state.
 
-**Next discriminating check:** Build a synthetic streaming selector contract
-with cursor replay, fixed-memory reservoir, source mutation detection,
-attribution exclusions, and deletion closure. Then run one small private audit
-and compare deterministic selection precision with the current bucketed sample
-before invoking another model.
+**Remaining unknowns:** Represented-user precision and false-attribution rate;
+whether the vocabulary misses informal or multilingual cues; branch-complete
+lineage for every eligible source; minimum context adequacy; acceptance and
+expansion thresholds; whether a later phase requires full prior-file rehashing
+or a frozen snapshot; and comparative advantage over the earlier bucketed
+sample.
+
+**Next discriminating check:** Complete the prepared private audit, freeze the
+precision and false-attribution rule without a model, and compare it with the
+earlier selector before invoking another extractor.

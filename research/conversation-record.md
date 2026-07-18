@@ -2453,3 +2453,50 @@ The current bucketed sample did not justify lowering the proposal gate. The
 next candidate is a resumable, streaming, fixed-memory selector for explicitly
 judgment-bearing user turns, followed by a small represented-user precision
 audit before any wider corpus expansion.
+
+## Event 052 — Produce the First Fixed-Memory Judgment Audit Package
+
+### User Direction
+
+The user asked the project to continue implementation and testing until it
+produced a successful output, while reiterating that corpus processing must not
+load the history into memory or destabilize the remotely operated machine.
+
+### Implemented Result
+
+The runtime now discovers canonical sources with bounded retained metadata,
+streams JSONL records, applies deterministic judgment signals, and keeps only a
+fixed reservoir plus short context. A private revision chain binds the source
+study, holdout freeze, selector configuration, exact file digest and metadata,
+record boundary, and prior revision. Source mutation and broken replay fail
+closed.
+
+The first real attempt exposed a Windows discovery identity mismatch and was
+rejected before artifact creation. Discovery now obtains the same stable file
+identity used by descriptor and path verification; the link-swap guard was not
+weakened. A second apparatus observation showed that chronological traversal
+over-concentrated the small review set, so the final selector uses a frozen,
+label-blind deterministic hash order across the eligible source universe.
+
+The resulting bounded private run reached `audit_ready` and wrote a review
+Markdown file plus a label template outside Git. No model, database, provider,
+benchmark admission, persona promotion, or action path was used.
+
+### Evidence Boundary
+
+Focused synthetic tests cover signal classes, exclusions, resource caps,
+deterministic regeneration, cursor replay, mutation rejection, private
+artifact deletion, and zero provider/database use. The runtime output proves
+only that a represented-user audit package is structurally ready. It does not
+prove that its focuses belong to the user, that the selector is precise, or
+that a persona resembles or predicts the user.
+
+No private content, path, ID, hash, source date, corpus count, candidate
+aggregate, or machine measurement is recorded in Git. The public-safe record
+is [Fixed-Memory Judgment Harvester Checkpoint](fixed-memory-judgment-harvester-2026-07-18.md).
+
+### Next Discriminating Check
+
+The represented user reviews the private cards and completes the label
+template. Precision and false attribution are measured before any model is
+enabled or the corpus window is expanded.

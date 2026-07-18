@@ -1118,6 +1118,30 @@ from silently becoming product authority.
   approved by this checkpoint.
 - **Durable record:** [Bounded private persona pilot](bounded-private-persona-pilot-2026-07-18.md)
 
+### D-060 — Use a fixed-memory, human-audited judgment harvester
+
+- **Date:** 2026-07-18
+- **Status:** Confirmed and implemented as a private audit gate
+- **User direction:** Continue processing the large local history, obtain a
+  successful tangible output, keep the remote machine responsive, and verify
+  the result through tests.
+- **Decision:** Stream canonical records under fixed byte, file, record, event,
+  time, context, reservoir, and output limits. Select deterministic judgment
+  signals without labels or a model, preserve unknown attribution, bind resume
+  state to exact source evidence, and require represented-user review before
+  any extractor comparison or persona use.
+- **Observed result:** The corrected runtime reached its structural
+  `audit_ready` state and wrote a private review package. Synthetic tests cover
+  selection, exclusions, resource bounds, replay, source mutation, artifact
+  deletion, regeneration, and zero database/model/provider use.
+- **Privacy consequence:** Private content, paths, identifiers, hashes, source
+  dates, corpus counts, candidate aggregates, and machine measurements remain
+  outside Git.
+- **Non-decision:** No selector precision threshold, accepted label, persona
+  claim, model comparison, full-corpus completion, calibration, benchmark
+  eligibility, core admission, or automatic promotion is established.
+- **Durable record:** [Fixed-memory judgment harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
