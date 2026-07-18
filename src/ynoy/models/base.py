@@ -96,7 +96,7 @@ class ScopeRef(StrictModel):
     project: str | None = None
     role: str | None = None
     audience: str | None = None
-    risk: Literal["low", "medium", "high", "unknown"] = "unknown"
+    risk: Literal["low", "medium", "high", "unknown", "any"] = "unknown"
     valid_from: datetime | None = None
     valid_until: datetime | None = None
 

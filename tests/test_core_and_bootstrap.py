@@ -53,7 +53,8 @@ def test_zero_data_mirror_asks_one_high_value_question() -> None:
         scope=ScopeRef(project="pilot"),
         reasoner=DeterministicReasoner(),
     )
-    assert result.confidence == 0.0
+    assert result.confidence is None
+    assert result.judgment_basis.value == "abstention"
     assert result.personal_fit == "unknown"
     assert result.question is not None and result.question.count("?") == 1
     assert result.evidence_receipts == ()
@@ -124,7 +125,8 @@ def test_same_scope_lexically_unrelated_persona_abstains_without_receipts() -> N
     )
 
     assert result.evidence_receipts == ()
-    assert result.confidence == 0.0
+    assert result.confidence is None
+    assert result.judgment_basis.value == "abstention"
     assert result.personal_fit == "unknown"
     assert result.question is not None
 

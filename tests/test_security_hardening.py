@@ -120,7 +120,9 @@ def test_loopback_reasoner_needs_attestation_before_receiving_d3(
     result = mirror_predict(
         DeclarationMemory(declaration), task="review", scope=ScopeRef(), reasoner=trusted
     )
-    assert result.personal_fit == "known"
+    assert result.personal_fit == "unknown"
+    assert result.confidence is None
+    assert result.judgment_basis.value == "abstention"
     assert len(calls) == 1
 
 

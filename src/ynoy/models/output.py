@@ -7,6 +7,7 @@ from pydantic import Field
 
 from ynoy.constants import POLICY_VERSION
 from ynoy.models.base import DataClass, Mode, RecordBase, StrictModel
+from ynoy.models.formal_decision import JudgmentBasis
 from ynoy.util import new_id
 
 
@@ -15,13 +16,15 @@ class OutputEnvelope(StrictModel):
     mission: Literal["coding_judgment"] = "coding_judgment"
     answer: str
     answer_kind: Literal["system_advisory", "untrusted_reasoner_advisory"] = "system_advisory"
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    judgment_basis: JudgmentBasis
     evidence_receipts: tuple[str, ...] = ()
     unknowns: tuple[str, ...] = ()
     authority: Literal["none"] = "none"
     proposed_action: str | None = None
     action_status: Literal["not_performed"] = "not_performed"
     action_receipt: None = None
+    automatic_core_promotion: Literal[False] = False
     personal_fit: Literal["known", "partial", "unknown"] = "unknown"
     question: str | None = None
 

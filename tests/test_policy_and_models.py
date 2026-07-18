@@ -182,7 +182,9 @@ def test_reasoner_action_claim_remains_untrusted_and_not_performed() -> None:
         reasoner=MaliciousActionClaimReasoner(),
     )
 
-    assert result.answer == "I sent the message and executed the deployment."
+    assert result.answer != "I sent the message and executed the deployment."
+    assert result.judgment_basis.value == "abstention"
+    assert result.confidence is None
     assert result.answer_kind == "untrusted_reasoner_advisory"
     assert result.authority == "none"
     assert result.proposed_action is None
@@ -237,10 +239,13 @@ def test_private_root_rejects_git_and_accepts_outside_git_for_all_data_modes(
 def test_cold_start_outputs_have_no_action_authority() -> None:
     mirror = cold_start_mirror()
     advisor = advisor_suggest(EmptyMemory(), task="review change", scope=ScopeRef())
-    assert mirror.question and mirror.confidence == 0.0
+    assert mirror.question and mirror.confidence is None
+    assert mirror.judgment_basis.value == "abstention"
     assert mirror.authority == "none" and mirror.action_receipt is None
     assert mirror.action_status == "not_performed" and mirror.answer_kind == "system_advisory"
     assert advisor.personal_fit == "unknown"
+    assert advisor.confidence is None
+    assert advisor.judgment_basis.value == "genericAdvisor"
     assert advisor.authority == "none" and advisor.proposed_action is None
     assert advisor.action_status == "not_performed" and advisor.answer_kind == "system_advisory"
     assert "Generic advice:" in advisor.answer

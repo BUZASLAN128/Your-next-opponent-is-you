@@ -118,6 +118,14 @@ def _run_benchmark_workflow(
     return frozen, run, report
 
 
+def _assert_uncalibrated_mirror(mirror: dict[str, object]) -> None:
+    assert mirror["authority"] == "none" and mirror["personal_fit"] == "unknown"
+    assert mirror["judgment_basis"] == "abstention" and mirror["confidence"] is None
+    assert mirror["proposed_action"] is None and mirror["action_receipt"] is None
+    assert mirror["action_status"] == "not_performed"
+    assert mirror["answer_kind"] == "untrusted_reasoner_advisory"
+
+
 def test_synthetic_cli_end_to_end(tmp_path: Path, make_chatgpt_zip, test_database_url: str) -> None:
     root = tmp_path / "private-artifacts"
     archive = make_chatgpt_zip()
@@ -147,10 +155,7 @@ def test_synthetic_cli_end_to_end(tmp_path: Path, make_chatgpt_zip, test_databas
         "deterministic",
         "--synthetic",
     )
-    assert mirror["authority"] == "none" and mirror["personal_fit"] == "known"
-    assert mirror["proposed_action"] is None and mirror["action_receipt"] is None
-    assert mirror["action_status"] == "not_performed"
-    assert mirror["answer_kind"] == "untrusted_reasoner_advisory"
+    _assert_uncalibrated_mirror(mirror)
     _, run, report = _run_benchmark_workflow(root, test_database_url, _prepare_cases(tmp_path))
     assert run["status"] == "complete" and run["acceptance_status"] == "not_calibrated"
     assert report["local_only"] is True and Path(report["report_path"]).is_file()

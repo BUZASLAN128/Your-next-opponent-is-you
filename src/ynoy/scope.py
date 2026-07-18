@@ -6,15 +6,20 @@ from ynoy.errors import DataValidationError
 from ynoy.models.base import ScopeRef
 
 
-def scope_matches(candidate: ScopeRef, requested: ScopeRef) -> bool:
-    """Return whether a scoped item may apply without broadening its declared scope."""
+def scope_applies(candidate: ScopeRef, requested: ScopeRef) -> bool:
+    """Return whether a stored scope applies to the concrete query environment."""
     if candidate.person_id != requested.person_id:
         return False
     for field in ("project", "role", "audience"):
         candidate_value = getattr(candidate, field)
         if candidate_value is not None and candidate_value != getattr(requested, field):
             return False
-    return candidate.risk == "unknown" or candidate.risk == requested.risk
+    return candidate.risk == "any" or candidate.risk == requested.risk
+
+
+def scope_matches(candidate: ScopeRef, requested: ScopeRef) -> bool:
+    """Compatibility alias for the V1.7 query-membership contract."""
+    return scope_applies(candidate, requested)
 
 
 def scope_is_active(scope: ScopeRef, evaluated_at: datetime) -> bool:

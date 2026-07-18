@@ -15,6 +15,7 @@ from ynoy.models import (
     OutputEnvelope,
     ScopeRef,
 )
+from ynoy.models.formal_decision import JudgmentBasis
 from ynoy.reasoner import (
     EvidenceItem,
     Reasoner,
@@ -163,7 +164,8 @@ def cold_start_mirror() -> OutputEnvelope:
     return OutputEnvelope(
         mode=Mode.MIRROR,
         answer="I do not yet have enough personal evidence to predict your judgment.",
-        confidence=0.0,
+        confidence=None,
+        judgment_basis=JudgmentBasis.ABSTENTION,
         unknowns=("represented_user_decision", "decision_rationale"),
         personal_fit="unknown",
         question="What single rule most often makes you reject a proposed coding change?",
@@ -179,7 +181,8 @@ def _conflict_abstention() -> OutputEnvelope:
     return OutputEnvelope(
         mode=Mode.MIRROR,
         answer="I cannot choose between conflicting active decisions without your clarification.",
-        confidence=0.0,
+        confidence=None,
+        judgment_basis=JudgmentBasis.ABSTENTION,
         unknowns=("conflicting_active_decisions",),
         personal_fit="unknown",
         question="Which active decision should govern this task?",
@@ -199,22 +202,19 @@ def _cold_start_response(selected: SelectedEvidence) -> OutputEnvelope:
 def _reasoned_mirror_response(
     response: ReasonerResponse, selected: SelectedEvidence
 ) -> OutputEnvelope:
-    unknowns = list(response.unknowns)
+    unknowns = [*response.unknowns, "persona_not_calibrated", "reviewed_decision_key_missing"]
     if selected.stale_count:
         unknowns.append("stale_evidence_was_excluded")
     return OutputEnvelope(
         mode=Mode.MIRROR,
-        answer=response.answer,
+        answer="A model ranking is available, but it is not a calibrated personal prediction.",
         answer_kind="untrusted_reasoner_advisory",
-        confidence=response.confidence,
-        evidence_receipts=tuple(item.receipt_id for item in selected.items),
+        confidence=None,
+        judgment_basis=JudgmentBasis.ABSTENTION,
+        evidence_receipts=(),
         unknowns=tuple(unknowns),
-        personal_fit="known" if response.predicted_label != DecisionLabel.UNKNOWN else "partial",
-        question=(
-            None
-            if response.predicted_label != DecisionLabel.UNKNOWN
-            else "Which option would you choose here, and what evidence decides it?"
-        ),
+        personal_fit="unknown",
+        question="Which option would you choose here, and what evidence decides it?",
     )
 
 
@@ -261,7 +261,8 @@ def advisor_suggest(
                 "Generic advice: define the expected behavior, choose the smallest reversible "
                 "change, and verify it with a focused test before expanding scope."
             ),
-            confidence=0.35,
+            confidence=None,
+            judgment_basis=JudgmentBasis.GENERIC_ADVISOR,
             unknowns=("personal_fit",),
             personal_fit="unknown",
             question="Which trade-off matters most for this task?",
@@ -279,8 +280,9 @@ def advisor_suggest(
         mode=Mode.ADVISOR,
         answer=response.answer,
         answer_kind="untrusted_reasoner_advisory",
-        confidence=response.confidence,
+        confidence=None,
+        judgment_basis=JudgmentBasis.GENERIC_ADVISOR,
         evidence_receipts=tuple(item.receipt_id for item in selected.items),
         unknowns=response.unknowns,
-        personal_fit="partial",
+        personal_fit="unknown",
     )

@@ -44,9 +44,11 @@ def test_only_canonical_admission_can_support_prediction() -> None:
         reasoner=DeterministicReasoner(),
     )
 
-    assert result.answer == f"Predicted decision: {DecisionLabel.REJECT.value}."
-    assert result.personal_fit == "known"
-    assert result.evidence_receipts == (str(admission.receipt.record_id),)
+    assert result.judgment_basis.value == "abstention"
+    assert result.confidence is None
+    assert result.personal_fit == "unknown"
+    assert result.evidence_receipts == ()
+    assert "reviewed_decision_key_missing" in result.unknowns
 
 
 def test_legacy_candidate_reader_is_never_called() -> None:
@@ -87,7 +89,8 @@ def test_conflicting_active_canonical_claims_abstain() -> None:
     )
 
     assert result.personal_fit == "unknown"
-    assert result.confidence == 0.0
+    assert result.confidence is None
+    assert result.judgment_basis.value == "abstention"
     assert result.evidence_receipts == ()
     assert "conflicting_active_decisions" in result.unknowns
 
