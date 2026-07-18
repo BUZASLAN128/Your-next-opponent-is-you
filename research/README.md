@@ -1,5 +1,18 @@
 # Research Hub
 
+> 2026-07-17 deterministic-contract checkpoint: canonical subject/key identity,
+> active conflict groups, target-bound calibration, operational matched
+> coverage, trusted append context, authorization-tuple selection, attested
+> erasure, and typed public output are now explicit research obligations. No
+> runtime behavior or persona evidence is implied.
+>
+> 2026-07-17 V1.7 adversarial-review checkpoint: a user-supplied formula and
+> flow audit was preserved with no authority and source-checked. Valid findings
+> now sharpen basis-specific answer gates, persona-independent authorization,
+> private-class parameter isolation, and pre-registered coverage decisions.
+> Its numeric score replacement, reversed authority rule, execution flows, and
+> content-bearing snapshot implication remain rejected.
+>
 > 2026-07-17 V1.7 formal-safety checkpoint: applicability is now query-
 > environment membership, output basis and conflict are explicit, adoption is
 > bound to a separate trusted channel, privacy covers the complete observer
@@ -111,7 +124,9 @@ The shortest current distinction is:
 | No real-person benchmark, annotation study, or user-audited temporal holdout has been run. | Observed project state | Conversation content has not been sampled for those experiments |
 | Public research records must use neutral user language and attribute procedure or interpretation failures to the responsible apparatus. | Confirmed documentation policy | [Decision D-044](decision-log.md#d-044--require-neutral-and-accountable-public-research-language) and [Event 031](conversation-record.md#event-031--correct-public-record-tone-and-replace-feature-history) |
 | The implemented V1 remains a scientific prototype and must not be presented as a faithful virtual self or production system. | Confirmed scope boundary | [V1 implementation record](v1-implementation-record-2026-07-15.md) |
-| The V1.7 mathematical contract defines query-environment scope, four judgment bases, ternary conflict, channel-bound adoption, expected-head review append, observer-indexed trace privacy, registry-complete erasure, and matched-coverage evaluation. | Research and implementation-test handoff; runtime, authenticator, thresholds, and persona validation remain unselected | [Mathematical foundation](mathematical-foundation/README.md) and [implementation/test contract](mathematical-foundation/implementation-test-contract.md) |
+| The V1.7 mathematical contract defines query-environment scope, four judgment bases, deterministic required-decision closure, ternary conflict, channel-bound adoption, expected-head review append, observer-indexed trace privacy, registry-complete erasure, private-derivative parameter isolation, and matched-coverage evaluation. | Research and implementation-test handoff; runtime, authenticator, thresholds, and persona validation remain unselected | [Mathematical foundation](mathematical-foundation/README.md) and [implementation/test contract](mathematical-foundation/implementation-test-contract.md) |
+| A supplied formula-and-flow audit correctly challenged ungrounded thresholds and one authority notation, but its numeric score, authorization implication, execution flow, and snapshot prescriptions are unsafe. Independent review exposed and corrected additional V1.7 specification gaps. | Authority-free report intake plus research-contract hardening; no runtime implementation | [Preserved report](incoming-reports/formula-flow-defect-analysis-2026-07-17.md) and [local review](formula-flow-defect-review-2026-07-17.md) |
+| A follow-up formal review now binds claim subject/key identity, valid supersession, exact-target calibration, deterministic comparison manifests, authorized append context, authorization tuple selection, attested erasure, and gated public output. | Confirmed research-contract closure and future red-test handoff; no implemented V1.7 behavior | [Decision D-057](decision-log.md#d-057--close-deterministic-formal-contract-bindings-before-implementation), [Event 049](conversation-record.md#event-049--close-residual-formal-contract-ambiguity), and [Source L-034](source-ledger.md#l-034--deterministic-formal-contract-closure-checkpoint-2026-07-17) |
 | Current-tree privacy scanning found no credential, private key, actual host locator, private IP, or device identity; exact private correction aggregates were redacted, but older reachable Git history still requires a separate decision. | Observed repository finding and open history risk | [Privacy and falsification record](mathematical-foundation/privacy-and-falsification.md) and [RQ-027](open-questions.md#rq-027--should-the-public-feature-history-be-replaced-again-for-privacy) |
 
 ## Documents
@@ -127,6 +142,8 @@ The shortest current distinction is:
 | [landscape.md](landscape.md) | Comparison with adjacent memory, graph, personalization, and digital-twin work |
 | [hivemind-actions-case-study.md](hivemind-actions-case-study.md) | Source-grounded review of the earlier prototype and its control-boundary lessons |
 | [incoming-reports/project-evaluation-2026-07-17.md](incoming-reports/project-evaluation-2026-07-17.md) | Authority-free preservation and current-HEAD audit of the supplied external project evaluation |
+| [incoming-reports/formula-flow-defect-analysis-2026-07-17.md](incoming-reports/formula-flow-defect-analysis-2026-07-17.md) | Authority-free preservation of the supplied mathematical and flow-defect audit |
+| [formula-flow-defect-review-2026-07-17.md](formula-flow-defect-review-2026-07-17.md) | Source-grounded disposition of the supplied audit, corrected formal gaps, rejected prescriptions, and future red tests |
 | [model-and-evaluation.md](model-and-evaluation.md) | Technology-neutral research hypothesis for extracting and testing a judgment model |
 | [mathematical-foundation/](mathematical-foundation/README.md) | Formal variables, hard invariants, candidate equations, privacy findings, and falsification tests |
 | [source-ledger.md](source-ledger.md) | Consulted sources, evidence types, findings, and limitations |
@@ -216,6 +233,7 @@ Read the files in the order listed below:
 19. [progress-gap-assessment-2026-07-15.md](progress-gap-assessment-2026-07-15.md)
 20. [atomic-correction-form-2026-07-15.md](atomic-correction-form-2026-07-15.md)
 21. [persona-annotation-feasibility-pilot-2026-07-16.md](persona-annotation-feasibility-pilot-2026-07-16.md)
+22. [formula-flow-defect-review-2026-07-17.md](formula-flow-defect-review-2026-07-17.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as

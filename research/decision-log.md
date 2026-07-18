@@ -1003,6 +1003,61 @@ from silently becoming product authority.
   level, migration, dependency, storage mechanism, or runtime owner is
   selected. No source or test implementation is authorized by this decision.
 
+### D-056 — Apply only verified corrections from the formula-and-flow audit
+
+- **Date:** 2026-07-17
+- **Status:** Confirmed research and documentation decision; no runtime change
+- **User direction:** After reviewing the report's strengths and defects, the
+  user delegated the evidence-filtered next step to the assistant.
+- **Decision:** Preserve the supplied report with `Authority: none`; accept only
+  findings independently supported by the current contract or primary sources;
+  and record rejected prescriptions explicitly. Strengthen D-055 without
+  rewriting its historical record.
+- **Formal correction:** Derive the same-key unresolved conflict set from a
+  deterministic dependency manifest; separate ranking and calibrated persona-
+  emission thresholds; enforce authorization independence across its upstream
+  projection; prohibit direct or derivative D1-D5 influence on model-parameter
+  updates in V1; and require a frozen single-primary or familywise overall
+  coverage rule plus absolute per-stratum safety ceilings that cannot hide
+  supported high-risk strata.
+- **Rejected prescriptions:** Do not convert the narrative `resolve` notation
+  into the report's score; do not use its reverse-implication authority rule;
+  do not add execution, delegation, budget leases, cryptographic infrastructure,
+  or content-bearing provenance snapshots to V1.7.
+- **Privacy consequence:** Credentials and third-party personal data gain no
+  training path. Erasure tombstones remain non-content-bearing and may not keep
+  reversible content-derived values.
+- **Non-decision:** Numeric thresholds, kappa choice for a final label design,
+  one primary coverage versus a familywise rule, per-stratum ceiling values,
+  authenticator, timing threat semantics, runtime owners, dependencies, storage,
+  and future execution remain open or separately gated.
+
+### D-057 — Close deterministic formal-contract bindings before implementation
+
+- **Date:** 2026-07-17
+- **Status:** Confirmed research and documentation decision; no runtime change
+- **User direction:** After reviewing the formal findings, the user explicitly
+  requested that the corrections be applied.
+- **Decision:** Canonical claims must bind stable claim/subject identity and a
+  reviewed subject/layer/decision key. Conflict applies only to distinct active
+  same-key claims, and supersession is effective only through a verified,
+  query-applicable same-key successor.
+- **Evaluation decision:** Persona calibration is exact-target, frozen-profile,
+  version/domain-bound, and isolated from sealed outcomes. Matched coverage uses
+  a frozen label-blind selector plus case, baseline, cluster, support, and
+  inference manifests; sealed results cannot choose or mutate them.
+- **State and authority decision:** Review append requires trusted context bound
+  to actor, subject, review, stream, event policy, and required adoption.
+  Persona/model state may neither select nor alter an authorization tuple.
+  Erasure requires a current bound producer-universe attestation, verified
+  receipt, future-trace independence, and tombstone fence.
+- **Output decision:** Internal Mirror candidates and public tagged judgments
+  are disjoint. Only the deterministic basis resolver may emit a public value.
+- **Non-decision:** No numeric value, calibration mapping, baseline identity,
+  cluster mapping, authenticator, attestation technology, storage/recovery
+  boundary, runtime owner, source/test implementation, schema, dependency,
+  corpus, model, provider, action capability, commit, or push is selected.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

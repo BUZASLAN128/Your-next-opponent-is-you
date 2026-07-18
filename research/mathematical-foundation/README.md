@@ -24,13 +24,16 @@ one of three roles:
 ## Documents
 
 - [formal-system.md](formal-system.md): objects, admission gates, memory state,
-  prediction, abstention, and authority.
+  internal prediction, gated public judgment, abstention, and authority.
 - [decision-semantics.md](decision-semantics.md): query-environment scope,
-  judgment basis, three-valued conflict, supersession, and adoption trust.
-- [state-privacy-erasure.md](state-privacy-erasure.md): expected-head append,
-  observer-indexed trace noninterference, registry parity, and tombstone fence.
-- [evaluation-contract.md](evaluation-contract.md): calibrated probability,
-  matched-coverage risk, paired cluster inference, and shift strata.
+  typed judgment basis, reviewed subject/layer/key groups, three-valued
+  conflict, query-valid supersession, and adoption trust.
+- [state-privacy-erasure.md](state-privacy-erasure.md): authorization-bound
+  expected-head append, observer-indexed trace noninterference, attested erasure
+  universe, future-trace deletion, and private-derivative parameter isolation.
+- [evaluation-contract.md](evaluation-contract.md): frozen target-specific
+  calibration, deterministic matched-coverage selection, pre-registered
+  baselines/clusters, controlled inference, and shift strata.
 - [implementation-test-contract.md](implementation-test-contract.md):
   candidate interfaces, ownership boundaries, and mandatory red tests.
 - [learning-privacy-evaluation.md](learning-privacy-evaluation.md): append-only
@@ -41,21 +44,27 @@ one of three roles:
 
 ## Central claim
 
-Let `StructuredCore` be the scoped, provenance-bearing model and `Baseline` be
-the best simpler arm available under the same evidence boundary. The narrow V1
-hypothesis is:
+Let `StructuredCore` be the scoped, provenance-bearing model and
+$\mathcal{B}_{\mathrm{primary}}$ a baseline set frozen under the same evidence
+boundary before sealed outcomes are accessible. The narrow V1 hypothesis is:
 
 $$
 H_1(\kappa):\quad
-\Delta R(\kappa)=
-R_{\mathrm{YNOY}}(\kappa)-R_{\mathrm{Baseline}}(\kappa)<-\delta
+\forall b\in\mathcal{B}_{\mathrm{primary}},\quad
+\Delta R_b(\kappa)=
+R_{\mathrm{YNOY}}(\kappa)-R_b(\kappa)<-\delta
 $$
 
-at pre-registered matched coverage, with a paired cluster-level confidence
-interval wholly below $-\delta$, and subject to zero fatal provenance, scope,
-privacy, authority, and temporal-leakage violations. Until the coverage grid,
-sample minima, $\delta$, and interval rule are frozen, the hypothesis result is
-`not_calibrated/inconclusive`.
+at the one pre-registered primary matched-coverage point, or under a
+pre-registered familywise rule over declared primary points, with the applicable
+paired cluster-level confidence bound wholly below $-\delta$. Fatal provenance,
+scope, privacy, authority, and temporal-leakage violations must remain zero.
+No favorable coverage, baseline, cluster mapping, or tie resolution may be
+selected after sealed outcomes are visible. Every required safety stratum must
+also satisfy its pre-registered absolute risk ceiling under simultaneous or
+familywise-controlled upper bounds. Until the comparison specification,
+calibration profile, support minima, $\delta$, stratum ceilings, and interval
+procedures are frozen, the result is `not_calibrated/inconclusive`.
 
 ## External research used as form, not authority
 

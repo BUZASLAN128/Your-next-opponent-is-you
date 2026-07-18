@@ -1964,6 +1964,60 @@ infrastructure.
 - **Next check:** Preserve provenance validation while keeping adoption and
   erasure as independent proof obligations.
 
+### S-085 — Cohen's kappa for a fixed pair
+
+- **Title:** A Coefficient of Agreement for Nominal Scales
+- **Type:** Peer-reviewed primary methods paper, 1960
+- **URL:** https://doi.org/10.1177/001316446002000104
+- **Accessed:** 2026-07-17
+- **Supports:** Chance-corrected nominal agreement for a fixed pair of judges.
+- **Does not establish:** YNOY's label ontology, represented-user ground truth,
+  a universal `0.80` threshold, adequacy under severe prevalence imbalance, or
+  whether kappa is the final reliability statistic.
+- **Next check:** Freeze the label scale, missingness, rater design, prevalence,
+  confusion matrix, and error costs before choosing an agreement statistic.
+
+### S-086 — Fleiss' kappa for many-rater assignments
+
+- **Title:** Measuring Nominal Scale Agreement Among Many Raters
+- **Type:** Peer-reviewed primary methods paper, 1971
+- **URL:** https://doi.org/10.1037/h0031619
+- **Accessed:** 2026-07-17
+- **Supports:** Generalization of nominal chance-corrected agreement to a fixed
+  number of ratings per item when the raters need not be the same across items.
+- **Does not establish:** That Fleiss' kappa is mathematically impossible with
+  two ratings, that it is appropriate for one fixed rater pair, or that any
+  absolute threshold should automatically reject YNOY fields.
+- **Next check:** Use Cohen for a fixed pair or a separately justified robust
+  alternative; report raw agreement and class structure alongside chance-
+  corrected agreement.
+
+### S-087 — Shannon entropy definition and units
+
+- **Title:** A Mathematical Theory of Communication
+- **Type:** Peer-reviewed primary methods paper, 1948
+- **URL:** https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
+- **Accessed:** 2026-07-17
+- **Supports:** Entropy is defined from a probability distribution, and the
+  logarithm base determines the information unit.
+- **Does not establish:** That entropy is an appropriate YNOY promotion signal,
+  which random variable should be measured, or any numeric threshold.
+- **Next check:** Define the variable, alphabet, probability estimator, unit,
+  normalization, and error cost before proposing entropy as an experiment.
+
+### S-088 — Kappa sensitivity to marginal imbalance
+
+- **Title:** High Agreement but Low Kappa: I. The Problems of Two Paradoxes
+- **Type:** Peer-reviewed primary methods paper, 1990
+- **URL:** https://doi.org/10.1016/0895-4356(90)90158-l
+- **Accessed:** 2026-07-17
+- **Supports:** In a binary agreement table, imbalanced marginal totals can
+  substantially reduce kappa despite high observed agreement.
+- **Does not establish:** That kappa must be discarded, which alternative is
+  correct for YNOY, or any universal acceptance threshold.
+- **Next check:** Report raw agreement, marginals, confusion matrix, prevalence,
+  and error costs alongside any selected chance-corrected statistic.
+
 ### L-032 — V1.7 formal-safety research checkpoint (2026-07-17)
 
 - **Type:** Local research synthesis and implementation/test handoff
@@ -1977,6 +2031,40 @@ infrastructure.
   persona quality.
 - **Next check:** Implement the red tests in a separately approved change,
   then choose numeric evaluation values before opening a sealed benchmark.
+
+### L-033 — Formula-and-flow adversarial review checkpoint (2026-07-17)
+
+- **Type:** User-supplied report intake plus local source and contract review
+- **Provenance:** Supplied artifact SHA-256
+  `DC4F9A6FF9C2BE70B583C705DB92E157D19BC02B1A4423EBF1D51002BFB7B74B`,
+  D-056, Event 048, S-020, S-023, S-052, S-075, and S-084 through S-088.
+- **Supports:** Basis-specific response gating, deterministic decision-group
+  closure, whole-dataflow authorization noninterference, V1-wide private-class
+  derivative isolation, separated ranking and emission thresholds, and a
+  frozen overall coverage decision with absolute required-stratum safety
+  ceilings are now explicit research obligations.
+- **Does not establish:** Runtime conformance, a valid numeric score, a chosen
+  agreement statistic or threshold, database linearizability, privacy against
+  timing channels, unlearning, erasure in backups, or persona quality.
+- **Next check:** Make the expanded red tests fail against the current runtime
+  in a separately authorized implementation before claiming V1.7 behavior.
+
+### L-034 — Deterministic formal-contract closure checkpoint (2026-07-17)
+
+- **Type:** Local adversarial review correction and implementation/test handoff
+- **Provenance:** D-057 and Event 049; the current mathematical documents and
+  independent read-only contract reviews; no new external authority or private
+  corpus was used.
+- **Supports:** The research specification now binds canonical claim identity,
+  active decision groups, query-valid supersession, target-specific calibration,
+  deterministic matched selection, frozen baseline/cluster manifests, trusted
+  append context, authorization-tuple selection, attested erasure universes,
+  quantified post-delete traces, and typed public output.
+- **Does not establish:** Runtime conformance, authenticator or attestation
+  security, database linearizability, numeric calibration, external-provider
+  privacy, backup erasure, unlearning, persona quality, or product readiness.
+- **Next check:** In a separately approved runtime change, map each interface to
+  one owner and make the new red tests fail before implementing their behavior.
 
 ## Evidence Gaps
 
@@ -1993,7 +2081,7 @@ The current ledger lacks:
 - a privacy impact assessment beyond the implemented V1 threat model;
 - proof that any candidate method predicts the user's real decisions;
 - evidence for product-market demand outside the originating user;
-- recovered bibliographies and claim maps for all four supplied reports;
+- complete recovered bibliographies and claim maps for every supplied report;
 - independent reproduction of the 2026 preprints and their reported numbers;
 - empirical justification for any acceptance or falsification threshold;
 - evidence that the proposed evidence, identity, continuity, derivation, and

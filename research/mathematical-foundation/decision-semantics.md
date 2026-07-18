@@ -34,7 +34,7 @@ $$
 \mathrm{Admit}(c)\,
 I[\omega_q\models s_c]\,
 I[t_q\in[b_c,e_c]]\,
-I[u_c=u_q]\,
+I[\mathrm{subjectId}(c)=u_q]\,
 I[\neg\mathrm{revoked}(c)].
 $$
 
@@ -72,6 +72,21 @@ $$
 \mathrm{genericAdvisor},\mathrm{abstention}\}.
 $$
 
+The public output is a disjoint tagged union:
+
+$$
+\mathrm{PublicJudgment}[T]=
+\mathrm{ExplicitPolicy}[T]\mid
+\mathrm{InferredPersona}[T]\mid
+\mathrm{GenericAdvisor}[T]\mid
+\mathrm{Abstention}[\mathrm{Reason}].
+$$
+
+`MirrorCandidate[T]` is an internal type and is not a member of
+`PublicJudgment[T]`. Only the deterministic basis resolver may construct a
+public variant; serialization, logging, or fallback code cannot unwrap an
+internal candidate directly.
+
 The bases have different admission rules:
 
 | Basis | Permitted source | Required behavior |
@@ -94,17 +109,47 @@ C(c_i,c_j)\in
 \{\mathrm{compatible},\mathrm{incompatible},\mathrm{unknown}\}.
 $$
 
-Conflict is assessed only when both claims share the same user-reviewed
-`decision_key`. The key identifies one decision question under the relevant
-target layer; a model may propose it, but only a review receipt can establish
-it for canonical use.
+Conflict is assessed only inside a full reviewed key
 
-For a decision group $G_k(q)$:
+$$
+K(c)=(\mathrm{subjectId}(c),\mathrm{targetLayer}(c),
+\mathrm{reviewedDecisionKey}(c)).
+$$
+
+The final component identifies one decision question; a model may propose it,
+but only a review receipt can establish the full key for canonical use.
+
+Let $\mathrm{ValidSupersedes}_q$ be the query-relative relation defined in
+Section 4. The active decision group is
+
+$$
+G_k(q)=\{c\in\mathcal{E}(q):
+K(c)=k\land
+\nexists c'\in\mathcal{E}(q):
+\mathrm{ValidSupersedes}_q(c',c)\}.
+$$
+
+Every canonical claim has exactly one reviewed key whose record also binds its
+target layer. Missing, malformed, model-only, or receipt-unbound keys fail
+admission and cannot enter persona evidence. For every two distinct members of
+one group, $C$ is symmetric and total; a missing assessment is `unknown`.
+
+Conflict is unsafe only for a distinct pair:
 
 $$
 \mathrm{UnsafeConflict}(G_k)=
-I[\exists c_i,c_j\in G_k:
+I[\exists c_i,c_j\in G_k:c_i\ne c_j\land
 C(c_i,c_j)\ne\mathrm{compatible}].
+$$
+
+Let $\mathrm{SupersessionInvalid}(k,q)=1$ when a stored edge relevant to full
+key $k$ has a missing endpoint, broken receipt/head/tuple binding, cross-key
+endpoint, or cycle. The complete group gate is
+
+$$
+\mathrm{UnsafeDecisionGroup}(k,q)=
+I[\mathrm{SupersessionInvalid}(k,q)=1\lor
+\mathrm{UnsafeConflict}(G_k(q))=1].
 $$
 
 Mirror must abstain for that decision key when `incompatible` or `unknown`
@@ -112,17 +157,61 @@ appears and no explicit supersession resolves it. Different decision keys do
 not conflict merely because their labels differ. Recency, frequency,
 similarity, or model confidence cannot resolve a conflict.
 
+### 3.1 Required decision-group closure
+
+Conflict safety cannot depend on a model choosing which keys to inspect. For a
+versioned output contract $v$, define
+
+$$
+\mathcal{K}_{\mathrm{req}}(q,v)=
+\mathrm{Closure}_{\mathrm{dep}}
+(\mathrm{Manifest}_v(m_q,\mathrm{requestedOutput}(q)))
+$$
+
+and
+
+$$
+\mathcal{G}_{\mathrm{req}}(q,v)=
+\{G_k(q):k\in\mathcal{K}_{\mathrm{req}}(q,v)\}.
+$$
+
+The manifest is a deterministic, versioned system-control input selected
+before candidate generation. It includes the transitive decision-key
+dependencies of every rule, predicate, basis selector, content field, and
+rationale field that may affect the requested output. A model, extractor,
+candidate answer, or ranking score cannot author or narrow it.
+
+If the manifest is missing, its version is stale, a dependency cannot be
+resolved, or resolution reads or is influenced by an applicable key outside
+the declared closure, Mirror fails closed. This makes omission of a conflicting
+key an abstention condition rather than a way to manufacture an empty conflict
+set.
+
 ## 4. Supersession
 
-Let $c_i\succ c_j$ mean a verified review event explicitly supersedes $c_j$
-with $c_i$. The relation is acyclic:
+Let $c_i\succ c_j$ mean a verified review event explicitly names $c_i$ as a
+successor to $c_j$. The stored relation is acyclic:
 
 $$
 c_i\succ^{+}c_i\quad\mathrm{is\ forbidden}.
 $$
 
-Supersession preserves the historical record. It changes the active
-projection; it does not rewrite the source, adoption, or earlier receipt.
+One stored edge changes the active projection for query $q$ only when
+
+$$
+\mathrm{ValidSupersedes}_q(c_i,c_j)=
+I[c_i\ne c_j]I[c_i\succ c_j]I[\mathrm{Applies}(c_i,q)]
+I[K(c_i)=K(c_j)].
+$$
+
+An expired, future, revoked, inadmissible, wrong-subject, wrong-key, or
+wrong-layer successor cannot hide an otherwise active claim. A narrower
+successor supersedes only where its own scope applies. Supersession preserves
+the historical source, adoption, and earlier receipt. Its review receipt binds
+both claim IDs and immutable tuple hashes, the review, and expected head.
+Missing endpoints, a broken binding, or a cycle sets
+`SupersessionInvalid(k,q)` and forces abstention; it is never repaired by
+recency.
 
 ## 5. Verified adoption boundary
 
@@ -134,14 +223,16 @@ adoption. The current base does not yet implement that independent channel.
 A candidate adoption record is
 
 $$
-a=(\mathrm{subjectId},\mathrm{reviewId},\mathrm{claimId},
-\mathrm{expectedHead},\mathrm{channelId},\mathrm{challenge},
-\mathrm{response},\mathrm{receiptHash}).
+r_{\mathrm{adopt}}=(\mathrm{subjectId},\mathrm{reviewId},\mathrm{claimId},
+\mathrm{claimTupleHash},\mathrm{fullDecisionKey},\mathrm{expectedHead},
+\mathrm{channelId},\mathrm{challenge},\mathrm{response},
+\mathrm{receiptHash}).
 $$
 
-Verification must bind subject, review, claim, current head, approval channel,
-fresh challenge, and response. A receipt replayed for another subject, review,
-claim, or head fails closed. Challenge reuse also fails closed.
+Verification must bind subject, review, immutable claim tuple, full decision
+key, current head, approval channel, fresh challenge, and response. A receipt
+replayed or rebound for another field fails closed. Challenge reuse also fails
+closed.
 
 A hash proves that bytes have not changed since hashing. It does not prove
 human presence, user intent, device integrity, or channel independence.
@@ -153,11 +244,12 @@ solved property. The concrete authenticator remains an open decision.
 For each decision key, the resolver follows this order:
 
 1. reject inadmissible or inapplicable claims;
-2. apply explicit supersession;
+2. apply only query-valid explicit supersession;
 3. assess the remaining same-key relations;
 4. abstain on `incompatible` or `unknown`;
 5. use an exact explicit policy when one unambiguous policy remains;
 6. use inferred persona only with a valid calibration profile;
-7. otherwise return generic advice or abstention, preserving the basis label.
+7. otherwise Mirror abstains; Advisor may independently return labeled generic
+   advice without unwrapping a Mirror candidate.
 
 No step grants send, execute, promote, or impersonation authority.

@@ -62,9 +62,12 @@ not belong to $G$.
 
 ### P2 — No external private egress
 
+Let $\mathcal{H}$ be all D1-D5 private state and
+$\mathcal{H}^{+}=\bigcup_{x\in\mathcal{H}}D^+(x)$ include its transformed
+derivatives. Then
+
 $$
-\forall x:\mathrm{class}(x)\in\{D1,D2,D3,D4,D5\}
-\Rightarrow
+\forall x\in\mathcal{H}^{+}:\quad
 \mathrm{externalSend}(x)=0.
 $$
 
@@ -74,11 +77,11 @@ artifact identity need independent attestation.
 ### P3 — Provenance completeness
 
 $$
-\mathrm{retrievableIdentity}(c)=1
+\mathrm{Admit}(c)=1
 \Rightarrow
-\mathrm{source}(c)\land
-\mathrm{adoption}(c)\land
-\mathrm{receiptChain}(c).
+\mathrm{retrievableIdentity}(c)\land
+\mathrm{source}(c)\land\mathrm{adoption}(c)\land
+\mathrm{receiptChain}(c)\land\mathrm{reviewedDecisionKey}(c).
 $$
 
 If any term is missing, the claim may be inspected as a quarantined proposal
@@ -87,27 +90,77 @@ but cannot support Mirror.
 ### P4 — Deletion completeness
 
 $$
-\mathrm{DeleteSuccess}(s)=1
-=
+\mathrm{DeleteSuccess}(s;v)=
 I[\mathrm{closureAbsent}(D^+(s))]
-I[\mathrm{registryComplete}]
-I[\mathrm{postDeleteIndependent}(s)]
-I[\mathrm{tombstoneFence}(s)].
+I[\mathrm{RegistryComplete}(v)]
+I[\mathrm{VerifyErasureReceipt}(r_{\mathrm{erase}},s,v)]
+I[\mathrm{PostDeleteIndependent}_v(s)]
+I[\mathrm{tombstoneFence}_v(s)].
 $$
 
 This includes derived reports, embeddings, claims, continuity edges, indexes,
-and private presentation artifacts. D2-D3 identity data is forbidden from
-model parameters until a separate unlearning proof exists.
+and private presentation artifacts. In V1, D1-D5 private data and its
+derivatives cannot influence model parameters. A later exception requires a
+separately approved
+purpose, authority, retention, deletion, and unlearning contract; none is
+implied here.
 
 ### P5 — Authority independence
 
+Let $\ell_{\mathrm{auth}}$ be trusted identity, immutable resource, control,
+grant, and explicitly confirmed action-request state. A model proposal is not
+trusted request state. Let $h$ be all persona-, model-, extractor-, or
+reasoner-derived state. The canonical authorization tuple is
+
 $$
-\frac{\partial\mathrm{Authority}}{\partial\mathrm{PersonaFit}}=0.
+\gamma_{\mathrm{auth}}=(\mathrm{actorId},\mathrm{subjectId},
+\mathrm{confirmedActionDigest},\mathrm{resourceId},\mathrm{capability},
+\mathrm{grantId},\mathrm{scope},\mathrm{confirmationReceipt},
+\mathrm{auditContext},\mathrm{killSafetyState},\mathrm{policyVersion}).
 $$
 
-This notation states an architectural independence requirement: increasing
-persona similarity must not itself increase permission to send, execute,
-approve, or impersonate.
+Stable IDs and enum values are canonical; grant and confirmation receipts must
+verify and bind the same actor, subject, action, resource, scope, and policy.
+`TrustedMatch(\gamma_{\mathrm{auth}},\ell_{\mathrm{auth}})=1` means every bound
+field matches. $\mathrm{SelectAuth}_{T}$ returns the unique trusted match or
+$\bot$ on zero or multiple matches:
+
+$$
+\mathrm{SelectAuth}_{T}(\ell)=
+\begin{cases}
+\gamma, & \exists!\gamma:\mathrm{TrustedMatch}(\gamma,\ell)=1,\\
+\bot, & \mathrm{otherwise}.
+\end{cases}
+$$
+
+The selector must satisfy
+
+$$
+\forall\ell_{\mathrm{auth}},h_1,h_2:\quad
+\mathrm{SelectAuth}(\ell_{\mathrm{auth}},h_1)=
+\mathrm{SelectAuth}(\ell_{\mathrm{auth}},h_2)=
+\mathrm{SelectAuth}_{T}(\ell_{\mathrm{auth}}).
+$$
+
+$$
+\forall\ell_{\mathrm{auth}},\gamma,h:\quad
+[\gamma=\mathrm{SelectAuth}_{T}(\ell_{\mathrm{auth}})\land\gamma\ne\bot]
+\Rightarrow
+\pi_{\mathrm{auth}}(\gamma,h)=\gamma
+\quad\land\quad
+\mathrm{Authorize}(\gamma,h)=\mathrm{Policy}(\gamma).
+$$
+
+This is selector and field noninterference, not a correlation. No value derived
+from $h$ may choose a grant or populate or alter its request, scope,
+confirmation, capability, audit, or kill-safety inputs. Request substitution
+after confirmation fails the trusted binding.
+Tests must exercise the pure policy oracle with capability synthetically
+enabled so the invariant cannot pass only because V1 runtime capability is
+fixed to zero. This synthetic oracle authorizes no product action. The
+conjunctive execution gate in
+[Formal System Model](formal-system.md#9-mirror-advisor-and-authority) remains
+the necessary action contract.
 
 ## Falsification matrix
 
@@ -126,7 +179,8 @@ approve, or impersonate.
 
 - The decision-label distribution and rationale representation are not yet
   validated on a randomized represented-user sample.
-- No calibrated threshold $\tau$ exists for Mirror abstention.
+- No calibrated threshold $\tau_{\mathrm{persona}}$ exists for personal
+  inference.
 - The relevance weights $w$ are unselected and may be unnecessary if a simpler
   deterministic order performs as well.
 - Semantic conflict beyond exact or explicitly linked oppositions remains an

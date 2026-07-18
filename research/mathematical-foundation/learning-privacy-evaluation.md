@@ -12,26 +12,29 @@ where $\Delta_t$ is a verified source, correction, supersession, outcome, or
 deletion event. The transition must preserve prior receipts and create a new
 state digest. A later action does not mutate the historical source event.
 
-A probabilistic parameter update may be represented as
+A probabilistic update of recomputable external structured state may be
+represented as
 
 $$
 P(\theta\mid D_{1:t})\propto
 P(d_t\mid\theta)P(\theta\mid D_{1:t-1}),
 $$
 
-but only adopted represented-user evidence may enter $D$. Model-generated text
-and external documents remain context or quarantined proposals. The system
-must not learn identity from its own previous output.
+but only adopted represented-user evidence may enter $D$. Here $\theta$ is an
+external, source-linked state estimate, not a neural-model weight, adapter, or
+activation-steering parameter. This candidate equation grants no
+`TrainingInput` authority. Model-generated text and external documents remain
+context or quarantined proposals, and the V1 D1-D5 direct-and-derivative
+parameter-update prohibition is normative in
+[State, Privacy, and Erasure](state-privacy-erasure.md#4-parametric-memory-prohibition).
+The system must not learn identity from its own previous output.
 
-Every durable correction uses an expected-head event:
-
-$$
-e=(\mathrm{eventId},\mathrm{streamId},\mathrm{expectedRevision},
-\mathrm{type},\mathrm{payloadHash},\mathrm{causationId}).
-$$
-
-The idempotency, stale-head, and concurrent-writer rules are normative in
+Every durable correction uses the authorization-context-bound expected-head
+event defined in
 [State, Privacy, and Erasure](state-privacy-erasure.md#1-linearizable-review-append).
+That canonical owner defines authorization, idempotency, stale-head, rebound-
+context, and concurrent-writer behavior; this overview does not duplicate a
+weaker tuple.
 
 ## 2. Deletion closure
 
@@ -42,10 +45,11 @@ $$
 D^+(s)=\{s\}\cup\{v:\exists\mathrm{\ path\ }s\rightarrow^+v\}.
 $$
 
-A deletion succeeds only when the dependency closure is inactive, the erasure
-registry covers every private producer, later behavior is independent of the
-deleted content, and a tombstone prevents resurrection. The complete invariant
-is in [State, Privacy, and Erasure](state-privacy-erasure.md#3-erasure-registry).
+A deletion succeeds only when the dependency closure is absent, a current
+attestation binds the declared producer universe to its handlers and parity
+tests, an erasure receipt verifies, all admissible future traces are independent
+of the deleted content, and a tombstone prevents resurrection. The complete
+invariant is in [State, Privacy, and Erasure](state-privacy-erasure.md#3-erasure-registry).
 
 ## 3. Privacy and egress
 
@@ -97,8 +101,9 @@ L_{\mathrm{scope}},L_{\mathrm{provenance}},
 L_{\mathrm{privacy}},L_{\mathrm{promotion}},C_{\mathrm{review}}).
 $$
 
-A structured model supports the thesis only if it beats simple baselines at
-matched coverage while all fatal-gate counts remain zero. The primary risk
-difference, paired cluster bootstrap, calibration rules, shift strata, and
+A structured model supports the thesis only if it beats every pre-registered
+primary baseline at operationally matched coverage while all fatal-gate counts
+remain zero. The frozen selector, case/baseline/cluster manifests, primary risk
+difference, paired cluster bootstrap, calibration isolation, shift strata, and
 inconclusive status are defined in
 [Evaluation Contract](evaluation-contract.md). Numeric values remain open.

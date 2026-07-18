@@ -2259,3 +2259,90 @@ Numeric acceptance thresholds, minimum cases and clusters, interval settings,
 the real authenticator, timing threat semantics, migrations, dependencies, and
 runtime ownership remain open. Until those values and a sealed experiment
 exist, persona results are `not_calibrated/inconclusive`.
+
+## Event 048 — Audit the Formula-and-Flow Defect Report
+
+### User Direction
+
+The user supplied an AI-generated audit of the combined research bundle and
+asked for a source-grounded review. After receiving the assessment, the user
+delegated the evidence-filtered next step to the assistant.
+
+### Confirmed Report Value
+
+The report correctly challenges an ungrounded two-rater kappa rule, an
+undefined entropy threshold, calculus-like authority notation, universalized
+JPAF constants, transferred P3 benchmark percentages, and happy-path-only
+diagrams. Each accepted claim remains bounded by its primary source and local
+contract evidence.
+
+### Confirmed Report Defects
+
+The report treats a source expression explicitly labeled non-numeric as a
+numeric score and proposes coefficients that violate its own normalization
+condition. Its replacement authority implication makes an incomplete set of
+conditions sufficient rather than necessary. Its diagrams introduce execution,
+cryptographic delegation, budget leases, rollback, and a provenance snapshot
+despite the current V1 no-action and content-free-erasure boundaries. W3C PROV
+does not supply those control guarantees.
+
+### Research Result
+
+The audit triggered an independent review of the current formal documents. It
+found an under-specified decision-group closure, conflated ranking and persona-
+emission thresholds, an upstream authorization-taint gap, indirect private
+parameter-update paths, and no overall decision rule preventing post-hoc
+selection across coverage points. The research contract now closes those
+specification gaps, requires controlled familywise evidence, keeps supported
+high-risk strata visible, and expands the future red-test handoff. No runtime,
+source code, schema, corpus, model, dependency, commit, or push change follows
+from this event.
+
+### Remaining Decisions
+
+The final annotation-agreement statistic, entropy use, numeric thresholds,
+single-primary versus familywise coverage rule, absolute per-stratum ceiling
+values, authenticator, timing threat model, unlearning proof, and any future
+action layer remain unresolved or separately gated.
+
+## Event 049 — Close Residual Formal-Contract Ambiguity
+
+### User Direction
+
+After reviewing the updated mathematical foundation, the user explicitly asked
+for the identified corrections to be applied. The authorized scope remains
+research documentation and future red-test definitions only.
+
+### Research Result
+
+The canonical claim now binds stable claim and subject IDs to a reviewed
+subject/layer/decision key. Decision groups contain only applicable active
+claims, conflict requires two distinct claims, and only a query-applicable,
+receipt-bound, same-key successor may suppress an older claim. Internal Mirror
+candidates are type-separated from gated public judgments.
+
+Calibration now binds an exact represented-user outcome target, predictor and
+feature versions, disjoint fit/validation partitions, shift domain, threshold,
+and a pre-sealed freeze receipt. Matched coverage now has a deterministic
+label-blind selector plus frozen case, baseline, cluster, support, and inference
+manifests; sealed results cannot select a favorable baseline or re-cluster.
+
+Review append now requires trusted actor/subject/review/adoption context in
+addition to expected-head idempotency. Authority noninterference covers both
+trusted tuple selection and tuple fields. Erasure now requires a current
+producer-universe attestation, verified erasure receipt, and counterfactual
+equality across admissible future retry, import, restore, and recovery traces.
+
+### Evidence Boundary
+
+These are research invariants and mandatory future red tests. No source code,
+test implementation, schema, corpus, model, provider, dependency, commit, push,
+runtime conformance, calibration result, erasure proof, or persona evidence was
+created by this event.
+
+### Remaining Decisions
+
+The numeric comparison specification, calibration mapping and threshold,
+primary baseline set, cluster estimand, independent authenticator, append-event
+policy, producer-universe attestation mechanism, recovery/backup boundary,
+timing observer, and all runtime owners remain open or separately gated.

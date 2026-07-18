@@ -272,6 +272,14 @@ freeze target-free baseline predictions, and collect represented-user targets
 only afterward. Failure to retain enough independent cases must stop the
 benchmark rather than relax the holdout.
 
+**Metric boundary:** The eight blind repeats are within-person test-retest
+observations, not two independent raters. Neither Cohen nor Fleiss can turn them
+into independent ground truth. Report raw field agreement, transitions,
+prevalence, and separately preserved adjudication. If a future schema-clarity
+study uses the same two independent annotators on every item, Cohen's kappa is
+a candidate alongside the confusion matrix and raw agreement; the represented
+user remains the authority for personal adoption.
+
 ## Next Discriminating Questions
 
 These no longer ask the user to design the system from scratch. They test the
@@ -1202,20 +1210,32 @@ administrator or root compromise is outside the V1 guarantee.
 
 **Decision needed later:** Select the real channel, freshness mechanism,
 subject/review/head binding, recovery behavior, and replay window after a
-threat-model review. This requires separate implementation authorization.
+threat-model review. The same review must select which event types require an
+adoption reference and how trusted `ReviewAppend` caller context is produced
+without giving ordinary runtime or a model adoption authority. This requires
+separate implementation authorization.
 
 ### RQ-029 — What numeric matched-coverage acceptance protocol is adequate?
 
 **Status:** Open; results remain `not_calibrated/inconclusive`.
 
-**Unknown values:** Coverage grid, minimum answered cases, minimum independent
-clusters, minimum risk improvement, bootstrap repetitions, interval level,
-tie treatment tolerance, and per-stratum support.
+**Unknown values:** Coverage grid, one primary coverage point versus a declared
+familywise primary subset, simultaneous or familywise error control and pass
+rule, minimum answered cases, minimum independent clusters, minimum risk
+improvement, bootstrap repetitions, interval level, coverage-rounding tolerance,
+required shift strata, per-stratum support, absolute coverage-indexed stratum
+risk ceilings, and their simultaneous error-control rule. The primary baseline
+manifest, total case-to-cluster mapping, weighting estimand, selector kind,
+rounding rule, and calibration fit/validation manifests are also unselected.
 
 **Next discriminating check:** Use a pilot without opening sealed targets to
 estimate feasible support, then freeze all values and versions before the
-paired cluster evaluation. Values must not be chosen after seeing the sealed
-comparison.
+paired cluster evaluation. Choose either one primary coverage or one
+familywise-error-controlled rule before seeing the sealed comparison. A
+favorable diagnostic point, unadjusted pointwise intervals, pooled suppression
+of a supported high-risk stratum, or an unsupported required stratum cannot
+create an overall win. A baseline-relative improvement cannot substitute for a
+frozen absolute safety ceiling in a required stratum.
 
 ### RQ-030 — Which observations belong to the privacy trace?
 
@@ -1229,3 +1249,42 @@ and termination are observer-visible.
 resource contention, or power side channels belong in the supported threat
 model. If they do, select an observational or distributional equivalence and a
 testable tolerance before claiming noninterference.
+
+### RQ-031 — Could any private class ever enter model parameters after V1?
+
+**Status:** V1 resolved as no; any later D1-D3 exception remains open and
+ask-first. D4 credentials and D5 third-party personal data have no proposed
+training path.
+
+**Current invariant:** D1-D5 and their transformed labels, rewards, summaries,
+selectors, hyperparameters, adapters, and steering artifacts cannot influence
+fine-tuning or another model-parameter update. Source-linked external structured
+state is a separate, deletable owner and is not neural training.
+
+**Required future evidence:** A later D1-D3 proposal would need explicit
+purpose and user authority, source and subject rights, retention, exact
+parameter lineage, measured benefit over external memory, attack testing,
+validated unlearning, deletion and backup round trips, and a new public/private
+threat decision. Until then, the external-memory design is mandatory.
+
+### RQ-032 — What proves the private-producer universe is complete enough?
+
+**Status:** Open; the invariant is specified but no attestation mechanism or
+operational boundary is selected.
+
+**Known boundary:** Deletion success now requires a current attestation binding
+the declared product boundary, producer inventory, registry, handler/parity
+status, discovery procedure, and relevant product/configuration/artifact
+versions. Self-registration or a source-row deletion is insufficient.
+
+**Remaining uncertainty:** No finite scan proves that an undiscovered or
+out-of-boundary producer does not exist. Backup, restore, generated artifacts,
+plugins, caches, and optional integrations also need an explicit supported
+boundary before the attestation can be interpreted.
+
+**Next discriminating check:** In a separately authorized implementation plan,
+enumerate every producer-capable surface from trusted build, schema, storage,
+artifact, and configuration manifests; define stale-version behavior; inject an
+unregistered producer; and run deletion through retry, delayed work, import,
+restore, and recovery schedules. Do not claim universal erasure from a green
+synthetic registry test.

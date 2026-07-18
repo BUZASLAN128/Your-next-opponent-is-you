@@ -691,3 +691,59 @@ interfaces and red tests are specified, but no source, test, schema, corpus,
 model, provider, migration, or dependency was changed. The next implementation
 gate is to make those tests fail against the current code, map each contract to
 one owner, and seek separate approval before changing runtime behavior.
+
+## V1.7 Adversarial Formal Review Checkpoint — 2026-07-17
+
+A user-supplied formula-and-flow audit challenged ungrounded thresholds and
+ambiguous mathematical notation. Independent review accepted its kappa,
+entropy, authority-notation, JPAF, P3, and happy-path diagram cautions only
+within their evidence limits.
+
+The review rejected the report's numeric replacement for the explicitly
+non-numeric `resolve` notation, its reverse-implication authority formula, and
+its proposed execution, cryptographic delegation, budget-lease, rollback, and
+provenance-snapshot flows. These would confuse research inputs with authority,
+expand V1 action capability, or retain content across erasure. W3C PROV remains
+vocabulary and validation support, not a control mechanism.
+
+The adversarial pass also found gaps the report missed. Personal inference now
+uses a deterministic dependency closure, so omitting a conflicting decision
+key fails closed. Calibrated persona emission is distinct from ranking-only
+evaluation selection. Authorization projection is independent of all persona-
+derived state, and the future oracle test cannot pass vacuously on disabled V1
+capability. D1-D5 and their derivatives are prohibited from parameter-update
+influence, while source-linked external state remains distinct. Evaluation must
+freeze one primary coverage or a controlled familywise rule; supported high-
+risk strata stay visible, and unsupported required strata remain inconclusive.
+
+This is a stronger specification and red-test handoff, not runtime proof. The
+next implementation gate remains separately authorized failing tests and owner
+mapping. Numeric thresholds, the overall coverage-rule choice, authenticator,
+per-stratum ceiling values, timing privacy, unlearning, and real persona
+evidence remain open.
+
+## V1.7 Deterministic Contract-Closure Checkpoint — 2026-07-17
+
+A second adversarial pass closed residual ambiguity without selecting a runtime
+stack. Canonical claims now carry stable subject identity and a reviewed
+subject/layer/decision key; active groups exclude only query-valid verified
+successors, and conflict is defined over distinct pairs. The internal Mirror
+argmax is no longer a public output type.
+
+Calibration is now an exact-target frozen artifact isolated from sealed outcome
+derivatives. A versioned comparison specification deterministically binds case
+selection, label-blind ties, rounding, support, primary baselines, clusters,
+weighting, and inference. This prevents a favorable baseline, cluster boundary,
+or tied case from being selected after targets are visible.
+
+The state boundary now distinguishes append authority from adoption authority,
+and binds append retries to actor, subject, review, and adoption context.
+Authorization independence includes trusted tuple selection, with ambiguous
+matches denying. Erasure completeness is relative to a current attested product
+boundary and is tested across every declared future retry, import, restore, and
+recovery trace rather than a no-call fixture.
+
+These refinements create no implementation or proof. Numeric values, the real
+authenticator, append-event policy, attestation mechanism, complete recovery and
+backup boundary, runtime owners, timing channels, unlearning, and represented-
+user persona evidence remain open.
