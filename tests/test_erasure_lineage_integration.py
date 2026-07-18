@@ -21,10 +21,11 @@ def _confirm_and_finalize(database: Database, plan: dict[str, object]) -> UUID:
     digest = str(plan["plan_sha256"])
     result = repository.confirm_database(plan_id=plan_id, plan_sha256=digest)
     assert result["database_deleted"] is True
+    assert result["status"] == "local_database_deleted" and result["universal_success"] is False
     assert _audit_count(database, plan_id, "local_database_deleted_pending_artifact_cleanup") == 1
-    assert _audit_count(database, plan_id, "local_dependency_cascade_deleted") == 0
+    assert _audit_count(database, plan_id, "local_cleanup_recorded_no_universal_attestation") == 0
     repository.finalize(plan_id=plan_id, plan_sha256=digest)
-    assert _audit_count(database, plan_id, "local_dependency_cascade_deleted") == 1
+    assert _audit_count(database, plan_id, "local_cleanup_recorded_no_universal_attestation") == 1
     return plan_id
 
 
@@ -102,7 +103,9 @@ def test_source_record_erasure_removes_all_bootstrap_declarations_and_source(
             (source_id, source_id),
         ).fetchone()
     assert row is not None and row["sources"] == 0 and row["declarations"] == 0
-    assert _audit_count(test_database, plan_id, "local_dependency_cascade_deleted") == 1
+    assert (
+        _audit_count(test_database, plan_id, "local_cleanup_recorded_no_universal_attestation") == 1
+    )
 
 
 def test_direct_derived_record_erasure_removes_claim_and_leaves_tombstone(
@@ -129,7 +132,9 @@ def test_direct_derived_record_erasure_removes_claim_and_leaves_tombstone(
             (candidate.record_id,),
         ).fetchone()
     assert row is not None and row["count"] == 0
-    assert _audit_count(test_database, plan_id, "local_dependency_cascade_deleted") == 1
+    assert (
+        _audit_count(test_database, plan_id, "local_cleanup_recorded_no_universal_attestation") == 1
+    )
 
 
 def test_erasure_removes_continuity_events_referencing_target_record(

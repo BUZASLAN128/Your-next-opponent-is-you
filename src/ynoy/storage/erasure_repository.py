@@ -68,12 +68,14 @@ class ErasureRepository:
                 )
                 _append_database_delete_receipt(connection, plan_id, len(target_ids))
         return {
+            "status": "local_database_deleted",
             "plan_id": str(plan_id),
             "source_id": source_id,
             "deleted_record_count": len(target_ids),
             "target_counts": plan["target_counts"],
             "artifact_ids": [str(value) for value in target_ids],
             "database_deleted": True,
+            "universal_success": False,
         }
 
     def finalize(self, *, plan_id: UUID, plan_sha256: str) -> None:
@@ -115,9 +117,9 @@ def _append_tombstone(connection: Connection[Row], plan_id: UUID, count: int) ->
         config_version=SCHEMA_VERSION,
         opaque_input_ids=(str(plan_id),),
         input_count=count,
-        decision="complete",
-        reason_code="local_dependency_cascade_deleted",
-        status="success",
+        decision="partial",
+        reason_code="local_cleanup_recorded_no_universal_attestation",
+        status="partial",
     )
     insert_audit_receipt(connection, receipt)
 

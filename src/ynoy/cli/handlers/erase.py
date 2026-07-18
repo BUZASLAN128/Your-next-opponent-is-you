@@ -46,12 +46,19 @@ def _confirm(args: argparse.Namespace, context: CommandContext) -> dict[str, obj
     store.delete_if_exists("erasure-plans", plan_id)
     repository.finalize(plan_id=plan_id, plan_sha256=args.plan_sha256)
     return {
-        "status": "erased",
+        "status": "partial",
         "plan_id": str(plan_id),
         "deleted_record_count": result["deleted_record_count"],
         "deleted_artifact_count": deleted_artifacts,
         "target_counts": result["target_counts"],
         "local_deleted": True,
+        "local_database_status": result["status"],
+        "universal_success": False,
+        "missing_proofs": (
+            "independent_producer_universe_attestation",
+            "persistent_cross_restart_tombstone_fence",
+            "post_delete_future_trace_independence",
+        ),
         "provider_residual": "not_applicable_no_external_egress",
         "secure_physical_erase_guaranteed": False,
     }

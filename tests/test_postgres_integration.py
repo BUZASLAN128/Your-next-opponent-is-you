@@ -177,7 +177,7 @@ def test_erasure_cascade_is_resumable_and_leaves_content_free_tombstone(
               (SELECT count(*) FROM ynoy.inventory_manifests
                WHERE source_archive_sha256 = %s) AS manifests,
               (SELECT count(*) FROM ynoy.audit_receipts
-               WHERE reason_code = 'local_dependency_cascade_deleted'
+               WHERE reason_code = 'local_cleanup_recorded_no_universal_attestation'
                  AND opaque_input_ids @> ARRAY[%s]) AS tombstones,
               (SELECT count(*) FROM ynoy.audit_receipts
                WHERE reason_code = 'local_database_deleted_pending_artifact_cleanup'

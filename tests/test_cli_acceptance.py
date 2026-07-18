@@ -172,4 +172,6 @@ def test_synthetic_cli_end_to_end(tmp_path: Path, make_chatgpt_zip, test_databas
         "--synthetic",
     )
     assert erased["local_deleted"] is True
+    assert erased["status"] == "partial" and erased["universal_success"] is False
+    assert erased["local_database_status"] == "local_database_deleted"
     assert erased["provider_residual"] == "not_applicable_no_external_egress"
