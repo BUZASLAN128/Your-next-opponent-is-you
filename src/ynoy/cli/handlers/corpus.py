@@ -5,6 +5,12 @@ from pathlib import Path
 
 from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.common import build_audit_receipt, parse_uuid, require_matching_mode
+from ynoy.cli.handlers.corpus_codex_vault import (
+    approve_codex,
+    codex_status,
+    ingest_codex,
+    snapshot_codex,
+)
 from ynoy.corpus import (
     ChatGPTZipAdapter,
     CodexContentSampleAdapter,
@@ -25,6 +31,9 @@ def handle_corpus(args: argparse.Namespace, context: CommandContext) -> dict[str
         "inventory": _inventory,
         "codex-inventory": _codex_inventory,
         "codex-pilot": _codex_pilot,
+        "codex-snapshot": snapshot_codex,
+        "codex-ingest": ingest_codex,
+        "status": codex_status,
         "approve": _approve,
         "ingest": _ingest,
     }
@@ -126,6 +135,8 @@ def _inventory_counts(manifest: InventoryManifest) -> dict[str, int]:
 
 
 def _approve(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
+    if args.codex:
+        return approve_codex(args, context)
     synthetic = bool(args.synthetic)
     store = context.artifacts(synthetic=synthetic)
     database = context.database(synthetic=synthetic)
@@ -135,7 +146,7 @@ def _approve(args: argparse.Namespace, context: CommandContext) -> dict[str, obj
     require_matching_mode(requested_synthetic=synthetic, artifact_synthetic=manifest.synthetic)
     approval = create_ingestion_approval(
         manifest,
-        allowed_operations=tuple(args.operations),
+        allowed_operations=tuple(args.operations or ("ingest", "derive", "benchmark", "report")),
         retention_days=args.retention_days,
         third_party_reviewed=bool(args.third_party_reviewed),
     )

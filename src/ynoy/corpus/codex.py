@@ -84,14 +84,18 @@ def assert_synthetic_codex_root(root: Path) -> None:
 
 def _entry(item: DiscoveredCodexFile, limits: CodexInventoryLimits) -> CodexInventoryEntry:
     state = inspect_first_record(item, limits.max_first_record_bytes)
-    locator = item.relative.as_posix()
     return CodexInventoryEntry(
-        source_key=sha256_text(f"codex-local:{item.partition}:{locator}"),
+        source_key=codex_source_key(item),
         partition=item.partition,
         file_bytes=item.file_bytes,
-        observed_month=_observed_month(locator),
+        observed_month=_observed_month(item.relative.as_posix()),
         first_record_state=state,
     )
+
+
+def codex_source_key(item: DiscoveredCodexFile) -> str:
+    locator = item.relative.as_posix()
+    return sha256_text(f"codex-local:{item.partition}:{locator}")
 
 
 def _observed_month(locator: str) -> str | None:

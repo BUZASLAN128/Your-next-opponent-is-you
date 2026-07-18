@@ -10,6 +10,10 @@ CODEX_METADATA_PARSER_VERSION: Final[Literal["codex-local-metadata/1.0"]] = (
 CODEX_CONTENT_PILOT_PARSER_VERSION: Final[Literal["codex-local-content-pilot/0.1"]] = (
     "codex-local-content-pilot/0.1"
 )
+CODEX_VAULT_VERSION: Final[Literal["codex-raw-vault/1.0"]] = "codex-raw-vault/1.0"
+CODEX_INGEST_VERSION: Final[Literal["codex-normalized-dialogue/1.0"]] = (
+    "codex-normalized-dialogue/1.0"
+)
 PERSONA_STUDY_PROTOCOL_VERSION: Final[Literal["persona-study/0.1"]] = "persona-study/0.1"
 POLICY_VERSION = "egress-and-authority/1.0"
 REPORT_VERSION = "scientific-report/1.0"
@@ -47,6 +51,10 @@ DEFAULT_CODEX_PILOT_MAX_LINE_BYTES = 1024**2
 DEFAULT_CODEX_PILOT_MAX_RECORDS = 20_000
 DEFAULT_CODEX_PILOT_MAX_EVENTS = 2_000
 DEFAULT_CODEX_PILOT_MAX_CONTENT_BYTES = 256 * 1024
+CODEX_VAULT_BUFFER_BYTES = 8 * 1024**2
+CODEX_INGEST_TRANSACTION_EVENTS = 250
+CODEX_INGEST_MAX_LINE_BYTES = 16 * 1024**2
+CODEX_INGEST_MAX_CONTENT_BYTES = 1024**2
 
 PERSONA_STUDY_MAX_FILES = 24
 PERSONA_STUDY_MAX_TOTAL_BYTES = 32 * 1024**2

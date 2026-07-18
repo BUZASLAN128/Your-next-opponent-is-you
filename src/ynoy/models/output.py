@@ -42,6 +42,7 @@ class AuditReceipt(RecordBase):
     event_type: Literal[
         "inventory",
         "approval",
+        "snapshot",
         "ingest",
         "derive",
         "report",

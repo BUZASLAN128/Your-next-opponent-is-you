@@ -51,14 +51,29 @@ def _corpus_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser]
     codex_pilot = subcommands.add_parser("codex-pilot")
     codex_pilot.add_argument("codex_root")
     codex_pilot.add_argument("--synthetic", action="store_true")
+    codex_snapshot = subcommands.add_parser("codex-snapshot")
+    codex_snapshot.add_argument("codex_root")
+    codex_snapshot.add_argument("manifest_id")
+    codex_snapshot.add_argument("approval_id")
+    codex_snapshot.add_argument("--resume-snapshot-id")
+    codex_snapshot.add_argument("--max-new-bytes", type=int)
+    codex_snapshot.add_argument("--synthetic", action="store_true")
+    codex_ingest = subcommands.add_parser("codex-ingest")
+    codex_ingest.add_argument("snapshot_id")
+    codex_ingest.add_argument("--resume", action="store_true")
+    codex_ingest.add_argument("--synthetic", action="store_true")
+    status = subcommands.add_parser("status")
+    status.add_argument("snapshot_id")
+    status.add_argument("--synthetic", action="store_true")
     approve = subcommands.add_parser("approve")
     approve.add_argument("manifest_id")
+    approve.add_argument("--codex", action="store_true")
     approve.add_argument("--synthetic", action="store_true")
     approve.add_argument(
         "--operations",
         nargs="+",
-        default=["ingest", "derive", "benchmark", "report"],
-        choices=["ingest", "derive", "benchmark", "report"],
+        default=None,
+        choices=["snapshot", "ingest", "derive", "benchmark", "report"],
     )
     approve.add_argument("--retention-days", type=int)
     approve.add_argument("--third-party-reviewed", action="store_true")

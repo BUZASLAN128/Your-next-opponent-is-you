@@ -26,12 +26,22 @@ from ynoy.models.canonical import (
     ClaimSourceLink,
     PersonaStratum,
 )
+from ynoy.models.codex_ingest import (
+    CodexActorOrigin,
+    CodexIngestionReceipt,
+    NormalizedCodexEvent,
+)
 from ynoy.models.codex_inventory import (
     CodexInventoryEntry,
     CodexMetadataInventory,
     CodexMonthSummary,
 )
 from ynoy.models.codex_sample import CodexContentPilotSummary
+from ynoy.models.codex_vault import (
+    CodexCorpusApproval,
+    CodexSnapshotFile,
+    CodexSnapshotReceipt,
+)
 from ynoy.models.corpus import (
     IngestionApproval,
     InventoryEntry,
@@ -179,10 +189,15 @@ __all__ = [
     "ClaimReviewDecision",
     "ClaimReviewEvent",
     "ClaimSourceLink",
+    "CodexActorOrigin",
     "CodexContentPilotSummary",
+    "CodexCorpusApproval",
+    "CodexIngestionReceipt",
     "CodexInventoryEntry",
     "CodexMetadataInventory",
     "CodexMonthSummary",
+    "CodexSnapshotFile",
+    "CodexSnapshotReceipt",
     "CompletedPersonaLabelSet",
     "CompletedPersonaProposalReview",
     "CompletedRepeatAdjudicationSet",
@@ -222,6 +237,7 @@ __all__ = [
     "MarkTemporaryClaimDecision",
     "Mode",
     "NarrowScopeClaimDecision",
+    "NormalizedCodexEvent",
     "NullReason",
     "NullableReviewText",
     "OperatingMemorySeed",

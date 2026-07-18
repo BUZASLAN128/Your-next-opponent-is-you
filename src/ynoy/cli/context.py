@@ -5,6 +5,7 @@ from pathlib import Path
 
 from ynoy.artifacts import PrivateArtifactStore
 from ynoy.config import Settings
+from ynoy.corpus.raw_vault import RawVaultStore
 from ynoy.database_policy import require_local_database
 from ynoy.metadata_artifacts import PrivateMetadataInventoryStore
 from ynoy.policy import require_private_root
@@ -27,6 +28,9 @@ class CommandContext:
     def metadata_inventory_artifacts(self, *, synthetic: bool) -> PrivateMetadataInventoryStore:
         root = self.settings.require_private_root()
         return PrivateMetadataInventoryStore(root, synthetic=synthetic)
+
+    def raw_vault(self, *, synthetic: bool) -> RawVaultStore:
+        return RawVaultStore(self.settings.require_private_root(), synthetic=synthetic)
 
     def database(self, *, synthetic: bool) -> Database:
         root = self.settings.require_private_root()
