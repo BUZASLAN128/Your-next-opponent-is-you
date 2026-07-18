@@ -177,7 +177,7 @@ class InferredPersonaJudgment(StrictModel):
 class GenericAdvisorJudgment(StrictModel):
     basis: Literal[JudgmentBasis.GENERIC_ADVISOR] = JudgmentBasis.GENERIC_ADVISOR
     mode: Literal[Mode.ADVISOR] = Mode.ADVISOR
-    answer: str = Field(min_length=1)
+    advice_code: Literal["generic_reversible_guidance"] = "generic_reversible_guidance"
 
 
 class AbstentionJudgment(StrictModel):

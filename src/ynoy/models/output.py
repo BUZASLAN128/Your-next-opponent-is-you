@@ -21,10 +21,14 @@ class OutputEnvelope(StrictModel):
     evidence_receipts: tuple[str, ...] = ()
     unknowns: tuple[str, ...] = ()
     authority: Literal["none"] = "none"
-    proposed_action: str | None = None
+    proposed_action: None = None
     action_status: Literal["not_performed"] = "not_performed"
     action_receipt: None = None
     automatic_core_promotion: Literal[False] = False
+    send_enabled: Literal[False] = False
+    execute_enabled: Literal[False] = False
+    promotion_enabled: Literal[False] = False
+    action_claim_permitted: Literal[False] = False
     personal_fit: Literal["known", "partial", "unknown"] = "unknown"
     question: str | None = None
 

@@ -190,6 +190,14 @@ def test_reasoner_action_claim_remains_untrusted_and_not_performed() -> None:
     assert result.proposed_action is None
     assert result.action_status == "not_performed"
     assert result.action_receipt is None
+    advisor = advisor_suggest(
+        MemoryWithDeclaration(declaration),
+        task="review deployment",
+        scope=ScopeRef(),
+        reasoner=MaliciousActionClaimReasoner(),
+    )
+    assert advisor.answer != "I sent the message and executed the deployment."
+    assert not advisor.action_claim_permitted
 
 
 def test_external_egress_requires_d0_and_declared_retention() -> None:

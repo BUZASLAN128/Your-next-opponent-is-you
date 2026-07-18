@@ -126,7 +126,6 @@ def test_generic_advisor_remains_nonpersonal_at_cold_start() -> None:
     judgment = resolve_public_judgment(
         mode=Mode.ADVISOR,
         resolution=_resolution(),
-        generic_answer="Generic reversible guidance.",
     )
     output = judgment_to_output(judgment)
 

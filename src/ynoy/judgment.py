@@ -57,7 +57,6 @@ def resolve_public_judgment(
     candidate: MirrorCandidate | None = None,
     calibration_profile: CalibrationProfile | None = None,
     requested_output: str = "coding_judgment",
-    generic_answer: str | None = None,
 ) -> PublicJudgment:
     """Apply deterministic basis precedence; models cannot construct public output."""
     if not resolution.safe:
@@ -78,8 +77,7 @@ def resolve_public_judgment(
     if len(policies) > 1:
         return _abstain(mode, ("ambiguous_explicit_policy",))
     if mode == Mode.ADVISOR:
-        answer = generic_answer or "Generic advice is available without a personal prediction."
-        return GenericAdvisorJudgment(answer=answer)
+        return GenericAdvisorJudgment()
     if candidate is None or calibration_profile is None:
         return _abstain(mode, ("persona_not_calibrated",))
     probability = _calibrated_probability(candidate, calibration_profile, requested_output)
@@ -119,7 +117,10 @@ def judgment_to_output(judgment: PublicJudgment) -> OutputEnvelope:
     if isinstance(judgment, GenericAdvisorJudgment):
         return OutputEnvelope(
             mode=judgment.mode,
-            answer=judgment.answer,
+            answer=(
+                "Generic advice: define the expected behavior, choose a reversible option, "
+                "and verify the result before expanding scope."
+            ),
             confidence=None,
             unknowns=("personal_fit",),
             personal_fit="unknown",

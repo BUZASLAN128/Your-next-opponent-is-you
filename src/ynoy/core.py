@@ -278,7 +278,10 @@ def advisor_suggest(
     )
     return OutputEnvelope(
         mode=Mode.ADVISOR,
-        answer=response.answer,
+        answer=(
+            "Generic advice: review the evidence, choose a reversible option, and verify the "
+            "result before expanding scope."
+        ),
         answer_kind="untrusted_reasoner_advisory",
         confidence=None,
         judgment_basis=JudgmentBasis.GENERIC_ADVISOR,
