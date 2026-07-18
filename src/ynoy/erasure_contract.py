@@ -55,6 +55,7 @@ PRIVATE_ARTIFACT_PRODUCERS = (
     "artifact:benchmark_reports",
     "artifact:codex_inventory",
     "artifact:corpus_raw_vault",
+    "artifact:full_persona_runs",
     "artifact:interaction_reviews",
     "artifact:persona_study_runs",
     "artifact:persona_study_tombstones",

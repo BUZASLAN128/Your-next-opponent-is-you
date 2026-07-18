@@ -6,6 +6,12 @@ from pathlib import Path
 
 from ynoy.cli.context import CommandContext
 from ynoy.cli.handlers.study_action_pilot import run_action_pilot
+from ynoy.cli.handlers.study_full_persona import (
+    delete_full_persona,
+    freeze_full_persona,
+    full_persona_status,
+    scan_full_persona,
+)
 from ynoy.cli.handlers.study_guidance import status_guidance_tr
 from ynoy.cli.handlers.study_harvest import harvest_judgments, resume_judgment_harvest
 from ynoy.cli.handlers.study_harvest_authorship import seal_harvest_authorship
@@ -45,6 +51,10 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "propose-labels": propose_labels,
         "harvest": harvest_judgments,
         "resume-harvest": resume_judgment_harvest,
+        "freeze-full-persona": freeze_full_persona,
+        "scan-full-persona": scan_full_persona,
+        "full-persona-status": full_persona_status,
+        "delete-full-persona": delete_full_persona,
         "seal-harvest-authorship": seal_harvest_authorship,
         "record-proposal-review": record_proposal_review,
         "submit-proposal-review": submit_recorded_proposal_review,
