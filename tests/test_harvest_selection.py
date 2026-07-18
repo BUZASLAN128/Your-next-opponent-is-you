@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
-from support.harvest import normalized_event
+from support.harvest import normalized_event, sealed_candidate
 
+from ynoy.corpus.codex_discovery import DiscoveredCodexFile
 from ynoy.models import ClaimHolder, SourceAuthority
 from ynoy.models.persona_harvest import HarvestLimits
 from ynoy.persona_study.harvest_contract import seal_harvest_candidate, seal_harvest_manifest
-from ynoy.persona_study.harvest_events import HarvestContextBuffer
+from ynoy.persona_study.harvest_events import HarvestContextBuffer, offer_harvest_event
 from ynoy.persona_study.harvest_reservoir import HarvestReservoir
 from ynoy.persona_study.harvest_signals import evaluate_harvest_event
 from ynoy.util import sha256_text
@@ -64,10 +67,11 @@ def test_structural_user_judgment_signals_are_scored(text: str, tag: str) -> Non
     assert result.score >= 1
 
 
-def test_unrelated_user_turn_is_excluded_without_signal() -> None:
-    result = evaluate_harvest_event(
-        normalized_event("user", "Merhaba, bugün hava nasıl?"), _limits()
-    )
+@pytest.mark.parametrize(
+    "text", ["Merhaba, bugün hava nasıl?", "Write Hello World to f:/cerberus-repos/.swarm/test.txt"]
+)
+def test_unrelated_user_turn_is_excluded_without_signal(text: str) -> None:
+    result = evaluate_harvest_event(normalized_event("user", text), _limits())
 
     assert result.tags == ()
     assert result.score == 0
@@ -113,6 +117,89 @@ def test_quoted_prefix_with_judgment_signal_is_excluded() -> None:
 
     assert result.exclusion == "quoted_or_imported_content"
     assert result.tags == ()
+
+
+def test_ide_context_wrapper_with_judgment_signal_is_excluded() -> None:
+    result = evaluate_harvest_event(
+        normalized_event(
+            "user", "# Context from my IDE setup:\nOnaylıyorum, bunu uygula ve test et."
+        ),
+        _limits(),
+    )
+
+    assert result.exclusion == "quoted_or_imported_content"
+    assert result.tags == ()
+
+
+def test_aborted_turn_with_judgment_signal_is_imported_content() -> None:
+    result = evaluate_harvest_event(
+        normalized_event(
+            "user",
+            "<turn_aborted>Onaylıyorum, bunu uygula ve test et.</turn_aborted>",
+        ),
+        _limits(),
+    )
+
+    assert result.exclusion == "quoted_or_imported_content"
+    assert result.tags == ()
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["Düzelt.", "Kalsın."],
+    ids=["short-correction", "short-decision"],
+)
+def test_short_correction_and_decision_signals_remain_eligible(text: str) -> None:
+    result = evaluate_harvest_event(normalized_event("user", text), _limits())
+
+    assert result.exclusion is None
+    assert result.score >= 1
+
+
+def test_short_evidence_only_operational_fragment_is_excluded() -> None:
+    result = evaluate_harvest_event(normalized_event("user", "Test sonucu göster."), _limits())
+
+    assert result.exclusion == "low_signal_short_focus"
+
+
+@pytest.mark.parametrize("text", ["test ettin mi", "test sonucu göster"])
+def test_short_evidence_requests_use_the_quality_gate(text: str) -> None:
+    result = evaluate_harvest_event(normalized_event("user", text), _limits())
+
+    assert result.tags == ()
+    assert result.score == 0
+    assert result.exclusion == "low_signal_short_focus"
+
+
+def test_focus_matching_context_user_hash_is_duplicate_excluded() -> None:
+    manifest = _manifest()
+    context = HarvestContextBuffer(manifest)
+    content = "Bunu onaylıyorum, uygula ve test et."
+    context.observe(normalized_event("user", content))
+    exclusions: Counter[str] = Counter()
+    reservoir = HarvestReservoir(3, manifest.selector_config_sha256)
+    item = DiscoveredCodexFile(
+        partition="sessions",
+        path=Path("synthetic.jsonl"),
+        relative=Path("2026/01/02/synthetic.jsonl"),
+        file_bytes=100,
+        modified_ns=1,
+        device=0,
+        inode=0,
+    )
+
+    offer_harvest_event(
+        reservoir,
+        exclusions,
+        normalized_event("user", content),
+        item,
+        "a" * 64,
+        context,
+        manifest,
+    )
+
+    assert exclusions["duplicate_representation"] == 1
+    assert reservoir.candidates == ()
 
 
 def test_non_unknown_claim_holder_is_excluded() -> None:
@@ -171,6 +258,28 @@ def test_reservoir_is_order_independent_and_bounded() -> None:
     assert [item.candidate_id for item in first.candidates] == [
         item.candidate_id for item in second.candidates
     ]
+
+
+def test_reservoir_deduplicates_same_focus_across_sources_by_rank() -> None:
+    manifest = _manifest(_limits(max_reservoir=4))
+    event = normalized_event("user", "Bunu onaylıyorum, uygula ve test et.")
+    lower = sealed_candidate(event, manifest, "a" * 64, 1)
+    other_event = event.model_copy(
+        update={"source_key": "b" * 64, "byte_start": 17, "record_sha256": "c" * 64}
+    )
+    higher = sealed_candidate(other_event, manifest, "d" * 64, 2)
+
+    first = HarvestReservoir(4, manifest.selector_config_sha256)
+    second = HarvestReservoir(4, manifest.selector_config_sha256)
+    first.offer(lower)
+    first.offer(higher)
+    second.offer(higher)
+    second.offer(lower)
+
+    assert len(first.candidates) == len(second.candidates) == 1
+    assert first.candidates[0].candidate_id == higher.candidate_id
+    assert second.candidates[0].candidate_id == higher.candidate_id
+    assert first.candidates[0].focus_sha256 == lower.focus_sha256 == higher.focus_sha256
 
 
 def test_context_buffer_keeps_only_bounded_recent_user_assistant_messages() -> None:

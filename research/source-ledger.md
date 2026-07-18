@@ -2137,6 +2137,25 @@ infrastructure.
   explicit precision/false-attribution acceptance rule before another model
   comparison or corpus expansion.
 
+### L-038 — Repeated private selector audit and contamination regressions (2026-07-18)
+
+- **Type:** Private operator audit plus public synthetic regression evidence
+- **Provenance:** D-061 and Event 053; exact private packages and observations
+  intentionally omitted from Git.
+- **Observed:** Repeated bounded inspection exposed sticky-provenance,
+  cross-source duplicate, runtime/editor/import wrapper, filename-trigger, and
+  short low-signal defects. The implementation now rejects these cases through
+  shared deterministic rules with focused tests. A later private package did
+  not reproduce the known focus classes under operator and independent
+  inspection; explicitly labeled context remains non-attributed dialogue.
+- **Supports:** Real-example review can improve the selector without labels,
+  a model, unbounded memory, or weaker promotion gates.
+- **Does not establish:** Authorship ground truth, a precision estimate,
+  persona similarity, full-source snapshot integrity, extractor quality,
+  benchmark eligibility, or promotion safety.
+- **Next check:** Freeze the represented-user labeling rubric and acceptance
+  threshold before measuring selector precision and false attribution.
+
 ## Evidence Gaps
 
 The current ledger lacks:

@@ -838,3 +838,18 @@ measure false attribution and signal usefulness before another extractor is
 enabled. A successful selector audit would justify a frozen model comparison;
 an unsuccessful audit should revise the signal vocabulary or source/branch
 contract, not lower the adoption or promotion gates.
+
+## Real-Example Selector Hardening — 2026-07-18
+
+Structural readiness was not accepted as evidence quality. Repeated private
+operator inspection found concrete provenance, duplicate, wrapper, and
+low-signal false positives; each became a deterministic rejection rule and
+regression test. A later bounded package did not reproduce those known classes
+under operator inspection.
+
+This closes a debugging loop, not the scientific gate. The agent can determine
+that a card resembles a direct user turn and carries a practical judgment, but
+cannot certify represented-user authorship or convert qualitative inspection
+into a calibrated precision estimate. The next convergence step therefore
+remains frozen user labeling followed by precision and false-attribution
+measurement. Full-source snapshot integrity and model comparison stay separate.

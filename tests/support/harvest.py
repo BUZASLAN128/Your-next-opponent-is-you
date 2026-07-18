@@ -11,6 +11,9 @@ from ynoy.corpus.codex_normalizer import normalize_codex_record
 from ynoy.corpus.codex_normalizer_types import CodexFileBinding, CodexParserState
 from ynoy.corpus.codex_raw_records import iter_jsonl_records
 from ynoy.models import DataClass, NormalizedCodexEvent
+from ynoy.models.persona_harvest import HarvestCandidate, HarvestManifest
+from ynoy.persona_study.harvest_contract import seal_harvest_candidate
+from ynoy.persona_study.harvest_signals import evaluate_harvest_event
 
 
 def normalized_event(role: str, content: str) -> NormalizedCodexEvent:
@@ -40,6 +43,21 @@ def normalized_event(role: str, content: str) -> NormalizedCodexEvent:
         for raw in iter_jsonl_records(io.BytesIO(encoded))
     ]
     return events[1]
+
+
+def sealed_candidate(
+    event: NormalizedCodexEvent, manifest: HarvestManifest, receipt: str, score: int
+) -> HarvestCandidate:
+    result = evaluate_harvest_event(event, manifest.limits)
+    return seal_harvest_candidate(
+        event,
+        partition="sessions",
+        source_receipt=receipt,
+        context=(),
+        tags=result.tags,
+        score=score,
+        selector_config_sha256=manifest.selector_config_sha256,
+    )
 
 
 def write_rollout(root: Path, name: str, messages: Iterable[tuple[str, str]]) -> Path:

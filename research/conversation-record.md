@@ -2500,3 +2500,37 @@ is [Fixed-Memory Judgment Harvester Checkpoint](fixed-memory-judgment-harvester-
 The represented user reviews the private cards and completes the label
 template. Precision and false attribution are measured before any model is
 enabled or the corpus window is expanded.
+
+## Event 053 — Audit and Harden Real Judgment Selection
+
+### User Direction
+
+The user rejected stopping at a merely structural `audit_ready` result and
+asked the agent to inspect the examples directly while continuing bounded
+processing without loading the corpus into memory.
+
+### Implemented Result
+
+Repeated private operator inspection found structural false positives rather
+than treating every selected card as progress. The selector now keeps
+delegated-session provenance sticky, deduplicates identical focus text across
+sources, excludes runtime/editor/import wrappers from focus and context,
+narrows the evidence vocabulary so filenames do not trigger it, and rejects
+short evidence-only fragments. Each observed defect has synthetic regression
+coverage. A fresh private package was then produced under the same fixed-memory
+and no-model boundary.
+
+### Evidence Boundary
+
+The latest operator and independent audits did not reproduce the known
+focus-contamination classes. Ordinary external-reference or tool dialogue can
+remain in the explicitly labeled context and is not attributed as user truth.
+This supports apparatus hardening only. It is not represented-user authorship
+confirmation, a calibrated precision estimate, a full-source snapshot, or
+persona similarity evidence. Private text, paths, identifiers, hashes, counts,
+and behavioral aggregates remain outside Git.
+
+### Next Discriminating Check
+
+Obtain represented-user labels under a frozen rubric, then calculate selector
+precision and false attribution before enabling another extractor comparison.

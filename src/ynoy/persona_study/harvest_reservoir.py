@@ -39,14 +39,18 @@ class HarvestReservoir:
     def _reselect(self, values: tuple[HarvestCandidate, ...]) -> None:
         conversations: Counter[str] = Counter()
         months: Counter[str] = Counter()
+        focuses: set[str] = set()
         selected: list[HarvestCandidate] = []
         month_limit = max(2, self.maximum // 3)
         for candidate in sorted(values, key=self._rank):
+            if candidate.focus_sha256 in focuses:
+                continue
             if conversations[candidate.conversation_key] >= 2:
                 continue
             if months[candidate.session_month] >= month_limit:
                 continue
             selected.append(candidate)
+            focuses.add(candidate.focus_sha256)
             conversations[candidate.conversation_key] += 1
             months[candidate.session_month] += 1
             if len(selected) == self.maximum:

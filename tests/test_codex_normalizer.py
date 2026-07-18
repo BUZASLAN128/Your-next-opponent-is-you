@@ -1,3 +1,5 @@
+# ruff: noqa: RUF001 -- Turkish synthetic dialogue mirrors user input.
+
 from __future__ import annotations
 
 import io
@@ -78,6 +80,31 @@ def test_child_session_and_subagent_envelope_are_never_user_evidence() -> None:
         assert event.content is None
         assert event.actor_origin == CodexActorOrigin.SUBAGENT_DELEGATION
         assert event.exclusion_reason == "subagent_or_delegation"
+
+
+def test_delegated_session_origin_stays_sticky_across_rootlike_session_meta() -> None:
+    records = (
+        {
+            "type": "session_meta",
+            "payload": {
+                "id": "synthetic-spawned-thread",
+                "source": "subagent",
+                "originator": "thread_spawn",
+            },
+        },
+        {
+            "type": "session_meta",
+            "payload": {"id": "synthetic-rootlike-thread", "source": "vscode"},
+        },
+        _message("user", "Onaylıyorum, bunu uygula."),
+    )
+
+    events, state = _normalize(_encode(records))
+
+    assert state.delegated_session is True
+    assert events[2].status == "quarantined"
+    assert events[2].actor_origin == CodexActorOrigin.SUBAGENT_DELEGATION
+    assert events[2].exclusion_reason == "subagent_or_delegation"
 
 
 def test_control_reasoning_and_tool_output_content_never_enter_dialogue() -> None:

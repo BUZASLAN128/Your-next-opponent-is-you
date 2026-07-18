@@ -1142,6 +1142,21 @@ from silently becoming product authority.
   eligibility, core admission, or automatic promotion is established.
 - **Durable record:** [Fixed-memory judgment harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md)
 
+### D-061 — Treat private card inspection as selector debugging, not persona proof
+
+- **Date:** 2026-07-18
+- **Status:** Confirmed and implemented
+- **User direction:** Do not stop at structural readiness; inspect the examples
+  and keep processing under the bounded-memory rule.
+- **Decision:** Convert every observed provenance, wrapper, duplicate, and
+  low-signal false positive into a deterministic exclusion and regression test.
+  Operator inspection may clear known apparatus defects but cannot create
+  represented-user ground truth or promote a card into persona memory.
+- **Non-decision:** No precision threshold, accepted identity label, full-source
+  snapshot, extractor winner, persona claim, calibration, or promotion rule is
+  established.
+- **Durable record:** [Fixed-memory judgment harvester checkpoint](fixed-memory-judgment-harvester-2026-07-18.md)
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |

@@ -202,9 +202,10 @@ def _capture_session(
     )
     source = str(payload.get("source", "")).casefold()
     originator = str(payload.get("originator", "")).casefold()
-    state.delegated_session = bool(payload.get("parent_thread_id")) or any(
+    delegated = bool(payload.get("parent_thread_id")) or any(
         "subagent" in value or "delegate" in value for value in (source, originator)
     )
+    state.delegated_session = state.delegated_session or delegated
 
 
 def _capture_turn(

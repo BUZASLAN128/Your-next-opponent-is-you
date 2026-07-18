@@ -33,7 +33,8 @@ _SIGNALS: tuple[tuple[HarvestSignal, int, re.Pattern[str]], ...] = (
         "evidence_demand",
         5,
         re.compile(
-            r"\b(kanıt|test|doğrula|incele|araştır|kaynak|review|verify|evidence|benchmark)\b",
+            r"\b(kanıt|test(?:ler|leri| sonucu| et| ettin| geçiş)|doğrula|incele|araştır|"
+            r"kaynak|review|verify|evidence|benchmark)\b",
             re.I,
         ),
     ),
@@ -68,7 +69,17 @@ _SIGNALS: tuple[tuple[HarvestSignal, int, re.Pattern[str]], ...] = (
 _INERT_MARKERS = (
     "<codex_internal_context",
     "<environment_context>",
+    "<goal_context>",
+    "<turn_aborted>",
     "# agents.md instructions for",
+    "# context from my ide setup:",
+    "# review findings:",
+    "● api error:",
+    "automation:",
+    "automation id:",
+    "error running remote compact task:",
+    "mcp startup incomplete",
+    "tip: try the codex app.",
     "<recommended_plugins>",
     "# files mentioned by the user:",
     "```",
@@ -94,15 +105,21 @@ def evaluate_harvest_event(
     content_bytes = len(event.content.encode("utf-8"))
     if content_bytes > limits.max_focus_bytes:
         return HarvestSignalResult(exclusion="focus_oversized")
-    lowered = event.content.casefold()
-    if lowered.startswith("> ") or any(marker in lowered for marker in _INERT_MARKERS):
+    if is_inert_or_imported_content(event.content):
         return HarvestSignalResult(exclusion="quoted_or_imported_content")
     tags = tuple(tag for tag, _, pattern in _SIGNALS if pattern.search(event.content))
     if not tags:
         return HarvestSignalResult(exclusion="no_judgment_signal")
+    if tags == ("evidence_demand",) and len(re.findall(r"\w+", event.content)) < 5:
+        return HarvestSignalResult(exclusion="low_signal_short_focus")
     weights = {tag: weight for tag, weight, _ in _SIGNALS}
     score = sum(weights[tag] for tag in tags) + min(len(tags) - 1, 3)
     return HarvestSignalResult(tags, score)
+
+
+def is_inert_or_imported_content(content: str) -> bool:
+    lowered = content.casefold()
+    return lowered.startswith("> ") or any(marker in lowered for marker in _INERT_MARKERS)
 
 
 def _structural_exclusion(event: NormalizedCodexEvent) -> str | None:

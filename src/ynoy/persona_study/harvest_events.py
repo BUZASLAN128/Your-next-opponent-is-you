@@ -8,7 +8,10 @@ from ynoy.models import NormalizedCodexEvent, Speaker
 from ynoy.models.persona_harvest import HarvestContextMessage, HarvestManifest
 from ynoy.persona_study.harvest_contract import seal_harvest_candidate
 from ynoy.persona_study.harvest_reservoir import HarvestReservoir
-from ynoy.persona_study.harvest_signals import evaluate_harvest_event
+from ynoy.persona_study.harvest_signals import (
+    evaluate_harvest_event,
+    is_inert_or_imported_content,
+)
 from ynoy.util import sha256_text
 
 
@@ -25,6 +28,8 @@ class HarvestContextBuffer:
         if event.status != "dialogue" or event.content is None:
             return
         if event.structural_role not in {Speaker.USER, Speaker.ASSISTANT}:
+            return
+        if is_inert_or_imported_content(event.content):
             return
         if len(event.content.encode("utf-8")) > self.manifest.limits.max_context_bytes:
             return
@@ -64,6 +69,12 @@ def offer_harvest_event(
     if result.exclusion is not None:
         exclusions[_bounded_exclusion(result.exclusion)] += 1
         return
+    if result.tags == ("evidence_demand",) and not context.messages:
+        exclusions["low_signal_without_context"] += 1
+        return
+    if any(item.content_sha256 == event.content_sha256 for item in context.messages):
+        exclusions["duplicate_representation"] += 1
+        return
     candidate = seal_harvest_candidate(
         event,
         partition=item.partition,
@@ -82,6 +93,8 @@ def _bounded_exclusion(value: str) -> str:
         "empty_dialogue",
         "event_time_unknown",
         "focus_oversized",
+        "low_signal_short_focus",
+        "low_signal_without_context",
         "no_judgment_signal",
         "non_dialogue",
         "non_user_origin",

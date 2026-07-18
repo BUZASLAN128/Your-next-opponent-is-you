@@ -1296,9 +1296,10 @@ synthetic registry test.
 
 ### RQ-033 — How should high-signal judgments be harvested incrementally?
 
-**Status:** Apparatus implemented and synthetically tested; represented-user
-precision and expansion criteria remain open. The earlier 8B proposal receipt
-remains unreliable and cannot seed a persona.
+**Status:** Apparatus implemented, repeatedly operator-audited, and
+synthetically tested; represented-user precision and expansion criteria remain
+open. The earlier 8B proposal receipt remains unreliable and cannot seed a
+persona.
 
 **Known boundary:** The harvester must stream canonical files, keep fixed
 memory, use a restart-safe private cursor, preserve branch and source lineage,
@@ -1310,9 +1311,10 @@ labels, and corpus instructions remain inert evidence.
 **Observed apparatus:** Public hard limits now cover bytes, files, records,
 events, time, context, reservoir, output, entries, and revisions. The selector
 has a frozen multilingual signal vocabulary and deterministic source/ranking
-order. Cursor replay, source mutation, structural exclusions, private artifact
-deletion, and unchanged-source regeneration have synthetic coverage. One
-bounded private run reached the structural `audit_ready` state.
+order. Repeated private inspection also produced regressions for delegated
+provenance, cross-source duplicates, runtime/editor/import wrappers, filename
+false positives, and short low-signal focuses. Cursor replay, source mutation,
+private artifact deletion, and unchanged-source regeneration remain covered.
 
 **Remaining unknowns:** Represented-user precision and false-attribution rate;
 whether the vocabulary misses informal or multilingual cues; branch-complete
@@ -1321,6 +1323,6 @@ expansion thresholds; whether a later phase requires full prior-file rehashing
 or a frozen snapshot; and comparative advantage over the earlier bucketed
 sample.
 
-**Next discriminating check:** Complete the prepared private audit, freeze the
-precision and false-attribution rule without a model, and compare it with the
-earlier selector before invoking another extractor.
+**Next discriminating check:** Obtain represented-user labels for the prepared
+private audit, freeze the precision and false-attribution rule without a model,
+and compare it with the earlier selector before invoking another extractor.

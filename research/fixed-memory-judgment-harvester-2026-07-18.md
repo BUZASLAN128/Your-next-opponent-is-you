@@ -60,18 +60,32 @@ discovery, preserving the existing descriptor/path equality check rather than
 weakening the link-swap guard.
 
 The corrected real run reached the configured `audit_ready` state under the
-fixed checkpoint limits. It produced a private review package without a model,
-provider, database, embedding, migration, or automatic promotion. Early
+fixed checkpoint limits. Repeated private operator review then exposed more
+apparatus defects: delegated provenance could be cleared by later session
+metadata, identical focuses could survive through different source records,
+runtime and editor wrappers could enter context, a filename could trigger the
+word `test`, a short operational fragment could pass an evidence-only rule,
+and an imported review block could look like a user judgment. Each defect was
+converted into a deterministic exclusion or regression test before another
+private package was produced.
+
+The latest bounded package did not reproduce those known focus-contamination
+classes under operator and independent inspection. Ordinary dialogue about an
+external reference or tool can still appear in the explicitly labeled context;
+context is never attributed or admitted as persona truth. This is qualitative
+selector-debugging evidence, not represented-user ground truth or a precision
+estimate. No model, provider, database, embedding, migration, or automatic
+promotion was used. Earlier
 development evidence also showed that purely chronological traversal could
-over-concentrate a small reservoir; the final label-blind deterministic source
-order corrected that apparatus defect before the audit-ready run.
+over-concentrate a small reservoir; label-blind deterministic source order
+corrected that apparatus defect.
 
 Exact paths, IDs, hashes, source dates, corpus counts, candidate text, signal
 aggregates, and machine measurements remain private.
 
 ## Synthetic Evidence
 
-Focused synthetic tests cover:
+Focused synthetic tests additionally cover:
 
 - all six signal classes and the no-signal path;
 - speaker, authority, subagent, quoted, pasted, and duplicate exclusions;
@@ -79,13 +93,15 @@ Focused synthetic tests cover:
 - deterministic order and unchanged-source regeneration;
 - partial-file resume, record-boundary replay, idempotency, and source mutation;
 - private artifact integrity, retention-aware deletion, and regeneration;
+- sticky delegated provenance, cross-source focus deduplication, inert context
+  filtering, imported review rejection, filename false positives, and short
+  low-signal evidence requests;
 - CLI denial of database, model, and provider use.
 
-The focused contract suite passed 32 tests. Final full validation against the
-disposable loopback `ynoy_test` database passed 537 tests with one qualified
-platform skip and 85.52 percent branch coverage. Lint, formatting, strict
-typing, compilation, source limits, relative links, and whitespace checks also
-passed.
+The expanded focused contract suite passed 62 tests. Final validation against
+the disposable loopback `ynoy_test` database passed 561 tests with one
+qualified platform skip and 85.54 percent branch coverage. Lint, formatting,
+strict typing, compilation, source limits, and whitespace checks also passed.
 
 ## What This Proves
 
@@ -104,8 +120,9 @@ configured human-review package is structurally ready.
 
 ## Next Discriminating Check
 
-The represented user should inspect the private review Markdown and complete
-the adjacent label template. The first measurement is selector precision and
-false-attribution rate, not personality quality. Only an acceptable audited
-result may justify opening a separately frozen extractor comparison; the 8B
-model remains disabled for this checkpoint.
+The represented user should confirm or correct the private review labels. The
+operator audit is sufficient to debug known contamination classes but cannot
+substitute for authorship ground truth. After the labeling rule and acceptance
+threshold are frozen, measure selector precision and false attribution. Only
+that result may justify opening a separately frozen extractor comparison; the
+8B model remains disabled for this checkpoint.
