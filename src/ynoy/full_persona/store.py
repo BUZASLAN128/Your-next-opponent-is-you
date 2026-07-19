@@ -10,6 +10,7 @@ from uuid import uuid4
 from pydantic import ValidationError
 
 from ynoy.errors import DataValidationError
+from ynoy.full_persona.run_lock import exclusive_run_lock
 from ynoy.full_persona.store_contract import (
     initial_head,
     model_bytes,
@@ -25,7 +26,6 @@ from ynoy.models.full_persona import (
     FullCorpusShardReceipt,
 )
 from ynoy.persona_study.storage_paths import reject_link_if_present, require_regular_file
-from ynoy.persona_study.transactions import exclusive_study_lock, exclusive_write_bytes
 from ynoy.policy import require_private_root
 from ynoy.util import atomic_write_bytes
 
@@ -58,9 +58,9 @@ class FullPersonaStore:
         run.mkdir(parents=True, exist_ok=False)
         for name in ("heads", "shards", "files"):
             (run / name).mkdir()
-        exclusive_write_bytes(run / "manifest.json", model_bytes(safe))
+        _write_immutable(run / "manifest.json", model_bytes(safe))
         head = initial_head(safe)
-        exclusive_write_bytes(self._head_path(safe.run_id, 0), model_bytes(head))
+        _write_immutable(self._head_path(safe.run_id, 0), model_bytes(head))
         atomic_write_bytes(run / "head.json", pointer_bytes(head))
         return head
 
@@ -123,16 +123,16 @@ class FullPersonaStore:
             raise DataValidationError(
                 "full_persona_output_quota", "The full-persona run exceeded its output quota."
             )
+        _write_immutable(self._head_path(head.run_id, head.revision), model_bytes(head))
         if staging_shard is not None and shard_receipt is not None:
             self._commit_shard(head.run_id, staging_shard, shard_receipt)
         for receipt in file_receipts:
             self._write_file_receipt(head.run_id, receipt)
-        exclusive_write_bytes(self._head_path(head.run_id, head.revision), model_bytes(head))
         atomic_write_bytes(self._run(head.run_id) / "head.json", pointer_bytes(head))
         return head
 
     def lock(self, run_id: str) -> AbstractContextManager[None]:
-        return exclusive_study_lock(self._safe(self.locks / f"{run_id}.lock"))
+        return exclusive_run_lock(self._safe(self.locks / f"{run_id}.lock"))
 
     def iter_shard_paths(self, run_id: str) -> Iterator[Path]:
         root = self._safe(self._run(run_id) / "shards")
@@ -167,11 +167,11 @@ class FullPersonaStore:
                 "full_persona_shard_exists", "Refusing to overwrite an immutable shard."
             )
         os.replace(safe, destination)
-        exclusive_write_bytes(destination.with_suffix(".receipt.json"), model_bytes(receipt))
+        _write_immutable(destination.with_suffix(".receipt.json"), model_bytes(receipt))
 
     def _write_file_receipt(self, run_id: str, receipt: FullCorpusFileReceipt) -> None:
         path = self._safe(self._run(run_id) / "files" / f"{receipt.file_index:08d}.json")
-        exclusive_write_bytes(path, model_bytes(receipt))
+        _write_immutable(path, model_bytes(receipt))
 
     def _head_path(self, run_id: str, revision: int) -> Path:
         return self._safe(self._run(run_id) / "heads" / f"{revision:08d}.json")
@@ -217,3 +217,11 @@ def _read_bounded(path: Path) -> bytes:
             "full_persona_control_oversized", "A full-persona control artifact is oversized."
         )
     return value
+
+
+def _write_immutable(path: Path, content: bytes) -> None:
+    if path.exists():
+        raise DataValidationError(
+            "persona_study_artifact_exists", "Refusing to overwrite an immutable artifact."
+        )
+    atomic_write_bytes(path, content)

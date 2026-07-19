@@ -64,7 +64,12 @@ def _verify_shards(run: Path, manifest: FullCorpusManifest, head: FullCorpusHead
         receipt_path = path.with_suffix(".receipt.json")
         receipt = _read_model(receipt_path, FullCorpusShardReceipt)
         expected_relative = path.relative_to(run).as_posix()
-        if receipt.relative_path != expected_relative or receipt.source_key not in valid_sources:
+        filename_revision = int(path.name.split(".", 1)[0])
+        if (
+            receipt.relative_path != expected_relative
+            or receipt.revision != filename_revision
+            or receipt.source_key not in valid_sources
+        ):
             _integrity_error("shard receipt has an invalid source or path binding")
         if path.stat().st_size != receipt.compressed_bytes:
             _integrity_error("shard byte count does not match its receipt")

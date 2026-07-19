@@ -16,6 +16,7 @@ from ynoy.corpus.codex_reader import open_stable_codex_file
 from ynoy.errors import DataValidationError
 from ynoy.full_persona.evidence import EvidenceContext
 from ynoy.full_persona.integrity import verify_committed_run
+from ynoy.full_persona.recovery import recover_interrupted_run
 from ynoy.full_persona.scan_state import (
     ScanState,
     commit_file,
@@ -52,7 +53,7 @@ def scan_full_corpus(
                 "full_persona_run_expired", "The private full-persona run has expired."
             )
         head = store.read_head(run_id)
-        verify_committed_run(store, manifest, head)
+        head = recover_interrupted_run(store, manifest, head)
         if head.status == "complete":
             return head
         current = _verify_source_universe(source_root, manifest)
