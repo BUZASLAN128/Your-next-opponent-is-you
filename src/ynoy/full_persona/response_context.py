@@ -94,8 +94,18 @@ _STYLE_RULES: tuple[tuple[str, re.Pattern[str], str], ...] = (
     ),
     (
         "anti_hallucination",
-        re.compile(r"hayal gör|halüsin|okumadığı|uydur|kanıtsız", re.I),
+        re.compile(r"hayal\w* gör|halüsin\w*|okumadığı|uydur\w*|kanıtsız", re.I),
         "Okunmamış veya kanıtsız şeyi olmuş gibi anlatmaya düşük tolerans gösterir.",
+    ),
+    (
+        "privacy_local_first",
+        re.compile(r"kişisel veri|dışarıya? .*gitmesin|yerel\w* çalış|local.first|private", re.I),
+        "Kişisel verinin yerelde kalmasını ve dışarı çıkmamasını temel sınır sayar.",
+    ),
+    (
+        "modular_boundaries",
+        re.compile(r"god object|300 satır|yeni (?:bir )?dosya|modül\w* böl", re.I),
+        "Büyük sorumlulukları sınırlı dosya ve modüllere bölmeyi ister.",
     ),
 )
 

@@ -12,6 +12,7 @@ from ynoy.cli.handlers.study_full_persona import (
     full_persona_status,
     scan_full_persona,
 )
+from ynoy.cli.handlers.study_full_persona_dossier import profile_full_persona
 from ynoy.cli.handlers.study_full_persona_pack import (
     build_full_persona_pack,
     query_full_persona_pack,
@@ -62,6 +63,7 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "delete-full-persona": delete_full_persona,
         "build-full-persona-pack": build_full_persona_pack,
         "query-full-persona-pack": query_full_persona_pack,
+        "profile-full-persona": profile_full_persona,
         "respond-full-persona": respond_full_persona,
         "seal-harvest-authorship": seal_harvest_authorship,
         "record-proposal-review": record_proposal_review,
