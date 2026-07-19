@@ -150,10 +150,13 @@ def _classify_message(message: MessageCandidate, state: CodexParserState) -> Rec
 
 
 def _dialogue(origin: CodexActorOrigin, message: MessageCandidate) -> RecordClassification:
+    quarantine_origin = (
+        CodexActorOrigin.UNKNOWN if origin == CodexActorOrigin.USER_CANDIDATE else origin
+    )
     if not message.content:
-        return quarantine(origin, message.speaker, "empty_dialogue")
+        return quarantine(quarantine_origin, message.speaker, "empty_dialogue")
     if len(message.content.encode("utf-8")) > CODEX_INGEST_MAX_CONTENT_BYTES:
-        return quarantine(origin, message.speaker, "oversized_content")
+        return quarantine(quarantine_origin, message.speaker, "oversized_content")
     return RecordClassification(
         origin,
         message.speaker,
