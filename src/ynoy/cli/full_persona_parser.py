@@ -31,3 +31,8 @@ def add_full_persona_parsers(
     query_pack.add_argument("query")
     query_pack.add_argument("--top-k", type=int, default=5)
     query_pack.add_argument("--synthetic", action="store_true")
+    respond = commands.add_parser("respond-full-persona")
+    respond.add_argument("run_id")
+    respond.add_argument("query")
+    respond.add_argument("--arm", choices=("structured", "generic"), default="structured")
+    respond.add_argument("--synthetic", action="store_true")

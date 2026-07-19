@@ -46,9 +46,7 @@ def _evidence_source() -> FullCorpusSource:
         "chunk_size_bytes": 64 * 1024,
         "chunk_sha256": ("5" * 64,),
     }
-    return FullCorpusSource.model_validate(
-        {**payload, "source_receipt": canonical_sha256(payload)}
-    )
+    return FullCorpusSource.model_validate({**payload, "source_receipt": canonical_sha256(payload)})
 
 
 def _encode(records: Iterable[object]) -> bytes:
@@ -115,9 +113,7 @@ def test_structural_user_content_limits_quarantine_without_user_attribution(
     assert event.content is None
     assert event.actor_origin != CodexActorOrigin.USER_CANDIDATE
     assert event.source_authority.value != "user_turn_unattributed"
-    evidence, exclusion = evidence_from_event(
-        event, _evidence_source(), (), FullCorpusLimits()
-    )
+    evidence, exclusion = evidence_from_event(event, _evidence_source(), (), FullCorpusLimits())
     assert evidence is None
     assert exclusion == reason
 
