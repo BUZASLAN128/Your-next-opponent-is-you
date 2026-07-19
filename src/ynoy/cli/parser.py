@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 
+from ynoy.cli.full_persona_parser import add_full_persona_parsers
 from ynoy.models import CandidateKind, DecisionLabel, PersonaStratum
 
 
@@ -240,7 +241,7 @@ def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser])
     resume_harvest.add_argument("codex_root")
     resume_harvest.add_argument("run_id")
     resume_harvest.add_argument("--synthetic", action="store_true")
-    _full_persona_parsers(subcommands)
+    add_full_persona_parsers(subcommands)
     seal_authorship = subcommands.add_parser("seal-harvest-authorship")
     seal_authorship.add_argument("run_id")
     seal_authorship.add_argument("--revision", type=int, required=True)
@@ -258,26 +259,6 @@ def _study_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser])
     submit_review.add_argument("study_id")
     submit_review.add_argument("--synthetic", action="store_true")
     _action_pilot_parser(subcommands)
-
-
-def _full_persona_parsers(
-    commands: argparse._SubParsersAction[argparse.ArgumentParser],
-) -> None:
-    freeze = commands.add_parser("freeze-full-persona")
-    freeze.add_argument("codex_root")
-    freeze.add_argument("source_study_id")
-    freeze.add_argument("--synthetic", action="store_true")
-    scan = commands.add_parser("scan-full-persona")
-    scan.add_argument("codex_root")
-    scan.add_argument("run_id")
-    scan.add_argument("--max-input-bytes", type=int)
-    scan.add_argument("--synthetic", action="store_true")
-    status = commands.add_parser("full-persona-status")
-    status.add_argument("run_id")
-    status.add_argument("--synthetic", action="store_true")
-    delete = commands.add_parser("delete-full-persona")
-    delete.add_argument("run_id")
-    delete.add_argument("--synthetic", action="store_true")
 
 
 def _action_pilot_parser(

@@ -12,6 +12,10 @@ from ynoy.cli.handlers.study_full_persona import (
     full_persona_status,
     scan_full_persona,
 )
+from ynoy.cli.handlers.study_full_persona_pack import (
+    build_full_persona_pack,
+    query_full_persona_pack,
+)
 from ynoy.cli.handlers.study_guidance import status_guidance_tr
 from ynoy.cli.handlers.study_harvest import harvest_judgments, resume_judgment_harvest
 from ynoy.cli.handlers.study_harvest_authorship import seal_harvest_authorship
@@ -55,6 +59,8 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "scan-full-persona": scan_full_persona,
         "full-persona-status": full_persona_status,
         "delete-full-persona": delete_full_persona,
+        "build-full-persona-pack": build_full_persona_pack,
+        "query-full-persona-pack": query_full_persona_pack,
         "seal-harvest-authorship": seal_harvest_authorship,
         "record-proposal-review": record_proposal_review,
         "submit-proposal-review": submit_recorded_proposal_review,

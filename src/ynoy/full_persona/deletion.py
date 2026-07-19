@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from ynoy.errors import DataValidationError
+from ynoy.full_persona.pack_store import FullPersonaPackStore
 from ynoy.full_persona.store import FullPersonaStore
 from ynoy.persona_study.storage_paths import reject_link_if_present
 
@@ -13,15 +14,20 @@ def delete_full_persona_run(private_root: Path, run_id: str, *, synthetic: bool)
     store = FullPersonaStore(private_root, synthetic=synthetic)
     with store.lock(run_id):
         run = store.run_path(run_id)
-        if not run.is_dir():
+        pack_run = FullPersonaPackStore(private_root, synthetic=synthetic).run_path(run_id)
+        staging = store.staging_run_path(run_id)
+        if not run.is_dir() and not pack_run.is_dir() and not staging.is_dir():
             raise DataValidationError(
                 "full_persona_run_not_found", "The private full-persona run was not found."
             )
-        deleted = _delete_tree(run)
-        staging = store.staging_run_path(run_id)
+        deleted = 0
+        if pack_run.exists():
+            deleted += _delete_tree(pack_run)
+        if run.exists():
+            deleted += _delete_tree(run)
         if staging.exists():
             deleted += _delete_tree(staging)
-        if run.exists() or staging.exists():
+        if run.exists() or staging.exists() or pack_run.exists():
             raise DataValidationError(
                 "full_persona_delete_incomplete",
                 "The generated full-persona run was not deleted completely.",
