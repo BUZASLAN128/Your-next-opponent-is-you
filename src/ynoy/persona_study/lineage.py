@@ -4,10 +4,9 @@ import json
 from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime
 
 from ynoy.constants import DEFAULT_CODEX_INVENTORY_MAX_FIRST_RECORD_BYTES
-from ynoy.corpus.codex_discovery import DiscoveredCodexFile
+from ynoy.corpus.codex_discovery import DiscoveredCodexFile, rollout_session_start_ns
 from ynoy.corpus.codex_reader import open_stable_codex_file
 from ynoy.errors import DataValidationError
 from ynoy.util import canonical_sha256, sha256_text
@@ -118,14 +117,7 @@ def file_receipt(item: DiscoveredCodexFile) -> str:
 
 
 def session_start_ns(item: DiscoveredCodexFile) -> int:
-    try:
-        value = datetime.strptime(item.relative.name[8:27], "%Y-%m-%dT%H-%M-%S")
-    except ValueError as exc:
-        raise DataValidationError(
-            "persona_holdout_filename_time_invalid",
-            "A canonical rollout filename does not contain a valid session-start time.",
-        ) from exc
-    return int(value.replace(tzinfo=UTC).timestamp() * 1_000_000_000)
+    return rollout_session_start_ns(item.relative)
 
 
 def _parent_thread(metadata: Mapping[object, object]) -> str | None:

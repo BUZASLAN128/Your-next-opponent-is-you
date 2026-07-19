@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
 
@@ -36,6 +38,8 @@ def add_large_canonical_file(source_root: Path, *, size: int = 4 * 1024 * 1024 +
     metadata = {"type": "session_meta", "payload": {"id": "synthetic-large-session"}}
     prefix = (json.dumps(metadata, separators=(",", ":")) + "\n").encode()
     path.write_bytes(prefix + b"x" * max(0, size - len(prefix)) + b"\n")
+    stable_ns = int(datetime(2025, 12, 31, 3, 4, 5, tzinfo=UTC).timestamp() * 1_000_000_000)
+    os.utime(path, ns=(stable_ns, stable_ns))
     return path
 
 

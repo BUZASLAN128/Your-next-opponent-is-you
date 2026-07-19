@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from ynoy.constants import CODEX_HARVEST_RETENTION_DAYS
+from ynoy.constants import CODEX_HARVEST_RETENTION_DAYS, PERSONA_STUDY_STABILITY_MINUTES
 from ynoy.errors import DataValidationError
 from ynoy.models import (
     DataClass,
@@ -63,7 +63,7 @@ def prepare_harvest(
     chosen_limits = limits or HarvestLimits()
     run_id = new_harvest_run_id()
     stable_before_ns = min(
-        int((now - timedelta(minutes=5)).timestamp() * 1_000_000_000),
+        int((now - timedelta(minutes=PERSONA_STUDY_STABILITY_MINUTES)).timestamp() * 1_000_000_000),
         freeze.boundary_session_start_ns - 1,
     )
     manifest = seal_harvest_manifest(

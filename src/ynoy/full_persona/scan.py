@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, cast
 
 from ynoy.corpus.codex import assert_synthetic_codex_root, codex_source_key
 from ynoy.corpus.codex_discovery import (
@@ -14,6 +14,7 @@ from ynoy.corpus.codex_discovery import (
 from ynoy.corpus.codex_normalizer_types import CodexParserState
 from ynoy.corpus.codex_reader import open_stable_codex_file
 from ynoy.errors import DataValidationError
+from ynoy.full_persona.chunk_stream import VerifiedChunkStream
 from ynoy.full_persona.evidence import EvidenceContext
 from ynoy.full_persona.integrity import verify_committed_run
 from ynoy.full_persona.recovery import recover_interrupted_run
@@ -25,10 +26,14 @@ from ynoy.full_persona.scan_state import (
     exclude_file_remainder,
 )
 from ynoy.full_persona.shards import ShardBuffer
+from ynoy.full_persona.source_universe import (
+    exclusion_key,
+    manifest_exclusion_key,
+    partition_sources,
+)
 from ynoy.full_persona.store import FullPersonaStore
 from ynoy.full_persona.store_contract import seal_full_corpus_head
 from ynoy.models.full_persona import FullCorpusHead, FullCorpusManifest, FullCorpusSource
-from ynoy.persona_study.lineage import session_start_ns
 from ynoy.util import utc_now
 
 
@@ -86,15 +91,13 @@ def _verify_source_universe(
         CodexInventoryLimits(
             max_files=manifest.limits.max_manifest_files, max_entries=200_000, max_depth=8
         ),
+        session_start_before_ns=manifest.holdout_boundary_session_start_ns,
     )
-    eligible = tuple(
-        item
-        for item in discovery.files
-        if item.file_bytes > 0
-        and session_start_ns(item) < manifest.holdout_boundary_session_start_ns
-    )
+    eligible, excluded = partition_sources(discovery.files, manifest.stable_before_ns)
     current = {codex_source_key(item): item for item in eligible}
-    if set(current) != {item.source_key for item in manifest.files}:
+    source_keys_match = set(current) == {item.source_key for item in manifest.files}
+    exclusions_match = exclusion_key(excluded) == manifest_exclusion_key(manifest.excluded_files)
+    if not source_keys_match or not exclusions_match:
         raise DataValidationError(
             "full_persona_source_universe_changed",
             "The canonical pre-holdout source universe changed after freeze.",
@@ -147,8 +150,8 @@ def _scan_source(
         head.completed_lines,
     )
     with open_stable_codex_file(item) as stream:
-        _verify_opened_digest(stream, source)
-        _consume_open_source(store, state, stream, budget)
+        verified = cast(BinaryIO, VerifiedChunkStream(stream, source))
+        _consume_open_source(store, state, verified, budget)
     return state.head, state.invocation_bytes
 
 

@@ -12,6 +12,7 @@ from ynoy.constants import (
     PERSONA_STUDY_MAX_FILES,
     PERSONA_STUDY_MAX_RECORDS,
     PERSONA_STUDY_MAX_TOTAL_BYTES,
+    PERSONA_STUDY_STABILITY_MINUTES,
 )
 from ynoy.corpus.codex import assert_synthetic_codex_root
 from ynoy.corpus.codex_discovery import (
@@ -62,7 +63,7 @@ def load_study_source(
         discovery.files,
         stable_before=None
         if synthetic or evaluation_time is None
-        else evaluation_time - timedelta(minutes=5),
+        else evaluation_time - timedelta(minutes=PERSONA_STUDY_STABILITY_MINUTES),
     )
     return _load_selected(selected, synthetic=synthetic)
 
@@ -77,7 +78,9 @@ def load_protected_study_source(
     discovery = discover_codex_sessions(
         source, CodexInventoryLimits(max_first_record_bytes=limits.max_line_bytes)
     )
-    stable_before = None if synthetic else evaluation_time - timedelta(minutes=5)
+    stable_before = (
+        None if synthetic else evaluation_time - timedelta(minutes=PERSONA_STUDY_STABILITY_MINUTES)
+    )
     plan = plan_protected_holdout(discovery.files, stable_before=stable_before)
     selected = _select_files(plan.annotation_candidates, stable_before=None)
     sample = _load_selected(selected, synthetic=synthetic)

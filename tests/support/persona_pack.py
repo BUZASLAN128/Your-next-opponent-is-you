@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 
 from support.full_persona import canonical_file
@@ -42,6 +44,8 @@ def prepared_pack_source(tmp_path: Path) -> tuple[Path, Path, PreparedPersonaStu
                 },
             }
             stream.write(json.dumps(payload, separators=(",", ":")) + "\n")
+    stable_ns = int(datetime(2026, 1, 1, 3, 4, 5, tzinfo=UTC).timestamp() * 1_000_000_000)
+    os.utime(path, ns=(stable_ns, stable_ns))
     private_root = tmp_path / "private"
     prepared = prepare_persona_study(
         source_root,

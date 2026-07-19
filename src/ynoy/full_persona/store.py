@@ -201,6 +201,12 @@ class FullPersonaStore:
             raise DataValidationError(
                 "full_persona_manifest_invalid", "The full-persona manifest is invalid."
             ) from exc
+        manifest_bytes = len(model_bytes(safe))
+        if manifest_bytes > min(safe.limits.max_manifest_control_bytes, _CONTROL_BYTES):
+            raise DataValidationError(
+                "full_persona_manifest_oversized",
+                "The full-persona manifest exceeds its bounded control-file limit.",
+            )
         if safe.synthetic != self.synthetic:
             raise DataValidationError(
                 "full_persona_mode_mismatch", "The full-persona storage mode does not match."

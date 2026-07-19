@@ -4,6 +4,7 @@ import os
 import re
 import stat
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from itertools import islice
 from pathlib import Path
 from typing import Literal
@@ -80,7 +81,12 @@ def resolve_codex_root(root: Path) -> Path:
     return source
 
 
-def discover_codex_sessions(root: Path, limits: CodexInventoryLimits) -> CodexDiscovery:
+def discover_codex_sessions(
+    root: Path,
+    limits: CodexInventoryLimits,
+    *,
+    session_start_before_ns: int | None = None,
+) -> CodexDiscovery:
     files: list[DiscoveredCodexFile] = []
     ignored = visited = 0
     found_partition = False
@@ -96,6 +102,7 @@ def discover_codex_sessions(root: Path, limits: CodexInventoryLimits) -> CodexDi
             limits,
             entry_budget=limits.max_entries - visited,
             file_budget=limits.max_files - len(files),
+            session_start_before_ns=session_start_before_ns,
         )
         files.extend(result.files)
         ignored += result.ignored_files
@@ -123,6 +130,17 @@ def discovery_key(discovery: CodexDiscovery) -> tuple[object, ...]:
     return locators, discovery.ignored_noncanonical_files
 
 
+def rollout_session_start_ns(relative: Path) -> int:
+    try:
+        value = datetime.strptime(relative.name[8:27], "%Y-%m-%dT%H-%M-%S")
+    except ValueError as exc:
+        raise DataValidationError(
+            "codex_session_filename_time_invalid",
+            "A canonical rollout filename has an invalid session-start time.",
+        ) from exc
+    return int(value.replace(tzinfo=UTC).timestamp() * 1_000_000_000)
+
+
 def _validate_partition(path: Path) -> None:
     if path.is_symlink() or path.is_junction() or not path.is_dir():
         raise DataValidationError(
@@ -137,6 +155,7 @@ def _walk_partition(
     *,
     entry_budget: int,
     file_budget: int,
+    session_start_before_ns: int | None,
 ) -> _PartitionDiscovery:
     selected: list[DiscoveredCodexFile] = []
     ignored = visited = 0
@@ -155,6 +174,7 @@ def _walk_partition(
                 file_budget,
                 selected,
                 stack,
+                session_start_before_ns,
             )
     return _PartitionDiscovery(tuple(selected), ignored, visited)
 
@@ -185,6 +205,7 @@ def _handle_child(
     file_budget: int,
     selected: list[DiscoveredCodexFile],
     stack: list[tuple[Path, int]],
+    session_start_before_ns: int | None,
 ) -> int:
     path = Path(child.path)
     if child.is_symlink() or path.is_junction():
@@ -196,6 +217,11 @@ def _handle_child(
         _accept_directory(partition, relative, depth, limits, path, stack)
         return 0
     if child.is_file(follow_symlinks=False) and _is_canonical_file(partition, relative):
+        if (
+            session_start_before_ns is not None
+            and rollout_session_start_ns(relative) >= session_start_before_ns
+        ):
+            return 0
         if len(selected) >= file_budget:
             raise DataValidationError(
                 "codex_inventory_file_limit",

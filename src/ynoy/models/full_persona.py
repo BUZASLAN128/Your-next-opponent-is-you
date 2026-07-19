@@ -7,6 +7,12 @@ from typing import Any, Literal
 from pydantic import Field, model_validator
 
 from ynoy.models.base import DataClass, StrictModel
+from ynoy.models.full_persona_exclusion import (
+    FullCorpusExclusion,
+    exclusion_order,
+    validate_exclusion_reasons,
+)
+from ynoy.models.full_persona_source import FullCorpusSource as FullCorpusSource
 from ynoy.util import canonical_sha256, sha256_text
 
 type Digest = str
@@ -21,6 +27,8 @@ class EvidenceRole(StrEnum):
 class FullCorpusLimits(StrictModel):
     max_manifest_files: int = Field(default=100_000, ge=1, le=100_000)
     max_manifest_input_bytes: int = Field(default=80 * 1024**3, ge=1)
+    max_manifest_control_bytes: int = Field(default=16 * 1024**2, ge=1024, le=16 * 1024**2)
+    source_chunk_bytes: int = Field(default=4 * 1024**2, ge=64 * 1024, le=16 * 1024**2)
     max_line_bytes: int = Field(default=1024**2, ge=1)
     max_wire_record_bytes: int = Field(default=64 * 1024**2, ge=1)
     max_evidence_bytes: int = Field(default=128 * 1024, ge=1)
@@ -43,35 +51,12 @@ class FullCorpusLimits(StrictModel):
     @property
     def config_sha256(self) -> Digest:
         return canonical_sha256(
-            {"protocol": "full-persona-corpus/0.1", "limits": self.model_dump(mode="json")}
+            {"protocol": "full-persona-corpus/0.2", "limits": self.model_dump(mode="json")}
         )
 
 
-class FullCorpusSource(StrictModel):
-    partition: Literal["sessions", "archived_sessions"]
-    relative_locator: str = Field(min_length=1)
-    source_key: Digest = Field(pattern=r"^[0-9a-f]{64}$")
-    file_bytes: int = Field(ge=1)
-    modified_ns: int = Field(ge=1)
-    device: int = Field(ge=0)
-    inode: int = Field(ge=0)
-    session_start_ns: int = Field(ge=1)
-    thread_receipt: Digest = Field(pattern=r"^[0-9a-f]{64}$")
-    parent_thread_receipt: Digest | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
-    lineage_component_receipt: Digest = Field(pattern=r"^[0-9a-f]{64}$")
-    blob_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
-    source_receipt: Digest = Field(pattern=r"^[0-9a-f]{64}$")
-
-    @model_validator(mode="after")
-    def source_receipt_matches(self) -> FullCorpusSource:
-        payload = self.model_dump(mode="json", exclude={"source_receipt"})
-        if self.source_receipt != canonical_sha256(payload):
-            raise ValueError("full-corpus source receipt does not match its payload")
-        return self
-
-
 class FullCorpusManifest(StrictModel):
-    protocol_version: Literal["full-persona-corpus/0.1"] = "full-persona-corpus/0.1"
+    protocol_version: Literal["full-persona-corpus/0.2"] = "full-persona-corpus/0.2"
     run_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     source_study_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     holdout_freeze_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
@@ -86,6 +71,9 @@ class FullCorpusManifest(StrictModel):
     expected_file_count: int = Field(ge=1)
     expected_input_bytes: int = Field(ge=1)
     source_snapshot_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    excluded_files: tuple[FullCorpusExclusion, ...]
+    expected_excluded_file_count: int = Field(ge=0)
+    exclusion_snapshot_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     manifest_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     holdout_labels_used: Literal[False] = False
     database_used: Literal[False] = False
@@ -103,6 +91,8 @@ class FullCorpusManifest(StrictModel):
             raise ValueError("full-corpus file count does not reconcile")
         if self.expected_input_bytes != sum(item.file_bytes for item in self.files):
             raise ValueError("full-corpus input bytes do not reconcile")
+        if self.expected_excluded_file_count != len(self.excluded_files):
+            raise ValueError("full-corpus exclusion count does not reconcile")
         if self.expected_file_count > self.limits.max_manifest_files:
             raise ValueError("full-corpus manifest exceeds its file limit")
         if self.expected_input_bytes > self.limits.max_manifest_input_bytes:
@@ -112,9 +102,23 @@ class FullCorpusManifest(StrictModel):
             self.files
         ):
             raise ValueError("full-corpus sources must be ordered and unique")
+        exclusions = tuple(sorted(self.excluded_files, key=exclusion_order))
+        excluded_keys = {item.source_key for item in exclusions}
+        if self.excluded_files != exclusions or len(excluded_keys) != len(exclusions):
+            raise ValueError("full-corpus exclusions must be ordered and unique")
+        if excluded_keys & {item.source_key for item in self.files}:
+            raise ValueError("full-corpus source cannot also be excluded")
+        if any(item.modified_ns > self.stable_before_ns for item in self.files):
+            raise ValueError("full-corpus source exceeds its stability cutoff")
+        validate_exclusion_reasons(self.excluded_files, self.stable_before_ns)
         snapshot = canonical_sha256([item.model_dump(mode="json") for item in self.files])
         if self.source_snapshot_sha256 != snapshot:
             raise ValueError("full-corpus source snapshot hash does not match")
+        exclusion_snapshot = canonical_sha256(
+            [item.model_dump(mode="json") for item in self.excluded_files]
+        )
+        if self.exclusion_snapshot_sha256 != exclusion_snapshot:
+            raise ValueError("full-corpus exclusion snapshot hash does not match")
         _require_hash(self, "manifest_sha256")
         return self
 
