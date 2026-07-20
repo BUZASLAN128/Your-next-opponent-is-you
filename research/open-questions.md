@@ -1386,3 +1386,10 @@ reasoning prompt and from action authority.
 one auditable manager brief for a single project. The brief must include current
 state, decision, plan, delegation candidates, risks, unknowns, source receipts,
 and the exact user approval still required.
+## RQ-037 — Model output contract under reasoning-capable GGUFs
+
+The first pinned local model produced a valid structured response for the
+responder, but the reaction benchmark encountered non-empty reasoning outside
+the JSON contract and correctly failed closed. Should the serving contract be
+made stricter at the endpoint (grammar/template configuration) or should a
+separate non-reasoning model be selected? No parser relaxation is allowed.

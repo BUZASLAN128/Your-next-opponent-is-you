@@ -282,3 +282,14 @@ Read the files in the order listed below:
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as
 scientific validation or silently expand the confirmed V1 baseline.
+## 2026-07-20 executive-agent run checkpoint
+
+The explicitly selected local Codex source completed a resumable, bounded-memory
+full-persona scan in a private root outside Git. A deterministic pack, life
+profile, and package were produced without database access, external providers,
+automatic promotion, or action execution. A pinned loopback Qwen GGUF adapter
+also produced a structured candidate response; the public projection remained
+abstention with no send/execute authority. The sealed reaction benchmark was
+stopped fail-closed when the model emitted non-empty reasoning outside its JSON
+contract. Private metrics, content, model artifact, and response text remain
+outside this repository.

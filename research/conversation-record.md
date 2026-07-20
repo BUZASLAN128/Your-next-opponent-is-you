@@ -2641,3 +2641,17 @@ is recorded here.
 Resume the existing private full-corpus cursor and produce one source-bound,
 user-auditable manager brief for a single project: current state, decision,
 plan, delegation candidates, risks, unknowns, and required user approval.
+## Event 057 — Full private scan and model gate (2026-07-20)
+
+- User direction: start a new run from the explicitly selected Codex sessions,
+  process the full corpus without loading it into RAM, and produce a visible
+  executive-agent result.
+- Verified fact: the private run completed its frozen source scan and built the
+  deterministic pack, life profile, and package outside Git.
+- Verified fact: a loopback-only, locally attested Qwen GGUF adapter returned a
+  structured candidate, but the projection stayed abstention-only and could not
+  send, execute, persist, or promote.
+- Verified fact: the reaction benchmark rejected a non-empty reasoning segment
+  and therefore did not produce a benchmark claim.
+- Boundary: no raw corpus, private path, model output, or private aggregate was
+  copied into this record.

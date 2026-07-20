@@ -1293,3 +1293,14 @@ When a decision changes:
 3. Link to the replacing decision.
 4. Record the user statement or evidence that caused the change.
 5. Update dependent research claims without deleting the historical trail.
+### D-065 — Private full scan precedes model claims (2026-07-20)
+
+- Decision: keep full-corpus processing resumable and outside Git; use the
+  deterministic pack as the only evidence input to the model gate.
+- Decision: a loopback model may propose a candidate only. Basis selection,
+  abstention, action, send, persistence, and persona promotion remain runtime
+  controlled.
+- Decision: reject any benchmark response containing non-empty reasoning or
+  schema violations instead of relaxing the parser.
+- Status: implemented as a private-run checkpoint; benchmark calibration and
+  persona-quality acceptance remain open.

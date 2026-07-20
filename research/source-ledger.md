@@ -2250,3 +2250,11 @@ The current ledger lacks:
   control records can be annotated and corrected reliably.
 
 These gaps must remain visible until closed.
+### L-043 — Private full-persona and local-model checkpoint (2026-07-20)
+
+- Source: explicitly selected local Codex `sessions` and `archived_sessions`.
+- Use: resumable full-corpus scan and deterministic executive-agent pack.
+- Evidence class: private operational evidence; no raw content or aggregate is
+  stored in Git.
+- Limitation: local model output is a candidate only; reaction benchmark failed
+  closed on non-empty reasoning and is not a persona-quality result.
