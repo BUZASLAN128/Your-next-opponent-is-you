@@ -2655,3 +2655,7 @@ plan, delegation candidates, risks, unknowns, and required user approval.
   and therefore did not produce a benchmark claim.
 - Boundary: no raw corpus, private path, model output, or private aggregate was
   copied into this record.
+
+- Verified fact: the strict JSON grammar and bounded context retry completed the
+  sealed comparison with a negative-directional result; no persona-quality
+  claim was made.

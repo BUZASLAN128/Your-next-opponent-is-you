@@ -2258,3 +2258,6 @@ These gaps must remain visible until closed.
   stored in Git.
 - Limitation: local model output is a candidate only; reaction benchmark failed
   closed on non-empty reasoning and is not a persona-quality result.
+
+- Follow-up: strict grammar/context retry completed with a negative-directional
+  sealed comparison; proxy labels and private metrics remain outside Git.

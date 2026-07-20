@@ -1304,3 +1304,10 @@ When a decision changes:
   schema violations instead of relaxing the parser.
 - Status: implemented as a private-run checkpoint; benchmark calibration and
   persona-quality acceptance remain open.
+
+### D-066 - Preserve negative benchmark evidence (2026-07-20)
+
+- Keep the negative-directional result; do not tune or relabel proxy cases.
+- Retain strict JSON grammar and bounded context; each model change requires a
+  new sealed comparison.
+- Status: open for represented-user labels and calibrated evaluation.

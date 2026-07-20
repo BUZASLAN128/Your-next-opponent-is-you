@@ -1393,3 +1393,7 @@ responder, but the reaction benchmark encountered non-empty reasoning outside
 the JSON contract and correctly failed closed. Should the serving contract be
 made stricter at the endpoint (grammar/template configuration) or should a
 separate non-reasoning model be selected? No parser relaxation is allowed.
+
+The strict grammar closes the reasoning leak. The remaining question is whether
+a separately selected non-reasoning model and user-validated labels can separate
+the structured manager from frozen controls.

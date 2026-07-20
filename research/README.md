@@ -293,3 +293,6 @@ abstention with no send/execute authority. The sealed reaction benchmark was
 stopped fail-closed when the model emitted non-empty reasoning outside its JSON
 contract. Private metrics, content, model artifact, and response text remain
 outside this repository.
+\n+The strict JSON grammar and bounded context retry completed the sealed
+comparison with a negative-directional result against a frozen control. This
+is a measurement result, not a persona-quality claim.
