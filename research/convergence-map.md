@@ -891,3 +891,23 @@ a frozen retrieval-static control, and a structured representation that beats
 generic, majority, recency, and retrieval on the same future cases. Until that
 gate is passed, the implemented capability is an observable-action research
 pilot rather than a personal cognitive model.
+
+## Immutable Executive-Agent Direction — 2026-07-20
+
+The product target is now explicit: a personal executive agent that carries
+the user's decision logic, manages projects, organizes agents, and asks the
+user when uncertainty is material. This is a product-direction decision, not
+evidence that the current runtime already manages projects or delegates work.
+
+The dependency order is therefore:
+
+1. source-bound decision and project-state evidence;
+2. scoped policy and uncertainty/escalation rules;
+3. plan and delegation proposals with approval gates;
+4. LLM reasoning and communication inside that boundary;
+5. outcome receipts and reversible learning.
+
+An LLM, vector index, graph, or model fine-tune may be a later implementation
+candidate, but none may alter the immutable product direction or gain action
+authority by similarity alone. The next discriminating check is one private,
+auditable manager brief for a single project.

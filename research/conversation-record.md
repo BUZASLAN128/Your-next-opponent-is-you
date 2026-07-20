@@ -2609,3 +2609,35 @@ Increase independent authored chronological support and freeze retrieval plus
 recency controls before target access. Do not call a future result positive
 unless the structured arm beats every predeclared control under sufficient
 support.
+
+## Event 056 — Establish the Immutable Executive-Agent Product Direction
+
+### User Direction
+
+The user clarified the intended outcome: the system should carry the user's
+decision logic, manage projects like a general manager or organizer, organize
+agents, and return to the user when uncertainty is material. The user requested
+that this become the first main rule and that the rule itself be immutable.
+
+### Confirmed Interpretation
+
+The product target is an executive decision agent, not a voice clone or a
+static archive. Its durable state must connect decision evidence, project
+state, plans, delegation, uncertainty, and outcomes. An LLM may reason and
+draft inside that boundary, but it cannot define or rewrite the constitution,
+grant itself authority, or claim that an action occurred.
+
+### Evidence Boundary
+
+This is a confirmed product-direction decision, not evidence that the current
+runtime already performs executive management. The current full-persona
+runtime produces private evidence packs and proposal-only responses; planning,
+delegation, outcome learning, and real-user decision fidelity remain separate
+implementation and evaluation gates. No private corpus content or identifier
+is recorded here.
+
+### Next Discriminating Check
+
+Resume the existing private full-corpus cursor and produce one source-bound,
+user-auditable manager brief for a single project: current state, decision,
+plan, delegation candidates, risks, unknowns, and required user approval.

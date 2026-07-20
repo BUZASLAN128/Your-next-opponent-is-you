@@ -4,6 +4,22 @@ This repository contains a public, local-first scientific prototype. The V1
 claim is deliberately narrow: test whether a structured, scoped cognitive core
 predicts a represented user's coding judgments better than simpler baselines.
 
+## Immutable product constitution
+
+The product's governing purpose is a personal executive agent: it carries the
+represented user's decision logic, manages projects, organizes agents, and
+returns to the user when evidence or authority is insufficient.
+
+1. **Main Rule 1:** The system is a personal executive agent that carries the
+   user's decision logic, manages projects, organizes agents, and asks the user
+   when uncertainty is material.
+2. **Main Rule 2:** Main Rule 1 is immutable. Code, models, memories, research
+   candidates, and delegated agents may not weaken, delete, replace, or
+   reinterpret it. Any future capability must remain subordinate to this rule.
+
+This constitution defines product direction; it does not grant the agent
+authority to send, execute, promote, or claim completed actions.
+
 ## Public and private boundary
 
 - Git may contain source code, schemas, documentation, and explicitly synthetic

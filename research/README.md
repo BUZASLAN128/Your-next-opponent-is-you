@@ -1,5 +1,12 @@
 # Research Hub
 
+> 2026-07-20 product-direction checkpoint: the confirmed target is a personal
+> executive agent that carries the user's decision logic, manages projects,
+> organizes agents, and returns to the user when uncertainty is material. Main
+> Rule 1 names this purpose; Main Rule 2 makes Main Rule 1 immutable. The
+> current runtime does not yet implement executive management; the next check
+> is one private, source-bound manager brief.
+
 > 2026-07-18 fixed-memory judgment-harvester checkpoint: deterministic,
 > resumable, source-bound streaming produced a private `audit_ready` review
 > package under hard resource caps. Focuses remain unattributed and cannot

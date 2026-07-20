@@ -13,6 +13,19 @@ that predicts what you would accept in a later coding situation.
 
 AI responses are context. **Your decisions are the signal.**
 
+## Immutable product constitution
+
+The target product is a personal executive agent: it carries the user's
+decision logic, manages projects, organizes agents, and returns to the user
+when uncertainty or authority is material.
+
+1. **Main Rule 1:** Build that personal executive agent.
+2. **Main Rule 2:** Main Rule 1 is immutable. No code, model, memory, research
+   candidate, or delegated agent may weaken, delete, or reinterpret it.
+
+This direction does not grant sending, execution, promotion, or completed-
+action authority.
+
 ## Current Status
 
 V1 is an implemented command-line research harness, not a finished virtual
@@ -41,16 +54,18 @@ self. It supports synthetic and locally authorized experiments around:
 - local PostgreSQL 18.4 plus pgvector 0.8.2 storage;
 - provider-neutral adapters whose transport is restricted to loopback and whose
   private-data access requires a separate local-provider attestation.
+- a resumable, bounded-memory full-persona scanner that writes source-bound
+  private shards, plus deterministic pack, life-profile, response, and
+  target-isolated benchmark commands;
 
-The repository has synthetic test evidence plus bounded private correction and
-persona-study observations whose content remains outside Git. A pinned
-Qwen3-8B Q4_K_M endpoint has been validated locally on loopback and used for
-proposal-only private review. A bounded real study package now exists, but its
-first model-proposal receipt failed the deterministic review-burden gate and
-was retained only as negative evidence. No full conversation corpus has been
-ingested into the database, no represented-user annotation has been sealed,
-and no result establishes extraction quality, persona fidelity, or real-user
-decision prediction.
+The repository has synthetic test evidence plus bounded private correction,
+full-persona, and persona-study observations whose content remains outside
+Git. A pinned Qwen3-8B Q4_K_M endpoint has been validated locally on loopback
+and used only through proposal/benchmark paths. No full conversation corpus is
+ingested into the database, no automatic promotion is enabled, and no result
+establishes persona fidelity or real-user decision prediction. Private scan,
+pack, response, and benchmark artifacts are evidence for a local experiment,
+not a public identity record.
 
 The correction lifecycle is a private-artifact CLI and Python contract, not a
 database schema. The optional model proposes candidates only; correction and

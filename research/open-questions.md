@@ -1370,3 +1370,19 @@ case and cluster selections, arm identities, baseline and dependency
 artifacts, hard gates, coverage, support counts, estimator version, invalid
 replicate rate, and bootstrap samples. A cross-coverage or cross-baseline
 inference must fail closed at the public API.
+
+### RQ-036 — How Does the Persona Become an Executive Agent?
+
+**Status:** Open product/runtime question under confirmed D-064. The immutable
+target is a personal executive agent, but the current runtime is still an
+evidence-pack and proposal harness.
+
+**Required decomposition:** Define the source-bound project state, decision
+policy, plan format, delegation contract, approval gates, uncertainty/escalation
+rules, outcome receipt, and correction path. Keep these separate from the LLM
+reasoning prompt and from action authority.
+
+**Next discriminating check:** Resume one private full-corpus cursor and produce
+one auditable manager brief for a single project. The brief must include current
+state, decision, plan, delegation candidates, risks, unknowns, source receipts,
+and the exact user approval still required.

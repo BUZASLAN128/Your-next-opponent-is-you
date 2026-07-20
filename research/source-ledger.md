@@ -2211,6 +2211,23 @@ infrastructure.
   matched-selected-set rejection tests before using the comparator on private
   targets.
 
+### L-042 — Immutable executive-agent product direction (2026-07-20)
+
+- **Type:** Explicit user product decision recorded in Event 056 and D-064
+- **Provenance:** Current project conversation; no private corpus or external
+  source was used.
+- **Observed:** The intended product is a personal executive agent that carries
+  the user's decision logic, manages projects, organizes agents, and returns to
+  the user when uncertainty is material. The user made this Main Rule 1 and
+  declared Main Rule 1 immutable as Main Rule 2.
+- **Supports:** Product requirements must connect decision evidence, project
+  state, planning, delegation, uncertainty, and outcomes. An LLM remains a
+  reasoning component, not the authority or constitution.
+- **Does not establish:** That the current runtime performs executive
+  management, delegates real work, learns from outcomes, or matches the user.
+- **Next check:** Produce one private source-bound manager brief for a single
+  project after safely resuming the existing full-corpus cursor.
+
 ## Evidence Gaps
 
 The current ledger lacks:

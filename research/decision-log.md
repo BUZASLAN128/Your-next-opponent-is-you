@@ -1199,6 +1199,26 @@ from silently becoming product authority.
 - **Durable record:**
   [Observable-action pilot](observable-action-pilot-2026-07-19.md)
 
+## D-064 — Make the personal executive agent the immutable product direction
+
+- **Date:** 2026-07-20
+- **Status:** Confirmed user decision; product constitution
+- **User direction:** The user clarified that the intended system is a
+  personal executive agent that carries their decision logic, manages projects,
+  organizes agents, and returns to them when uncertainty is material.
+- **Main Rule 1:** The system must pursue that personal executive-agent role.
+- **Main Rule 2:** Main Rule 1 is immutable. No code, model, memory, research
+  candidate, or delegated agent may weaken, delete, replace, or reinterpret it.
+- **Authority boundary:** The rule defines product purpose, not action
+  authority. Sending, execution, promotion, and completed-action claims remain
+  separately gated and fail closed.
+- **Implementation consequence:** Conversation processing must produce usable
+  decision, project, delegation, uncertainty, and outcome evidence. A pack of
+  extracted text alone is not the product outcome.
+- **Non-decision:** This does not select a model, storage engine, graph/RAG
+  topology, fine-tuning method, authenticator, or external provider.
+- **Durable record:** Repository constitution in `AGENTS.md` and `README.md`.
+
 ## Resolved Candidate History
 
 | Candidate | Resolution |
