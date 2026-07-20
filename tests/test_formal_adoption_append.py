@@ -9,8 +9,11 @@ from support.formal_runtime import POLICY_VERSION, REVIEW_SHA256, runtime_fixtur
 from ynoy.adoption import adoption_matches
 from ynoy.errors import PolicyViolation
 from ynoy.models import DataClass
+from ynoy.models.formal_decision import DecisionGroupKey
 from ynoy.models.formal_runtime import TrustedReviewAuthorization
+from ynoy.models.review_vocab import TargetLayer
 from ynoy.review_append import build_review_authorization
+from ynoy.util import new_id
 
 
 def _attempt_append(fixture, event) -> str:
@@ -68,6 +71,58 @@ def test_adoption_is_bound_and_not_replayable() -> None:
             expected_head=0,
             data_class=DataClass.DERIVED_IDENTITY,
         )
+    assert blocked.value.code == "real_adoption_authenticator_unavailable"
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    (
+        ("subject_id", "another-subject"),
+        ("review_sha256", "b" * 64),
+        ("claim_id", new_id()),
+        (
+            "full_key",
+            DecisionGroupKey(
+                subject_id="self",
+                target_layer=TargetLayer.SCOPED_POLICY,
+                reviewed_decision_key="another-decision",
+            ),
+        ),
+        ("expected_head", 1),
+        ("channel_id", "another-channel"),
+    ),
+    ids=("subject", "review", "claim", "decision-key", "head", "channel"),
+)
+def test_adoption_challenge_rejects_every_rebound_binding(field: str, replacement: object) -> None:
+    fixture = runtime_fixture()
+    challenge = fixture.verifier.issue(
+        fixture.claim,
+        review_sha256=REVIEW_SHA256,
+        expected_head=0,
+    )
+    rebound = challenge.model_copy(update={field: replacement})
+
+    with pytest.raises(PolicyViolation) as blocked:
+        fixture.verifier.verify(rebound, response_sha256="a" * 64)
+
+    assert blocked.value.code == "adoption_challenge_invalid"
+    assert fixture.verifier.validate(fixture.adoption)
+
+
+@pytest.mark.parametrize(
+    "data_class", tuple(item for item in DataClass if item != DataClass.PUBLIC_SYNTHETIC)
+)
+def test_model_or_private_data_cannot_authenticate_adoption(data_class: DataClass) -> None:
+    fixture = runtime_fixture()
+
+    with pytest.raises(PolicyViolation) as blocked:
+        fixture.verifier.issue(
+            fixture.claim,
+            review_sha256=REVIEW_SHA256,
+            expected_head=0,
+            data_class=data_class,
+        )
+
     assert blocked.value.code == "real_adoption_authenticator_unavailable"
 
 

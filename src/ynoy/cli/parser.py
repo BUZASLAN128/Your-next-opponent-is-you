@@ -4,6 +4,7 @@ import argparse
 from collections.abc import Sequence
 
 from ynoy.cli.full_persona_parser import add_full_persona_parsers
+from ynoy.cli.manager_spike_parser import add_manager_spike_parsers
 from ynoy.models import CandidateKind, DecisionLabel, PersonaStratum
 
 
@@ -116,6 +117,8 @@ def _manager_parser(commands: argparse._SubParsersAction[argparse.ArgumentParser
     start = subcommands.add_parser("start")
     start.add_argument("--task", required=True)
     _add_scope_arguments(start)
+
+    add_manager_spike_parsers(subcommands)
 
 
 def _add_inference_arguments(parser: argparse.ArgumentParser) -> None:

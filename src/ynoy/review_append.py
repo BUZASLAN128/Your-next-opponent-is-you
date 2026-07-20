@@ -7,13 +7,18 @@ from pydantic import ValidationError
 
 from ynoy.adoption import SyntheticIndependentAdoptionVerifier
 from ynoy.errors import PolicyViolation
+from ynoy.local_adoption import LocalSshAdoptionAuthenticator
 from ynoy.models.formal_runtime import (
     ReviewAppend,
     ReviewAppendAck,
     TrustedReviewAuthorization,
     VerifiedAdoption,
 )
+from ynoy.models.local_adoption import VerifiedLocalAdoption
 from ynoy.util import canonical_sha256
+
+type AdoptionReceipt = VerifiedAdoption | VerifiedLocalAdoption
+type AdoptionVerifier = SyntheticIndependentAdoptionVerifier | LocalSshAdoptionAuthenticator
 
 
 class InMemoryReviewAppendStore:
@@ -23,7 +28,7 @@ class InMemoryReviewAppendStore:
         self,
         *,
         policy_version: str,
-        adoption_verifier: SyntheticIndependentAdoptionVerifier,
+        adoption_verifier: AdoptionVerifier,
     ) -> None:
         self.policy_version = policy_version
         self._adoption_verifier = adoption_verifier
@@ -35,7 +40,7 @@ class InMemoryReviewAppendStore:
         self,
         event: ReviewAppend,
         *,
-        adoption: VerifiedAdoption,
+        adoption: AdoptionReceipt,
         authorization: TrustedReviewAuthorization,
     ) -> ReviewAppendAck:
         event, adoption, authorization = _validated_inputs(event, adoption, authorization)
@@ -67,7 +72,7 @@ class InMemoryReviewAppendStore:
         self,
         recorded: tuple[ReviewAppend, ReviewAppendAck],
         event: ReviewAppend,
-        adoption: VerifiedAdoption,
+        adoption: AdoptionReceipt,
         authorization: TrustedReviewAuthorization,
     ) -> ReviewAppendAck:
         original, ack = recorded
@@ -76,7 +81,8 @@ class InMemoryReviewAppendStore:
             and adoption.receipt_sha256 == original.adoption_receipt_sha256
             and authorization.receipt_sha256 == original.authorization_receipt_sha256
             and _authorization_binds(original, authorization, check_policy=False)
-            and self._adoption_verifier.validate(adoption)
+            and _adoption_binds(original, adoption, authorization)
+            and _adoption_is_valid(self._adoption_verifier, adoption)
         )
         if not exact:
             raise PolicyViolation("review_append_denied", "Review append is not authorized.")
@@ -85,7 +91,7 @@ class InMemoryReviewAppendStore:
     def _validate_new(
         self,
         event: ReviewAppend,
-        adoption: VerifiedAdoption,
+        adoption: AdoptionReceipt,
         authorization: TrustedReviewAuthorization,
     ) -> None:
         valid = (
@@ -94,10 +100,8 @@ class InMemoryReviewAppendStore:
             and _authorization_binds(event, authorization, check_policy=True)
             and event.event_type in authorization.allowed_event_types
             and event.adoption_receipt_sha256 == adoption.receipt_sha256
-            and adoption.subject_id == event.subject_id
-            and adoption.review_sha256 == event.review_sha256
-            and adoption.expected_head == event.expected_revision
-            and self._adoption_verifier.validate(adoption)
+            and _adoption_binds(event, adoption, authorization)
+            and _adoption_is_valid(self._adoption_verifier, adoption)
         )
         if not valid:
             raise PolicyViolation("review_append_denied", "Review append is not authorized.")
@@ -134,7 +138,7 @@ def build_review_append(
     payload_sha256: str,
     causation_id: UUID,
     authorization: TrustedReviewAuthorization,
-    adoption: VerifiedAdoption,
+    adoption: AdoptionReceipt,
 ) -> ReviewAppend:
     draft = ReviewAppend.model_construct(
         event_id=event_id,
@@ -172,17 +176,57 @@ def _authorization_binds(
 
 def _validated_inputs(
     event: ReviewAppend,
-    adoption: VerifiedAdoption,
+    adoption: AdoptionReceipt,
     authorization: TrustedReviewAuthorization,
-) -> tuple[ReviewAppend, VerifiedAdoption, TrustedReviewAuthorization]:
+) -> tuple[ReviewAppend, AdoptionReceipt, TrustedReviewAuthorization]:
     try:
+        validated_adoption: AdoptionReceipt
+        if isinstance(adoption, VerifiedLocalAdoption):
+            validated_adoption = VerifiedLocalAdoption.model_validate(
+                adoption.model_dump(mode="python")
+            )
+        else:
+            validated_adoption = VerifiedAdoption.model_validate(adoption.model_dump(mode="python"))
         return (
             ReviewAppend.model_validate(event.model_dump(mode="python")),
-            VerifiedAdoption.model_validate(adoption.model_dump(mode="python")),
+            validated_adoption,
             TrustedReviewAuthorization.model_validate(authorization.model_dump(mode="python")),
         )
     except ValidationError as exc:
         raise PolicyViolation("review_append_denied", "Review append is not authorized.") from exc
+
+
+def _adoption_binds(
+    event: ReviewAppend,
+    adoption: AdoptionReceipt,
+    authorization: TrustedReviewAuthorization,
+) -> bool:
+    common = (
+        adoption.subject_id == event.subject_id
+        and adoption.review_sha256 == event.review_sha256
+        and adoption.expected_head == event.expected_revision
+    )
+    if not isinstance(adoption, VerifiedLocalAdoption):
+        return common
+    return bool(
+        common
+        and adoption.actor_id == authorization.actor_id
+        and adoption.stream_id == event.stream_id
+        and adoption.event_type == event.event_type
+        and adoption.payload_sha256 == event.payload_sha256
+    )
+
+
+def _adoption_is_valid(verifier: AdoptionVerifier, adoption: AdoptionReceipt) -> bool:
+    if isinstance(verifier, LocalSshAdoptionAuthenticator) and isinstance(
+        adoption, VerifiedLocalAdoption
+    ):
+        return verifier.validate(adoption)
+    if isinstance(verifier, SyntheticIndependentAdoptionVerifier) and isinstance(
+        adoption, VerifiedAdoption
+    ):
+        return verifier.validate(adoption)
+    return False
 
 
 def _seal_authorization(

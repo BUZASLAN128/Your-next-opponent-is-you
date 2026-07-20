@@ -13,6 +13,7 @@ from ynoy.full_persona.response_context import (
     PersonaStyleSignal,
 )
 from ynoy.full_persona.response_guard import public_uncertainties, runtime_guard_candidate
+from ynoy.full_persona.response_originality import validate_response_originality
 from ynoy.full_persona.response_protocol import PersonaResponseCandidate
 from ynoy.full_persona.response_runtime import (
     build_evidence_packet,
@@ -113,6 +114,7 @@ class LocalPersonaResponder:
             transport=post_json,
         )
         _validate_citations(candidate, packet.context, packet.style, selected_arm)
+        validate_response_originality(candidate, packet.context, selected_arm, generation_source)
         return _materialize(
             candidate,
             packet.context,

@@ -1201,20 +1201,21 @@ request alone.
 
 ### RQ-028 — Which authenticator can prove independent user adoption?
 
-**Status:** Synthetic binding and replay protocol implemented; real
-authenticator remains open and private adoption fails closed.
+**Status:** A dependency-free local OpenSSH signing channel and its in-memory
+append integration are implemented. Interactive key enrollment, durable append
+storage, recovery/revocation, and a complete candidate-review CLI remain open;
+private adoption fails closed until enrollment.
 
 **Known boundary:** V1 trusts the authenticated operating-system user and a
 separate approval channel. Models, reasoners, extractors, and ordinary runtime
 code cannot write adoption. Hashes prove integrity, not human presence, and
 administrator or root compromise is outside the V1 guarantee.
 
-**Decision needed later:** Select the real channel, freshness mechanism,
-subject/review/head binding, recovery behavior, and replay window after a
-threat-model review. The same review must select which event types require an
-adoption reference and how trusted `ReviewAppend` caller context is produced
-without giving ordinary runtime or a model adoption authority. This requires
-separate implementation authorization.
+**Decision needed later:** Select recovery and revocation behavior, the durable
+append store, which event types require adoption, and how trusted
+`ReviewAppend` authorization is produced without giving ordinary runtime or a
+model adoption authority. WebAuthn remains a future hardware-backed channel
+candidate rather than a requirement for the current local proof.
 
 ### RQ-029 — What numeric matched-coverage acceptance protocol is adequate?
 
@@ -1438,3 +1439,34 @@ receipts, abstention, and disagreement without persisting outputs into the
 persona. A candidate advances to authenticated review only if it changes a
 prediction in a traceable way; similarity still requires represented-user
 ratings on sealed outputs.
+
+### RQ-040 — Does Maker–Checker Review Reduce Error or Amplify Correlation?
+
+**Status:** Open experimental question under D-071. Two agents using the same
+model, corpus, and prompt family are not independent witnesses and cannot
+authenticate one another.
+
+**Known boundary:** Adversarial role separation may expose unsupported
+inference, scope drift, contradiction, provenance loss, and copying. It may
+also reproduce the same blind spot twice and create false confidence through
+agreement.
+
+**Next discriminating check:** Freeze identical cases, budgets, model identity,
+evidence, and decode settings for single-agent and maker–checker arms. Record
+disagreement, abstention, source-overlap contamination, decision loss, and
+critical provenance violations. Agreement remains a shadow candidate; only a
+separately signed represented-user receipt can adopt it.
+
+### RQ-041 — Can a Local Proposal Model Improve the Executive Loop Without Expanding Authority?
+
+**Status:** Open after D-073. The deterministic D0 loop proves persistence,
+restart, bounded observer execution, and truthful completion, but does not
+measure a model's planning quality.
+
+**Next discriminating check:** Run an attested loopback local model only as a
+strict typed proposal producer against the same fixed fixture, exact budgets,
+and independent oracle. Compare it with the deterministic planner; reject
+malformed, oversized, mismatched, or source-copying proposals before mutation.
+
+**Boundary:** Do not add arbitrary workspaces, commands, private persona input,
+automatic adoption, or external egress to answer this question.

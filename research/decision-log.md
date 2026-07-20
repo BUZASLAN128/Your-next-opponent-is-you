@@ -1358,3 +1358,52 @@ When a decision changes:
   adoption, sealed similarity evaluation, executive operation, then reversible
   outcome learning.
 - Status: system-adjudication phase implemented; later phases remain gated.
+
+### D-071 — Require Signed Local Adoption and Penalize Source Copying (2026-07-20)
+
+- Use a separately invoked, passphrase-protected system OpenSSH key to sign the
+  exact canonical adoption challenge; a model-produced hash or consent flag is
+  not authentication.
+- Bind the receipt to actor, subject, review, immutable claim tuple, decision
+  key, stream, event, payload, expected head, credential, channel, and expiry.
+- Persist challenge consumption across restart and deny replay, context
+  rebinding, silent key replacement, empty-passphrase enrollment, and missing
+  system signer.
+- Count exact source reproduction and excessive n-gram containment as
+  contamination, never persona similarity. Keep unauthenticated labels
+  `proxy_only` and prohibit persona-quality claims in this protocol version.
+- Permit two agents only as maker and adversarial checker. Their agreement may
+  create a shadow candidate but cannot create represented-user adoption or
+  authority.
+- Status: deterministic runtime and synthetic contract tests implemented;
+  interactive enrollment and prospective authenticated evaluation remain open.
+
+### D-072 — Reject Self-Attested Similarity and Bind Local Adoption at Append (2026-07-20)
+
+- A caller-provided authentication, sealing, prospectivity, or isolation flag
+  is experiment metadata, not proof. Persona-similarity protocol 0.1 remains
+  `proxy_only` until signed label receipts and a verified freeze artifact exist.
+- Derive each private source digest from its exact text and reject mismatches.
+- Limit local adoption challenges to five minutes, reject the exact expiry
+  instant, validate persisted state statuses and envelope digests, and bind
+  state to the enrolled profile.
+- Permit the append store to accept a local receipt only when its authenticator
+  validates it and actor, subject, review, revision, stream, event, and payload
+  all match. A foreign authenticator or rebound event fails closed.
+- Two-agent agreement remains a shadow candidate and never supplies either of
+  these missing represented-user proofs.
+- Status: implemented with unit-level and system-OpenSSH smoke evidence;
+  persistent append storage, interactive enrollment, signed prospective rating
+  flow, and verified freeze construction remain open.
+
+### D-073 — Prove Executive Continuity Before Broadening Tools (2026-07-21)
+
+- Implement the first executive loop only over an auto-created D0 fixture in a
+  private root outside Git.
+- Require an immutable hash-chained event sequence, bounded step budget,
+  restart/resume, trusted observer, preimage-bound patch, and verified finish.
+- Prohibit user-selected repositories, arbitrary commands, provider calls,
+  persona writes, model-backed claims, external send, automatic promotion, and
+  completed-action authority in this spike.
+- Status: implemented and tested. The next candidate is a proposal-only local
+  model adapter under the same fixture and unchanged observer boundary.

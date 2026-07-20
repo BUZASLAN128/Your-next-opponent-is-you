@@ -79,16 +79,31 @@ authority.
 
 ## Phase 4 — Represented-User Adoption Channel
 
+**Status:** Cryptographic local challenge protocol and in-memory append gate
+implemented; interactive credential enrollment and the persistent lossless
+candidate-review ledger remain pending.
+
 The private atomic review records disposition, explicit scope, currentness,
 exact adopted statement, supersession, and whether a transition is a genuine
 change, context switch, temporary exception, or unsupported. The original
 evidence candidate remains immutable.
 
-A real authenticator binds subject, review, exact candidate tuple, scope,
-expected head, independent channel, challenge freshness, and response. The
-recommended candidate is an out-of-process WebAuthn or platform-passkey
-channel requiring user presence and verification. Dependency choice,
-credential enrollment, and each real adoption response remain ask-first gates.
+A real authenticator binds actor, subject, review, exact candidate tuple,
+decision key, stream, event, payload, expected head, channel, credential,
+freshness, and response. The dependency-free local implementation delegates
+signing to system OpenSSH with a separately entered non-empty key passphrase
+and verifies the signature under a dedicated namespace. Challenge and used-
+receipt state survive restart; exact replay and implicit credential replacement
+fail closed. Challenges expire in at most five minutes, their state envelope is
+bound to the enrolled profile, and the append gate rechecks actor, subject,
+review, head, stream, event, and payload. This is local key possession and
+intent under the V1 trusted-OS-user boundary, not protection from administrator
+compromise or a durable multi-process append ledger.
+
+Windows WebAuthn/platform-passkey signing remains a stronger future candidate
+for hardware-backed user verification. `UserConsentVerifier` alone is not an
+acceptable replacement because it returns a local result enum rather than a
+signature over the canonical challenge.
 
 **Owning paths:** new evolution-adoption model/builder/store modules plus
 `adoption.py`, `formal_runtime.py`, `review_append.py`,
@@ -107,6 +122,15 @@ eligible. The current full-history profile cannot support a retrospective win.
 Freeze generic, majority, recency, retrieval, static-reviewed, and temporal-
 reviewed arms before targets. Predictions freeze before target answers or
 blind represented-user ratings open. A model judge is diagnostic only.
+
+Lexical reproduction is an exclusion diagnostic, never similarity credit. A
+content-free audit records exact-copy cases and maximum source n-gram
+containment per arm. A structured response above the frozen contamination
+limit makes the run contaminated or inconclusive even when its decision label
+matches. Source hashes are derived from their exact text. Caller-authored
+`authenticated`, `sealed`, `prospective`, or `target_isolated` booleans are not
+proof; protocol 0.1 therefore keeps every label set `proxy_only` until a signed
+rating receipt and independently verified freeze artifact are integrated.
 
 **Owning paths:** new persona-similarity model, split, runtime, scoring, artifact
 store, CLI, security tests, and scoring tests.
@@ -134,6 +158,17 @@ from sending or execution.
 
 **Completion signal:** every proposal is traceable and correctable; unapproved
 delegation never executes.
+
+### Maker–Checker Shadow Council
+
+Two agents may improve proposal quality only under asymmetric roles. The maker
+produces a candidate; the checker searches for unsupported inference, scope
+drift, contradiction, provenance loss, and source copying. Agreement creates
+only a `system_consensus_candidate`. Disagreement causes abstention or review.
+Neither agent may authenticate the other, create represented-user adoption, or
+turn repeated mutual agreement into authority. Evaluation must compare this
+two-agent condition against a single-agent control to detect correlated-error
+amplification rather than assume independence.
 
 ## Phase 7 — Reversible Outcome Learning
 

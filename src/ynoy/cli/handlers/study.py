@@ -24,6 +24,10 @@ from ynoy.cli.handlers.study_full_persona_responder import respond_full_persona
 from ynoy.cli.handlers.study_guidance import status_guidance_tr
 from ynoy.cli.handlers.study_harvest import harvest_judgments, resume_judgment_harvest
 from ynoy.cli.handlers.study_harvest_authorship import seal_harvest_authorship
+from ynoy.cli.handlers.study_local_authenticator import (
+    enroll_local_authenticator,
+    local_authenticator_status,
+)
 from ynoy.cli.handlers.study_proposals import propose_labels
 from ynoy.cli.handlers.study_review import (
     record_proposal_review,
@@ -75,6 +79,8 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "record-proposal-review": record_proposal_review,
         "submit-proposal-review": submit_recorded_proposal_review,
         "run-action-pilot": run_action_pilot,
+        "enroll-local-authenticator": enroll_local_authenticator,
+        "local-authenticator-status": local_authenticator_status,
     }
     return handlers[args.study_command](args, context)
 

@@ -2746,3 +2746,92 @@ Build a target-free three-arm shadow simulation: generic Advisor, static
 persona, and temporal persona. Prove equal budgets, target isolation, generic
 fallback, and no persistence before using a local model or requesting an
 authenticated adoption channel.
+
+## Event 061 — Cryptographic Adoption and Copy-Resistant Similarity (2026-07-20)
+
+### User Direction
+
+The user requested represented-user authentication and user-similarity
+measurement, and reported that current persona artifacts feel like collected
+source sentences are being pasted into later outputs. The user then proposed
+two copies of the agent alternately producing and approving work.
+
+### Implemented Boundary
+
+The runtime now defines a restart-durable local adoption challenge signed by a
+separate system OpenSSH process. The signed payload binds actor, subject,
+review, exact claim tuple and decision key, stream, event, payload, expected
+head, credential, and expiry. Replayed, rebound, expired, wrongly signed, or
+implicitly re-enrolled challenges fail closed. Enrollment requires an
+interactive non-empty passphrase; no credential material is emitted.
+
+A separate similarity audit now treats exact copying and excessive source
+n-gram overlap as contamination rather than evidence of personalization. It
+requires target-isolated frozen predictions and adequate case/cluster support.
+Unauthenticated or retrospective labels can produce only a proxy result; the
+runtime still cannot claim persona quality.
+
+### Two-Agent Interpretation
+
+Two agents may operate as maker and adversarial checker in shadow mode. Their
+agreement is a system candidate, not independent user authentication. They may
+not approve each other into persona memory or authority. Disagreement causes
+abstention; later evaluation must compare single-agent and maker–checker arms
+because shared data/model errors may be correlated.
+
+### Remaining Gate
+
+Interactive key enrollment, a lossless candidate-review ledger, prospective
+authenticated labels, and an equal-budget maker–checker benchmark remain open.
+No raw private corpus, credential, response, identifier, or behavioral result
+is recorded here.
+
+## Event 062 — Close Authentication and Similarity Self-Attestation Gaps
+
+### Independent Review Result
+
+The final security review found that caller booleans could be mistaken for
+authenticated similarity labels, challenge expiry could be extended by a
+caller, persisted state accepted non-protocol statuses, receipt validation did
+not rebind the current profile, and the signed receipt was not consumed by the
+review append boundary.
+
+### Implemented Resolution
+
+Similarity protocol 0.1 now remains proxy-only regardless of caller flags and
+checks each source digest against its text. Local challenges have a hard
+five-minute maximum, fail at the exact expiry instant, use a strict sealed state
+envelope bound to the enrolled profile, and validate the receipt against that
+profile. The in-memory review append gate now accepts the local receipt only
+after exact actor, subject, review, head, stream, event, and payload binding.
+
+### Evidence Boundary
+
+This proves deterministic and local cryptographic plumbing, including a real
+system OpenSSH sign/verify smoke path. It does not prove interactive enrollment,
+persistent append durability, prospective persona similarity, or independence
+between two agents. No private content or credential material entered Git.
+
+## Event 063 — First Restartable Executive-Loop Spike (2026-07-21)
+
+### User Direction
+
+The user requested a visible working result rather than further persona or
+formula discussion. The selected first result is a bounded executive loop that
+can observe, propose, apply an allowlisted reversible change, verify it, pause,
+and resume from persistent state.
+
+### Observed Fact
+
+The D0-only `config-repair-v1` fixture writes a hash-chained private mission
+log outside Git. A three-step invocation observed a synthetic failure, emitted
+a bounded plan, applied the fixed preimage-bound patch, and paused. A separate
+resume invocation reconstructed the same mission, observed the trusted oracle
+pass, and finished. The trace exposes no private corpus, persona evidence,
+model output, database access, external egress, or action authority.
+
+### Boundary
+
+The planner is deterministic and explicitly reports `model_used=false`. This
+is continuity and observer evidence only; it does not establish LLM reasoning,
+persona similarity, arbitrary repository safety, or autonomous authority.

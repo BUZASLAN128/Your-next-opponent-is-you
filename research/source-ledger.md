@@ -2309,3 +2309,47 @@ These gaps must remain visible until closed.
   persona similarity, calibration, action authority, or self-improvement.
 - **Next check:** Target-free equal-budget shadow simulation across generic,
   static, and temporal conditions.
+
+### L-047 — Local Signature and Contamination-Audit Checkpoint (2026-07-20)
+
+- **Type:** Primary platform/tool documentation plus local deterministic
+  runtime evidence.
+- **Sources:** [OpenBSD `ssh-keygen` manual](https://man.openbsd.org/ssh-keygen),
+  [Microsoft OpenSSH key management](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement),
+  [Microsoft Win32 WebAuthn API](https://learn.microsoft.com/en-us/windows/win32/api/webauthn/nf-webauthn-webauthnauthenticatorgetassertion),
+  and [Microsoft `UserConsentVerifier`](https://learn.microsoft.com/en-us/uwp/api/windows.security.credentials.ui.userconsentverifier).
+- **Observed:** The local Windows runtime exposes system `ssh-keygen` signing
+  and verification operations. The implementation uses an explicit signature
+  namespace, an allowed signer, immutable challenge binding, persistent one-
+  time state, a five-minute expiry ceiling, profile-bound state envelopes, and
+  a non-empty-passphrase enrollment gate. The in-memory append boundary rejects
+  foreign receipts and event rebinding.
+- **Research finding:** `UserConsentVerifier` can request local logged-on-user
+  verification but returns no signed challenge; WebAuthn supplies signed
+  transaction assertions but requires a larger native enrollment and
+  verification integration.
+- **Supports:** The dependency-free local signature channel is stronger than a
+  caller-supplied hash or model assertion and can bind exact adoption intent
+  under the V1 trusted-host boundary.
+- **Does not establish:** Protection from administrator compromise, remote
+  identity, hardware-backed verification, completed enrollment, persona
+  quality, or maker–checker independence.
+- **Next check:** Interactive enrollment, then one exact candidate-review
+  receipt through the complete CLI flow and a signed prospective
+  copy-resistant similarity case.
+
+### L-048 — Restartable D0 Executive-Loop Spike (2026-07-21)
+
+- **Type:** Local runtime and full-suite test evidence.
+- **Provenance:** `src/ynoy/executive_spike/`, `tests/test_executive_spike.py`,
+  and the local CLI start/resume/trace run.
+- **Observed:** The generated D0 fixture reached a verified finish after a
+  separate resume call, preserving a hash-linked sequence of observation,
+  proposal, patch, verification, and completion events.
+- **Supports:** A bounded, replay-checked executive state machine can outlive
+  one process without a database, model, or persona authority.
+- **Does not establish:** General coding-task repair, model planning quality,
+  persona utility, authenticated adoption, arbitrary tool execution, or action
+  authority.
+- **Next check:** An attested proposal-only local-model comparison under the
+  unchanged synthetic fixture and trusted observer.

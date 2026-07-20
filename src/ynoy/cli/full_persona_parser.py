@@ -47,3 +47,6 @@ def add_full_persona_parsers(
     respond.add_argument("--synthetic", action="store_true")
     benchmark = commands.add_parser("benchmark-full-persona")
     benchmark.add_argument("run_id")
+    enroll_auth = commands.add_parser("enroll-local-authenticator")
+    enroll_auth.add_argument("actor_id")
+    commands.add_parser("local-authenticator-status")

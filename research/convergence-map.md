@@ -956,3 +956,41 @@ The convergence order is now fixed: deterministic adjudication, target-free
 shadow simulation, authenticated represented-user adoption, sealed similarity
 measurement, executive-agent operation, and reversible outcome learning. A
 failed or inconclusive phase does not lower the next gate.
+
+## Signed Adoption and Correlated Review — 2026-07-20
+
+The adoption boundary now has a dependency-free local cryptographic path:
+canonical challenges are signed outside the model runtime with an enrolled
+passphrase-protected key and consumed once. This advances the protocol from a
+synthetic verifier to a real local signing mechanism, while interactive
+enrollment and a candidate-review ledger remain necessary before a genuine
+adoption receipt exists.
+
+Similarity convergence now separates decision agreement from textual reuse.
+Exact reproduction and excessive source overlap invalidate rather than improve
+the structured arm. Unauthenticated historical labels remain proxy evidence.
+
+A two-agent maker–checker arrangement is convergent only as a shadow quality
+control. Shared models and evidence create correlated errors, so mutual
+approval cannot substitute for user authentication. The next experiment must
+compare single-agent and maker–checker arms on the same frozen support.
+
+Security review closed the first self-attestation gaps: a local receipt now
+binds the active profile and exact append event under a five-minute challenge,
+while similarity protocol 0.1 treats every caller-authored label/freeze flag as
+proxy metadata. Convergence toward a persona-quality claim therefore still
+requires a signed prospective rating and independently verified freeze
+artifact; two-agent consensus supplies neither.
+
+## First Restartable Executive-Loop Spike
+
+**Observed fact:** A bounded D0 fixture now demonstrates the missing state
+transition: mission creation, failure observation, proposal, allowlisted patch,
+trusted verification, budget pause, restart, and finish are reconstructable
+from a private hash-chained event log. The trace remains deterministic with no
+model, persona evidence, database, send, or external action authority.
+
+**Inference:** The project now has a minimal continuity substrate rather than
+only a one-shot manager response. This does not yet establish the contribution
+of a model or persona; those variables must be introduced separately against
+the unchanged fixture and observer.

@@ -7,6 +7,18 @@
 > current runtime does not yet implement executive management; the next check
 > is one private, source-bound manager brief.
 
+> 2026-07-20 security-review closure: local adoption receipts are now
+> profile-bound, five-minute, replay-safe, and consumed by the in-memory append
+> gate only under exact event binding. Similarity protocol 0.1 rejects forged
+> source hashes and remains proxy-only because caller flags are not signed
+> represented-user evidence.
+
+> 2026-07-20 adoption/similarity checkpoint: exact adoption challenges can now
+> be signed by a separately invoked, passphrase-protected system OpenSSH key and
+> consumed once across restart. Similarity auditing treats source copying as
+> contamination and keeps unauthenticated labels proxy-only. Interactive
+> enrollment and prospective represented-user evidence remain open.
+
 > 2026-07-18 fixed-memory judgment-harvester checkpoint: deterministic,
 > resumable, source-bound streaming produced a private `audit_ready` review
 > package under hard resource caps. Focuses remain unattributed and cannot
@@ -320,3 +332,9 @@ shadow simulation, authenticated represented-user adoption, sealed similarity
 evaluation, executive-agent operation, and reversible outcome learning. An
 assistant may prioritize candidates but cannot manufacture represented-user
 adoption. See the [persona adoption and similarity roadmap](persona-adoption-similarity-roadmap-2026-07-20.md).
+
+> 2026-07-21 executive-loop spike: a D0-only synthetic mission now persists a
+> hash-chained trace across restart. It visibly reaches
+> observe → plan → patch → verify → finish under fixed budgets. The planner is
+> deterministic (`model_used=false`); this is not yet persona, LLM, or general
+> repository evidence.
