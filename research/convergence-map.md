@@ -930,3 +930,17 @@ The private pipeline now converges on a reproducible brain artifact: complete
 scan, higher-capacity pack, dossier, package, atlas, and bounded behavior
 samples. Persona similarity and represented-user adoption remain separate
 unclosed gates.
+
+## Temporal Evolution Projection — 2026-07-20
+
+The pipeline now separates stable-looking repetition from chronological state
+changes. Direct evidence can form a bounded, receipt-linked pattern candidate
+or a contextual transition candidate, but neither becomes identity truth.
+Imported instructions, model prose, and project evidence are excluded from the
+temporal profile.
+
+This closes a representation gap without closing the scientific gate. The
+current atoms do not prove candidate scope, and repetition is not calibrated
+confidence. The convergence path is now explicit: atomic represented-user
+adoption review, frozen currentness and scope, then a sealed comparison among
+generic, static-persona, and temporal-persona conditions.

@@ -278,6 +278,7 @@ Read the files in the order listed below:
 24. [bounded-private-persona-pilot-2026-07-18.md](bounded-private-persona-pilot-2026-07-18.md)
 25. [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md)
 26. [observable-action-pilot-2026-07-19.md](observable-action-pilot-2026-07-19.md)
+27. [persona-evolution-checkpoint-2026-07-20.md](persona-evolution-checkpoint-2026-07-20.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as
@@ -293,7 +294,7 @@ abstention with no send/execute authority. The sealed reaction benchmark was
 stopped fail-closed when the model emitted non-empty reasoning outside its JSON
 contract. Private metrics, content, model artifact, and response text remain
 outside this repository.
-\n+The strict JSON grammar and bounded context retry completed the sealed
+The strict JSON grammar and bounded context retry completed the sealed
 comparison with a negative-directional result against a frozen control. This
 is a measurement result, not a persona-quality claim.
 
@@ -305,3 +306,10 @@ The private full-persona pack now supports its approved higher retention bound
 and produces a deterministic receipt-bound Markdown brain atlas as part of the
 package command. Missing life/value evidence remains unknown rather than being
 filled by model inference.
+
+The private package now includes a separate receipt-bound evolution profile.
+It derives repeated behavior-pattern and contextual transition candidates from
+direct evidence only, keeps scope and semantic adoption unresolved, and limits
+their use to proposal context. This is temporal evidence organization, not a
+persona-similarity result or automatic core learning. See the
+[evolution checkpoint](persona-evolution-checkpoint-2026-07-20.md).

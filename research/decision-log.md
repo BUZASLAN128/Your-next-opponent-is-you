@@ -1327,3 +1327,18 @@ When a decision changes:
 - Do not equate more generated prose with more identity evidence; absent life
   and value facts remain unknown.
 - Status: implemented and privately exercised.
+
+### D-069 — Model Evolution as Evidence Before Adoption (2026-07-20)
+
+- Preserve repeated behavioral patterns and time-ordered contextual changes as
+  a separate temporal profile rather than a thirteenth persona layer.
+- Derive the profile only from direct, receipt-bound represented-user evidence;
+  imported project instructions and model prose cannot enter it.
+- Treat repetition as evidence density, not confidence or correctness. Keep
+  scope unresolved when the source atom cannot establish it.
+- Retain old and new contextual states as transition candidates without
+  declaring that either is a stable core value.
+- Permit use only as proposal context until the represented user atomically
+  reviews currentness, scope, and adoption.
+- Status: implemented with synthetic contract evidence and a private bounded
+  run; persona similarity and semantic adoption remain open.

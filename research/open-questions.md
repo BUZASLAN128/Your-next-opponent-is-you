@@ -1406,3 +1406,22 @@ The higher-capacity atlas exposes which cognitive layers are evidence-rich and
 which remain empty. The next discriminating question is whether represented-
 user review can adopt stable values and skills without promoting project
 instructions or model prose into identity truth.
+
+### RQ-038 — Does Temporal Persona Context Improve Represented-User Similarity?
+
+**Status:** Open scientific gate. A deterministic private evolution profile
+now exists, but all pattern and transition records remain unadopted and
+unscoped.
+
+**Known boundary:** Receipt-bound repetition and chronology establish that
+observable statements recur or change order. They do not establish a durable
+trait, the scope of a change, its current validity, or whether a response using
+the candidate resembles the represented user's judgment.
+
+**Next discriminating check:** Collect atomic represented-user review of each
+bounded candidate: confirm or reject, current or historical, applicable scope,
+and whether the transition reflects a genuine change or only context. Freeze
+that receipt, then compare generic-advisor, static-current-persona, and
+temporal-persona outputs on identical sealed scenarios. Predeclare support,
+coverage, tie, abstention, and acceptance rules before revealing user ratings.
+A model judge may be diagnostic only.

@@ -37,6 +37,16 @@ def build_full_persona_package_handler(
         "retained_projection_exhaustive": False,
         "identity_fact_policy": package.identity_fact_policy,
         "calibration_status": package.calibration_status,
+        "evolution_pattern_count": len(package.evolution.patterns),
+        "evolution_total_pattern_candidate_count": (
+            package.evolution.total_pattern_candidate_count
+        ),
+        "evolution_transition_count": len(package.evolution.transitions),
+        "evolution_total_transition_candidate_count": (
+            package.evolution.total_transition_candidate_count
+        ),
+        "evolution_status": "derived_unadopted",
+        "evolution_use": "proposal_context_only",
         "persona_quality_claimed": False,
         "brain_atlas_built": True,
         "brain_atlas_sha256": sha256_text(atlas),

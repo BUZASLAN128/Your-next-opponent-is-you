@@ -8,6 +8,7 @@ from pydantic import Field, model_validator
 from ynoy.models.base import DataClass, StrictModel
 from ynoy.models.full_persona_pack import PersonaLayer
 from ynoy.models.persona_dossier import PersonaDossier
+from ynoy.models.persona_evolution import PersonaEvolutionProfile
 from ynoy.util import canonical_sha256
 
 type Digest = str
@@ -32,7 +33,7 @@ class PersonaLayerSummary(StrictModel):
 class FullPersonaPackage(StrictModel):
     """Persistent private package over a complete scan and bounded retained projection."""
 
-    protocol_version: Literal["full-persona-package/0.1"] = "full-persona-package/0.1"
+    protocol_version: Literal["full-persona-package/0.2"] = "full-persona-package/0.2"
     package_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     pack_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     pack_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
@@ -48,6 +49,7 @@ class FullPersonaPackage(StrictModel):
     unique_semantic_claim_count: int = Field(ge=0)
     layer_summaries: tuple[PersonaLayerSummary, ...] = Field(min_length=12, max_length=12)
     dossier: PersonaDossier
+    evolution: PersonaEvolutionProfile
     source_scan_status: Literal["complete_verified"] = "complete_verified"
     history_scope: Literal["all_retained_pack_history"] = "all_retained_pack_history"
     retained_projection_exhaustive: Literal[False] = False
@@ -73,13 +75,14 @@ class FullPersonaPackage(StrictModel):
             self.unique_semantic_claim_count
         ):
             raise ValueError("persona package semantic claim count is inconsistent")
-        if not _dossier_matches(self):
-            raise ValueError("persona package dossier does not match its source pack")
+        if not _projections_match(self):
+            raise ValueError("persona package projections do not match their source pack")
         expected_id = canonical_sha256(
             {
                 "protocol_version": self.protocol_version,
                 "pack_sha256": self.pack_sha256,
                 "dossier_sha256": self.dossier.dossier_sha256,
+                "evolution_sha256": self.evolution.evolution_sha256,
             }
         )
         if self.package_id != expected_id:
@@ -90,7 +93,7 @@ class FullPersonaPackage(StrictModel):
         return self
 
 
-def _dossier_matches(package: FullPersonaPackage) -> bool:
+def _projections_match(package: FullPersonaPackage) -> bool:
     dossier = package.dossier
     expected_class = DataClass.PUBLIC_SYNTHETIC if package.synthetic else DataClass.DERIVED_IDENTITY
     return bool(
@@ -105,4 +108,6 @@ def _dossier_matches(package: FullPersonaPackage) -> bool:
         and dossier.synthetic == package.synthetic
         and dossier.processed_evidence_count == package.processed_evidence_count
         and dossier.retained_atom_count == package.retained_atom_count
+        and package.evolution.pack_id == package.pack_id
+        and package.evolution.pack_sha256 == package.pack_sha256
     )

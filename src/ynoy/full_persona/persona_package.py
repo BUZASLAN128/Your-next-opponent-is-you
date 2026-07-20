@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 
 from ynoy.full_persona.dossier import build_persona_dossier
+from ynoy.full_persona.persona_evolution import build_persona_evolution
 from ynoy.models.full_persona_pack import PersonaLayerView, PersonaPack
 from ynoy.models.persona_package import FullPersonaPackage, PersonaLayerSummary
 from ynoy.util import canonical_sha256
@@ -11,12 +12,14 @@ from ynoy.util import canonical_sha256
 def build_full_persona_package(pack: PersonaPack) -> FullPersonaPackage:
     """Bind the complete scan receipt, retained pack, dossier, and explicit unknowns."""
     dossier = build_persona_dossier(pack)
+    evolution = build_persona_evolution(pack)
     summaries = tuple(_layer_summary(view) for view in pack.layers)
     package_id = canonical_sha256(
         {
-            "protocol_version": "full-persona-package/0.1",
+            "protocol_version": "full-persona-package/0.2",
             "pack_sha256": pack.pack_sha256,
             "dossier_sha256": dossier.dossier_sha256,
+            "evolution_sha256": evolution.evolution_sha256,
         }
     )
     payload: dict[str, object] = {
@@ -35,6 +38,7 @@ def build_full_persona_package(pack: PersonaPack) -> FullPersonaPackage:
         "unique_semantic_claim_count": sum(item.unique_semantic_claim_count for item in summaries),
         "layer_summaries": summaries,
         "dossier": dossier,
+        "evolution": evolution,
     }
     draft = cast(Any, FullPersonaPackage).model_construct(**payload, package_sha256="0" * 64)
     canonical = draft.model_dump(mode="json", exclude={"package_sha256"})
@@ -60,6 +64,16 @@ def persona_prompt_profile(package: FullPersonaPackage) -> dict[str, object]:
         "retained_projection_exhaustive": package.retained_projection_exhaustive,
         "identity_fact_policy": package.identity_fact_policy,
         "calibration_status": package.calibration_status,
+        "evolution": {
+            "pattern_count": len(package.evolution.patterns),
+            "total_pattern_candidate_count": package.evolution.total_pattern_candidate_count,
+            "transition_count": len(package.evolution.transitions),
+            "total_transition_candidate_count": (
+                package.evolution.total_transition_candidate_count
+            ),
+            "status": "derived_unadopted",
+            "use": "proposal_context_only",
+        },
         "topics": topics,
     }
 
@@ -95,6 +109,7 @@ def render_persona_brain_atlas(package: FullPersonaPackage) -> str:
             )
             lines.extend(f"- Receipt: {item}" for item in candidate.evidence_receipts)
         lines.extend(f"- Unknown: {item}" for item in topic.unknowns)
+    lines.extend(_evolution_lines(package))
     lines.extend(
         (
             "",
@@ -106,6 +121,45 @@ def render_persona_brain_atlas(package: FullPersonaPackage) -> str:
         )
     )
     return "\n".join(lines) + "\n"
+
+
+def _evolution_lines(package: FullPersonaPackage) -> list[str]:
+    lines = ["", "## Evolution", "", "- Status: derived_unadopted"]
+    lines.extend(("- Use: proposal_context_only", "- Scope: not_established"))
+    lines.append(f"- Retained patterns: {len(package.evolution.patterns)}")
+    lines.append(f"- Total pattern candidates: {package.evolution.total_pattern_candidate_count}")
+    lines.append(f"- Retained transitions: {len(package.evolution.transitions)}")
+    lines.append(
+        f"- Total transition candidates: {package.evolution.total_transition_candidate_count}"
+    )
+    for pattern in package.evolution.patterns:
+        lines.extend(
+            (
+                "",
+                f"### Pattern {pattern.key}",
+                "",
+                f"- Evidence count: {pattern.evidence_count}",
+                f"- Distinct atoms: {pattern.distinct_atom_count}",
+                f"- Strength band: {pattern.evidence_strength}",
+                f"- Guidance: {pattern.guidance}",
+            )
+        )
+        lines.extend(f"- Receipt: {item.evidence_receipt}" for item in pattern.evidence_refs)
+    for transition in package.evolution.transitions:
+        lines.extend(
+            (
+                "",
+                f"### Transition {transition.dimension}",
+                "",
+                f"- From: {transition.from_state}",
+                f"- To: {transition.to_state}",
+                f"- At: {transition.transition_at.isoformat()}",
+                f"- From receipt: {transition.from_evidence.evidence_receipt}",
+                f"- To receipt: {transition.to_evidence.evidence_receipt}",
+            )
+        )
+    lines.extend(f"- Unknown: {item}" for item in package.evolution.unknowns)
+    return lines
 
 
 def _receipt_lines(supports: tuple[object, ...]) -> list[str]:

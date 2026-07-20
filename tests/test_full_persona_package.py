@@ -56,6 +56,7 @@ def test_build_full_persona_package_is_deterministic_and_canonical(tmp_path: Pat
             "protocol_version": first.protocol_version,
             "pack_sha256": first.pack_sha256,
             "dossier_sha256": first.dossier.dossier_sha256,
+            "evolution_sha256": first.evolution.evolution_sha256,
         }
     )
     assert first.package_sha256 == canonical_sha256(
@@ -128,6 +129,8 @@ def test_brain_atlas_is_deterministic_receipt_bound_and_private(tmp_path: Path) 
     atlas_path = store.write_brain_atlas(package, first)
     assert first == second == atlas_path.read_text(encoding="utf-8")
     assert "# Full Persona Brain Atlas" in first
+    assert "## Evolution" in first
+    assert "- Use: proposal_context_only" in first
     assert "- Receipt:" in first
     assert "Persona quality: not claimed" in first
 
@@ -166,6 +169,8 @@ def test_cli_package_summary_does_not_emit_private_paths(tmp_path: Path) -> None
     assert result["brain_atlas_built"] is True
     assert result["private_path_emitted"] is False
     assert result["private_content_emitted"] is False
+    assert result["evolution_status"] == "derived_unadopted"
+    assert result["evolution_use"] == "proposal_context_only"
     assert _strings(result).isdisjoint({str(private_root), str(private_root.resolve())})
 
 

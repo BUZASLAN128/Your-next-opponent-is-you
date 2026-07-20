@@ -2273,3 +2273,23 @@ These gaps must remain visible until closed.
   hashes are committed.
 - Limitation: retained projection is bounded and semantic adoption is not
   established.
+
+### L-045 — Receipt-bound temporal evolution checkpoint (2026-07-20)
+
+- **Type:** Public deterministic runtime contract plus private derived-identity
+  execution evidence.
+- **Provenance:** Event 059, D-069, RQ-038, synthetic evolution tests, and the
+  already frozen private full-persona pack. Private artifacts are intentionally
+  omitted from Git.
+- **Observed:** The runtime deterministically derives repeated direct-evidence
+  pattern candidates and time-ordered contextual transition candidates, binds
+  them into the full-persona package, and exposes only safe aggregate counts at
+  the CLI boundary. The private run produced a non-empty bounded profile
+  without a model or provider.
+- **Supports:** Temporal evidence can be preserved without erasing old states,
+  inventing missing biography, treating repetition as probability, or granting
+  adoption, core eligibility, action authority, or automatic promotion.
+- **Does not establish:** Stable identity, correct scope, currentness, persona
+  similarity, calibration, self-improvement, or executive-action quality.
+- **Next check:** Atomic represented-user candidate review followed by a frozen
+  same-scenario generic/static/temporal comparison.

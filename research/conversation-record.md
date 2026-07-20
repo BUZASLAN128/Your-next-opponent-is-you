@@ -2674,3 +2674,44 @@ plan, delegation candidates, risks, unknowns, and required user approval.
   the projection was corrected and covered by tests.
 - Limitation: missing biography and stable-value evidence remains explicit
   unknown state; no model is allowed to invent it.
+
+## Event 059 — Separate Temporal Evidence from Persona Adoption (2026-07-20)
+
+### User Direction
+
+The user identified mental evolution as a required persona dimension: older
+states must not be erased, contextual changes must remain visible, and stable
+patterns should progress from evidence to hypothesis to candidate before any
+adoption. The user requested continued implementation and bounded simulation.
+
+### Implemented Checkpoint
+
+The runtime now builds a separate evolution profile beside the canonical
+twelve persona layers. It uses only direct represented-user evidence already
+admitted to the private pack. Repeated pattern candidates preserve evidence
+counts, observation intervals, bounded receipt references, and a non-
+probabilistic repetition band. Contextual transition candidates bind their
+before and after states to time-ordered evidence receipts.
+
+The profile is deterministic and package-bound. Synthetic chronology proves a
+planning-state transition. The completed private corpus produced a non-empty
+bounded evolution projection without loading a model. Private content,
+identifiers, paths, hashes, dates, and behavioral aggregates remain outside
+Git.
+
+### Evidence Boundary
+
+Every candidate remains `derived_unadopted` or
+`contextual_transition_candidate`, `proposal_context_only`,
+`scope_status=not_established`, `adopted=false`, `core_eligible=false`, and
+`authority=none`. Repetition is not calibrated probability. A transition may
+reflect project context rather than durable identity. No self-improvement,
+persona similarity, semantic adoption, or action authority is claimed.
+
+### Next Discriminating Check
+
+Present the bounded candidates to the represented user for atomic currentness,
+scope, and adoption review. Freeze the resulting receipt before a sealed
+same-scenario comparison of generic, static-persona, and temporal-persona
+responses. Human evaluation remains required; a model judge cannot close the
+similarity gate.

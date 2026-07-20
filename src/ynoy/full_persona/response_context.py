@@ -24,7 +24,7 @@ _MAX_DIRECT_CLAIM_CHARS = 2_000
 _MAX_CONTEXT_CHARS = 1_600
 _MAX_RECEIPTS_PER_ATOM = 4
 _MAX_RESPONSE_CONTEXT_ATOMS = 4
-_STYLE_RULES: tuple[tuple[str, re.Pattern[str], str], ...] = (
+STYLE_RULES: tuple[tuple[str, re.Pattern[str], str], ...] = (
     (
         "evidence_first",
         re.compile(r"\b(kanıt|test|doğrula|incele|araştır|review)\w*\b", re.I),
@@ -105,7 +105,7 @@ def select_response_context(pack: PersonaPack, query: str) -> tuple[PersonaConte
 def select_style_signals(pack: PersonaPack) -> tuple[PersonaStyleSignal, ...]:
     atoms = tuple(atom for view in pack.layers for atom in view.atoms if _eligible(atom))
     signals: list[PersonaStyleSignal] = []
-    for name, pattern, guidance in _STYLE_RULES:
+    for name, pattern, guidance in STYLE_RULES:
         matches = sorted(
             (atom for atom in atoms if pattern.search(atom.claim)),
             key=lambda atom: (-_timestamp(atom.last_observed_at), atom.atom_id),
