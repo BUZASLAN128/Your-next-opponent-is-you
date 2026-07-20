@@ -300,3 +300,8 @@ is a measurement result, not a persona-quality claim.
 The private run now includes a receipt-bound executive-manager brief for the
 selected project. It is outside Git and contains no action authority, automatic
 promotion, or persona-quality claim.
+
+The private full-persona pack now supports its approved higher retention bound
+and produces a deterministic receipt-bound Markdown brain atlas as part of the
+package command. Missing life/value evidence remains unknown rather than being
+filled by model inference.

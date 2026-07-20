@@ -59,18 +59,18 @@ def primary_layer(evidence: FullCorpusEvidence) -> tuple[PersonaLayer, PersonaAt
         return _project_layer(evidence)
     if is_imported_identity_text(text):
         return PersonaLayer.EVIDENCE, PersonaAtomStatus.OBSERVED
-    if _CONTRADICTION_CANDIDATE.search(text):
-        return PersonaLayer.CONTRADICTIONS, PersonaAtomStatus.CONFLICTED
     if has_biography_claim(text):
         return PersonaLayer.AUTOBIOGRAPHY, PersonaAtomStatus.PENDING
     if has_relationship_claim(text):
         return PersonaLayer.RELATIONSHIPS, PersonaAtomStatus.PENDING
     if has_skill_claim(text):
         return PersonaLayer.SKILLS, PersonaAtomStatus.PENDING
-    if _KNOWLEDGE.search(text):
-        return PersonaLayer.KNOWLEDGE, PersonaAtomStatus.OBSERVED
     if has_value_claim(text):
         return PersonaLayer.VALUES, PersonaAtomStatus.PENDING
+    if _CONTRADICTION_CANDIDATE.search(text):
+        return PersonaLayer.CONTRADICTIONS, PersonaAtomStatus.CONFLICTED
+    if _KNOWLEDGE.search(text):
+        return PersonaLayer.KNOWLEDGE, PersonaAtomStatus.OBSERVED
     if _GOAL.search(text):
         return PersonaLayer.GOALS, PersonaAtomStatus.PENDING
     if _RISK.search(text):

@@ -925,3 +925,8 @@ persona similarity.
 
 The end-to-end path now reaches a receipt-bound manager brief. This is the first
 auditable executive-agent output, while similarity and adoption remain open.
+
+The private pipeline now converges on a reproducible brain artifact: complete
+scan, higher-capacity pack, dossier, package, atlas, and bounded behavior
+samples. Persona similarity and represented-user adoption remain separate
+unclosed gates.

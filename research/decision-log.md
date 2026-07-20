@@ -1319,3 +1319,11 @@ When a decision changes:
 - Keep proposed delegation and decisions non-authoritative until represented
   user approval is recorded.
 - Status: private artifact produced; operational adoption remains open.
+
+### D-068 - Full brain means bounded evidence depth (2026-07-20)
+
+- Use the existing maximum retained-atom bound for the private brain package.
+- Generate a deterministic, receipt-bound atlas from the canonical package.
+- Do not equate more generated prose with more identity evidence; absent life
+  and value facts remain unknown.
+- Status: implemented and privately exercised.

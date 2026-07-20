@@ -16,7 +16,11 @@ from support.life_profile import (
 from ynoy.cli.main import main
 from ynoy.errors import DataValidationError
 from ynoy.full_persona.deletion import delete_full_persona_run
-from ynoy.full_persona.identity_rules import has_relationship_claim, has_skill_claim
+from ynoy.full_persona.identity_rules import (
+    has_relationship_claim,
+    has_skill_claim,
+    has_value_claim,
+)
 from ynoy.full_persona.life_profile import build_verified_life_profile
 from ynoy.full_persona.life_profile_store import FullPersonaLifeProfileStore
 from ynoy.full_persona.reader import iter_verified_evidence
@@ -94,6 +98,10 @@ def test_identity_rules_and_evidence_roles_keep_weak_signals_out(tmp_path: Path)
     assert has_relationship_claim("Bir arkadaşımla beraber çalışıyorum.")
     assert not has_skill_claim("Yapabiliyorum.")
     assert has_skill_claim("Yıllardır Python kullanıyorum.")
+    assert has_skill_claim("Python kullanmayı biliyorum.")
+    assert has_skill_claim("Dağıtık sistemler konusunda deneyimim var.")
+    assert has_value_claim("Güvenlikten taviz vermem.")
+    assert has_value_claim("Benim önceliğim kanıt üretmek.")
     assert ide.role == EvidenceRole.MIXED
 
 

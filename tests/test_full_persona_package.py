@@ -18,7 +18,10 @@ from ynoy.full_persona.deletion import delete_full_persona_run
 from ynoy.full_persona.manifest import freeze_full_corpus
 from ynoy.full_persona.pack_builder import build_deterministic_pack
 from ynoy.full_persona.pack_store import FullPersonaPackStore
-from ynoy.full_persona.persona_package import build_full_persona_package
+from ynoy.full_persona.persona_package import (
+    build_full_persona_package,
+    render_persona_brain_atlas,
+)
 from ynoy.full_persona.persona_package_store import FullPersonaPackageStore
 from ynoy.full_persona.scan import scan_full_corpus
 from ynoy.full_persona.store import FullPersonaStore
@@ -116,6 +119,19 @@ def test_package_store_roundtrip_and_tamper_failure(tmp_path: Path) -> None:
     assert error.value.code == "persona_package_invalid"
 
 
+def test_brain_atlas_is_deterministic_receipt_bound_and_private(tmp_path: Path) -> None:
+    _private_root, _run_id, pack, store, _path = _persisted_package(tmp_path)
+    package = build_full_persona_package(pack)
+    first = render_persona_brain_atlas(package)
+    second = render_persona_brain_atlas(package)
+
+    atlas_path = store.write_brain_atlas(package, first)
+    assert first == second == atlas_path.read_text(encoding="utf-8")
+    assert "# Full Persona Brain Atlas" in first
+    assert "- Receipt:" in first
+    assert "Persona quality: not claimed" in first
+
+
 def test_package_store_rejects_stale_latest_pointer(tmp_path: Path) -> None:
     _private_root, run_id, _pack, store, path = _persisted_package(tmp_path)
     pointer = path.parent / "latest-persona-package.json"
@@ -147,6 +163,8 @@ def test_cli_package_summary_does_not_emit_private_paths(tmp_path: Path) -> None
     )
 
     assert result["status"] == "full_persona_package_built"
+    assert result["brain_atlas_built"] is True
+    assert result["private_path_emitted"] is False
     assert result["private_content_emitted"] is False
     assert _strings(result).isdisjoint({str(private_root), str(private_root.resolve())})
 

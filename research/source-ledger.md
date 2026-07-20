@@ -2264,3 +2264,12 @@ These gaps must remain visible until closed.
 
 - Follow-up: private receipt-bound executive-manager brief generated; content
   and receipt list remain outside Git.
+
+### L-044 - Higher-capacity private brain atlas (2026-07-20)
+
+- Source: the already frozen and completed private full-persona run.
+- Use: higher-capacity deterministic pack and receipt-bound Markdown atlas.
+- Evidence class: private derived identity data; no content, counts, paths, or
+  hashes are committed.
+- Limitation: retained projection is bounded and semantic adoption is not
+  established.

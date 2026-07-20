@@ -2663,3 +2663,14 @@ plan, delegation candidates, risks, unknowns, and required user approval.
 - Verified fact: a private executive-manager brief was generated with current
   state, decision boundary, plan, delegation candidates, unknowns, required
   user approval, and source receipt identifiers.
+
+## Event 058 - Higher-capacity brain package (2026-07-20)
+
+- User direction: produce substantially more useful brain data, not another
+  small summary.
+- Observed fact: the complete private scan was repacked at the existing bounded
+  maximum and the package now writes a receipt-bound brain atlas.
+- Observed fact: a duplicated dossier filter hid classified skill candidates;
+  the projection was corrected and covered by tests.
+- Limitation: missing biography and stable-value evidence remains explicit
+  unknown state; no model is allowed to invent it.

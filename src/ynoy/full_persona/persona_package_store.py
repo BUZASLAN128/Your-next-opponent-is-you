@@ -13,6 +13,7 @@ from ynoy.persona_study.storage_paths import reject_link_if_present, require_reg
 from ynoy.util import atomic_write_bytes, canonical_json_bytes, utc_now
 
 _MAX_PACKAGE_BYTES = 2 * 1024**2
+_MAX_ATLAS_BYTES = 512 * 1024
 _MAX_POINTER_BYTES = 4 * 1024
 
 
@@ -46,6 +47,22 @@ class FullPersonaPackageStore:
                 }
             ),
         )
+        return path
+
+    def write_brain_atlas(self, package: FullPersonaPackage, content: str) -> Path:
+        """Persist a bounded private Markdown projection beside its canonical package."""
+        self._validate(package)
+        encoded = content.encode("utf-8")
+        if not encoded or len(encoded) > _MAX_ATLAS_BYTES:
+            _store_error("persona brain atlas exceeded its bounded artifact size")
+        path = self._safe(
+            self.pack_store.run_path(package.source_run_id) / f"{package.package_id}.brain-atlas.md"
+        )
+        if path.exists():
+            if _read_bounded(path, _MAX_ATLAS_BYTES) != encoded:
+                _store_error("a different brain atlas owns this package identifier")
+        else:
+            atomic_write_bytes(path, encoded)
         return path
 
     def read_package(self, run_id: str, package_id: str | None = None) -> FullPersonaPackage:

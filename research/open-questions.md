@@ -1401,3 +1401,8 @@ the structured manager from frozen controls.
 The first private manager brief exists. The next question is whether the user
 can approve or reject its individual decision candidates without conflating
 project rules and persona evidence.
+
+The higher-capacity atlas exposes which cognitive layers are evidence-rich and
+which remain empty. The next discriminating question is whether represented-
+user review can adopt stable values and skills without promoting project
+instructions or model prose into identity truth.

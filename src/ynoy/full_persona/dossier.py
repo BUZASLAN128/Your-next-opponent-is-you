@@ -78,24 +78,8 @@ _TOPIC_RULES = (
         ),
     ),
     _TopicRule("knowledge", frozenset({PersonaLayer.KNOWLEDGE})),
-    _TopicRule(
-        "skills",
-        frozenset({PersonaLayer.SKILLS}),
-        re.compile(
-            r"\b(uzmanım|yetkinim|hakimim|yıllardır .{0,80} kullanıyorum|"
-            r"profesyonel olarak .{0,80} yapıyorum)\b",
-            re.I,
-        ),
-    ),
-    _TopicRule(
-        "values",
-        frozenset({PersonaLayer.VALUES}),
-        re.compile(
-            r"\b(önemsiyorum|değer veriyorum|inanıyorum|benim için önemli|"
-            r"vazgeçilmez|asla kabul etmem)\b",
-            re.I,
-        ),
-    ),
+    _TopicRule("skills", frozenset({PersonaLayer.SKILLS})),
+    _TopicRule("values", frozenset({PersonaLayer.VALUES})),
     _TopicRule("goals", frozenset({PersonaLayer.GOALS})),
     _TopicRule("decision_behavior", frozenset({PersonaLayer.DECISIONS})),
     _TopicRule("risk_boundaries", frozenset({PersonaLayer.RISK})),

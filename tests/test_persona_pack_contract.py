@@ -8,6 +8,7 @@ import pytest
 from support.full_persona import prepared_full_persona_source
 from support.persona_pack import atom_evidence_ids, atom_text, built_pack, pack_atoms
 
+from ynoy.full_persona.dossier import build_persona_dossier
 from ynoy.full_persona.manifest import freeze_full_corpus
 from ynoy.full_persona.pack_builder import build_deterministic_pack
 from ynoy.full_persona.scan import scan_full_corpus
@@ -118,6 +119,24 @@ def test_knowledge_exposure_does_not_become_skill(tmp_path: Path) -> None:
     assert matches
     assert all(getattr(atom, "layer") == PersonaLayer.KNOWLEDGE for atom in matches)
     assert all(getattr(atom, "layer") != PersonaLayer.SKILLS for atom in matches)
+
+
+def test_explicit_preference_becomes_unadopted_value_candidate(tmp_path: Path) -> None:
+    _source, _private, _manifest, pack = built_pack(tmp_path)
+    matches = [atom for atom in pack_atoms(pack) if "tercih ederim" in atom_text(atom)]
+
+    assert matches
+    assert all(getattr(atom, "layer") == PersonaLayer.VALUES for atom in matches)
+    assert all(atom.adopted is False and atom.core_eligible is False for atom in matches)
+
+
+def test_dossier_preserves_classified_skill_and_value_candidates(tmp_path: Path) -> None:
+    _source, _private, _manifest, pack = built_pack(tmp_path)
+    dossier = build_persona_dossier(pack)
+    topics = {topic.key: topic for topic in dossier.topics}
+
+    assert topics["skills"].evidence_state == "literal_candidates"
+    assert topics["values"].evidence_state == "literal_candidates"
 
 
 def test_project_rule_does_not_become_persona_value(tmp_path: Path) -> None:

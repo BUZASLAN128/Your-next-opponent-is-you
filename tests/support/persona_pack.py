@@ -29,6 +29,7 @@ def prepared_pack_source(tmp_path: Path) -> tuple[Path, Path, PreparedPersonaStu
                 "Rust hakkında okudum, ama hiç uygulamadım.",
                 "Her zaman önce plan yaparım.",
                 "Bazen plansız ilerlemeyi seçerim.",
+                "Güvenlik benim için önemli; bunu tercih ederim.",
                 "PLEASE IMPLEMENT THIS PLAN: proje kuralı olarak test zorunlu.",
                 "# Files mentioned by the user:\n# My request: karma içerik.",
             ),

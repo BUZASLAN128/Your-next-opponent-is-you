@@ -64,6 +64,62 @@ def persona_prompt_profile(package: FullPersonaPackage) -> dict[str, object]:
     }
 
 
+def render_persona_brain_atlas(package: FullPersonaPackage) -> str:
+    """Render a private, receipt-bound atlas without adding inferred identity facts."""
+    lines = [
+        "# Full Persona Brain Atlas",
+        "",
+        f"- Source scan: {package.source_scan_status}",
+        f"- Processed evidence: {package.processed_evidence_count}",
+        f"- Retained atoms: {package.retained_atom_count}",
+        f"- Unique semantic claims: {package.unique_semantic_claim_count}",
+        "- Persona quality: not claimed",
+        "- Authority: none",
+    ]
+    for topic in package.dossier.topics:
+        lines.extend(("", f"## {topic.key}", "", f"- State: {topic.evidence_state}"))
+        lines.append(f"- Total candidates: {topic.total_candidate_count}")
+        for signal in topic.style_signals:
+            lines.append(f"- Style signal: {signal.name} - {signal.guidance}")
+            lines.extend(_receipt_lines(signal.supports))
+        for candidate in topic.candidates:
+            lines.extend(
+                (
+                    "",
+                    f"### Candidate {candidate.atom_id[:12]}",
+                    "",
+                    f"- Truth status: {candidate.truth_status}",
+                    f"- Source role: {candidate.source_role}",
+                    f"- Claim: {_single_line(candidate.claim)}",
+                )
+            )
+            lines.extend(f"- Receipt: {item}" for item in candidate.evidence_receipts)
+        lines.extend(f"- Unknown: {item}" for item in topic.unknowns)
+    lines.extend(
+        (
+            "",
+            "## Global safety state",
+            "",
+            "- Semantic adoption: not_established",
+            "- Automatic core promotion: false",
+            "- Send/execute authority: none",
+        )
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _receipt_lines(supports: tuple[object, ...]) -> list[str]:
+    return [
+        f"- Receipt: {receipt}"
+        for support in supports
+        for receipt in getattr(support, "evidence_receipts", ())
+    ]
+
+
+def _single_line(value: str) -> str:
+    return " ".join(value.split())
+
+
 def _layer_summary(view: PersonaLayerView) -> PersonaLayerSummary:
     semantic = {atom.semantic_key for atom in view.atoms}
     observations = sum(atom.observation_count for atom in view.atoms)

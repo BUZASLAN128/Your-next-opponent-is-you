@@ -60,12 +60,15 @@ _RELATIONSHIP = re.compile(
 )
 _SKILL = re.compile(
     r"\b(?:uzmanım|hakimim|yetkinim|yıllardır(?:\s+[^.!?\n]{1,80})?\s+kullanıyorum|"
-    r"profesyonel\s+olarak\s+[^.!?\n]{1,80}\s+yapıyorum)\b",
+    r"profesyonel\s+olarak\s+[^.!?\n]{1,80}\s+yapıyorum|"
+    r"[^.!?\n]{2,80}\s+(?:kullanmayı\s+biliyorum|yapabiliyorum)|"
+    r"[^.!?\n]{2,80}\s+(?:konusunda|alanında)\s+(?:deneyimim|tecrübem)\s+var)\b",
     re.I,
 )
 _VALUE = re.compile(
     r"\b(?:önemsiyorum|değer\s+veriyorum|inanıyorum|benim\s+için\s+önemli|"
-    r"vazgeçilmez|asla\s+kabul\s+etmem)\b",
+    r"vazgeçilmez|asla\s+kabul\s+etmem|önceliğim|tercihim|tercih\s+ederim|"
+    r"taviz\s+vermem|ödün\s+vermem)\b",
     re.I,
 )
 
