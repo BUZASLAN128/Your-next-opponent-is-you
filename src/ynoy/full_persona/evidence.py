@@ -47,6 +47,7 @@ _CONTROL_PREFIXES = (
     "<recommended_plugins>",
     "# agents.md instructions for",
 )
+_MIXED_PREFIXES = ("# context from my ide setup:",)
 
 
 class EvidenceContext:
@@ -174,6 +175,8 @@ def _role(content: str) -> EvidenceRole | None:
         return None
     if lowered.startswith("please implement this plan"):
         return EvidenceRole.PROJECT
+    if any(lowered.startswith(value) for value in _MIXED_PREFIXES):
+        return EvidenceRole.MIXED
     if "# files mentioned by the user:" in lowered or "```" in content or "\n> " in content:
         return EvidenceRole.MIXED
     if re.search(r"\b(implement|fixle|push|commit|repo|kod|test|dosya|branch|pr)\b", content, re.I):

@@ -18,7 +18,11 @@ type ShortText = Annotated[
     StringConstraints(strip_whitespace=True, min_length=1, max_length=512),
 ]
 type PersonaResponseArm = Literal["structured", "generic"]
-type PersonaGenerationSource = Literal["local_model", "deterministic_runtime_guard"]
+type PersonaGenerationSource = Literal[
+    "local_model",
+    "deterministic_runtime_guard",
+    "deterministic_evidence_projection",
+]
 
 _JSON_OBJECT_ADAPTER = TypeAdapter(dict[str, Any])
 

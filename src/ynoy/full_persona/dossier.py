@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from pydantic import TypeAdapter, ValidationError
 
 from ynoy.errors import DataValidationError
+from ynoy.full_persona.identity_rules import is_imported_identity_text
 from ynoy.full_persona.response_context import select_style_signals
 from ynoy.models.full_persona import EvidenceRole
 from ynoy.models.full_persona_pack import (
@@ -31,6 +32,7 @@ from ynoy.util import canonical_sha256, utc_now
 
 _MAX_CANDIDATES_PER_TOPIC = 8
 _MAX_CLAIM_CHARS = 1_200
+_MAX_DIRECT_CLAIM_CHARS = 2_000
 _JSON_OBJECT_ADAPTER = TypeAdapter(dict[str, Any])
 
 
@@ -166,7 +168,7 @@ def _validated_pack(pack: PersonaPack) -> PersonaPack:
 
 def _eligible(atom: PersonaAtom) -> bool:
     return bool(
-        atom.source_role == EvidenceRole.DIRECT
+        atom.source_role in {EvidenceRole.DIRECT, EvidenceRole.PROJECT}
         and atom.basis == PersonaEvidenceBasis.LITERAL
         and atom.status
         in {PersonaAtomStatus.OBSERVED, PersonaAtomStatus.PENDING, PersonaAtomStatus.CONFLICTED}
@@ -175,6 +177,8 @@ def _eligible(atom: PersonaAtom) -> bool:
         and atom.last_observed_at is not None
         and not atom.adopted
         and atom.layer != PersonaLayer.TIMELINE
+        and len(atom.claim) <= _MAX_DIRECT_CLAIM_CHARS
+        and not is_imported_identity_text(atom.claim)
     )
 
 
@@ -256,6 +260,9 @@ def _candidate(atom: PersonaAtom) -> PersonaDossierCandidate:
         layer=atom.layer,
         claim=atom.claim[:_MAX_CLAIM_CHARS],
         truth_status=_truth_status(atom.status),
+        source_role=cast(
+            Literal["direct_user_expression", "project_instruction"], atom.source_role
+        ),
         evidence_receipts=receipts,
         evidence_receipt_count=len(atom.evidence_receipts),
         first_observed_at=atom.first_observed_at,

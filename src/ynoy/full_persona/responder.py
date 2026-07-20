@@ -1,22 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, cast
 
 from pydantic import ValidationError
 
 from ynoy.errors import AdapterError, DataValidationError, PolicyViolation
+from ynoy.full_persona.local_model_artifact import verify_local_model_artifact
 from ynoy.full_persona.response_context import (
     PersonaContextEntry,
     PersonaStyleSignal,
-    select_response_context,
-    select_style_signals,
 )
 from ynoy.full_persona.response_guard import public_uncertainties, runtime_guard_candidate
-from ynoy.full_persona.response_protocol import (
-    PersonaResponseCandidate,
-    build_response_request,
-    parse_response_candidate,
+from ynoy.full_persona.response_protocol import PersonaResponseCandidate
+from ynoy.full_persona.response_runtime import (
+    build_evidence_packet,
+    generate_persona_candidate,
+    require_verified_artifact,
 )
 from ynoy.local_http import post_json
 from ynoy.models.full_persona_pack import PersonaPack
@@ -31,7 +32,6 @@ from ynoy.policy import is_loopback_url
 from ynoy.util import sha256_text, utc_now
 
 _MAX_QUERY_CHARS = 4_096
-_MAX_RESPONSE_BYTES = 256 * 1024
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,6 +41,7 @@ class LocalPersonaResponder:
     revision: str
     artifact_sha256: str
     local_attested: bool
+    artifact_path: Path | None = None
     timeout_seconds: float = 120.0
 
     def __post_init__(self) -> None:
@@ -62,6 +63,10 @@ class LocalPersonaResponder:
                 "The persona responder requires canonical pinned model identity.",
             ) from exc
         del provider
+        if self.artifact_path is not None:
+            verify_local_model_artifact(
+                self.artifact_path, self.artifact_sha256, prefix="persona_responder"
+            )
 
     @property
     def provider_evidence(self) -> ReviewProviderEvidence:
@@ -82,6 +87,7 @@ class LocalPersonaResponder:
         selected_arm = _validate_arm(arm)
         normalized_query = _validate_query(query)
         validated_pack = _validated_pack(pack)
+        require_verified_artifact(validated_pack, self.artifact_path, self.artifact_sha256)
         guarded = runtime_guard_candidate(normalized_query, selected_arm)
         if guarded is not None:
             return _materialize(
@@ -94,30 +100,28 @@ class LocalPersonaResponder:
                 self,
                 "deterministic_runtime_guard",
             )
-        context = (
-            select_response_context(validated_pack, normalized_query)
-            if selected_arm == "structured"
-            else ()
-        )
-        style = select_style_signals(validated_pack) if selected_arm == "structured" else ()
-        raw = post_json(
-            self.endpoint,
-            build_response_request(self.model, normalized_query, context, selected_arm, style),
+        packet = build_evidence_packet(validated_pack, normalized_query, selected_arm)
+        candidate, generation_source = generate_persona_candidate(
+            endpoint=self.endpoint,
+            model=self.model,
             timeout_seconds=self.timeout_seconds,
-            max_response_bytes=_MAX_RESPONSE_BYTES,
-            error_prefix="persona_responder",
+            artifact_path=self.artifact_path,
+            artifact_sha256=self.artifact_sha256,
+            query=normalized_query,
+            arm=selected_arm,
+            packet=packet,
+            transport=post_json,
         )
-        candidate = parse_response_candidate(raw, self.model)
-        _validate_citations(candidate, context, style, selected_arm)
+        _validate_citations(candidate, packet.context, packet.style, selected_arm)
         return _materialize(
             candidate,
-            context,
-            style,
+            packet.context,
+            packet.style,
             validated_pack,
             normalized_query,
             selected_arm,
             self,
-            "local_model",
+            generation_source,
         )
 
 
@@ -171,7 +175,7 @@ def _validate_citations(
     invalid = len(cited) != len(candidate.used_atom_ids) or not cited <= supplied
     if arm == "generic" and cited:
         invalid = True
-    if arm == "structured" and not candidate.should_abstain and not cited:
+    if arm == "structured" and supplied and not cited:
         invalid = True
     if invalid:
         raise AdapterError(

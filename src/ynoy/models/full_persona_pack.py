@@ -42,7 +42,8 @@ class PersonaAtomStatus(StrEnum):
 
 
 class PersonaPackBuildConfig(StrictModel):
-    schema_version: Literal["persona-pack/0.1"] = "persona-pack/0.1"
+    schema_version: Literal["persona-pack-build/0.3"] = "persona-pack-build/0.3"
+    identity_rules_version: Literal["identity-rules/0.3"] = "identity-rules/0.3"
     max_atoms_per_layer: int = Field(default=128, ge=4, le=1_024)
     max_excerpt_chars: int = Field(default=2_048, ge=128, le=8_192)
     max_retrieval_hits: int = Field(default=12, ge=1, le=64)
@@ -140,7 +141,7 @@ class PersonaLayerView(StrictModel):
 
 
 class PersonaPack(StrictModel):
-    protocol_version: Literal["persona-pack/0.1"] = "persona-pack/0.1"
+    protocol_version: Literal["persona-pack/0.2"] = "persona-pack/0.2"
     pack_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     source_run_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
     source_manifest_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")

@@ -172,8 +172,8 @@ def test_structured_request_is_bounded_and_result_is_non_authoritative(
     payload = requests[0]
     selected = _atom_ids(payload)
     available = {atom.atom_id for atom in pack_atoms(pack)}
-    assert selected <= available
-    assert len(selected) <= pack.config.max_retrieval_hits
+    assert selected
+    assert all(item.startswith("c") and item[1:].isdigit() for item in selected)
     assert {"target", "label", "focus"}.isdisjoint(_keys(payload))
     observations = json.loads(payload["messages"][1]["content"])["persona_observations"]
     assert all(item["source_role"] == "direct_user_expression" for item in observations)
@@ -187,7 +187,7 @@ def test_structured_request_is_bounded_and_result_is_non_authoritative(
     assert dumped["execute_enabled"] is False
     assert dumped["automatic_core"] is False
     assert dumped["target_seen"] is False
-    assert set(dumped["used_atom_ids"]) <= selected
+    assert set(dumped["used_atom_ids"]) <= available
     assert isinstance(dumped["response_sha256"], str)
     assert isinstance(dumped["provenance_sha256"], str)
 

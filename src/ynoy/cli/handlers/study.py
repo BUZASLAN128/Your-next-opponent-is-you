@@ -12,11 +12,14 @@ from ynoy.cli.handlers.study_full_persona import (
     full_persona_status,
     scan_full_persona,
 )
+from ynoy.cli.handlers.study_full_persona_benchmark import benchmark_full_persona
 from ynoy.cli.handlers.study_full_persona_dossier import profile_full_persona
+from ynoy.cli.handlers.study_full_persona_life import build_full_persona_life_profile
 from ynoy.cli.handlers.study_full_persona_pack import (
     build_full_persona_pack,
     query_full_persona_pack,
 )
+from ynoy.cli.handlers.study_full_persona_package import build_full_persona_package_handler
 from ynoy.cli.handlers.study_full_persona_responder import respond_full_persona
 from ynoy.cli.handlers.study_guidance import status_guidance_tr
 from ynoy.cli.handlers.study_harvest import harvest_judgments, resume_judgment_harvest
@@ -64,7 +67,10 @@ def handle_study(args: argparse.Namespace, context: CommandContext) -> dict[str,
         "build-full-persona-pack": build_full_persona_pack,
         "query-full-persona-pack": query_full_persona_pack,
         "profile-full-persona": profile_full_persona,
+        "build-full-persona-package": build_full_persona_package_handler,
+        "build-full-persona-life-profile": build_full_persona_life_profile,
         "respond-full-persona": respond_full_persona,
+        "benchmark-full-persona": benchmark_full_persona,
         "seal-harvest-authorship": seal_harvest_authorship,
         "record-proposal-review": record_proposal_review,
         "submit-proposal-review": submit_recorded_proposal_review,

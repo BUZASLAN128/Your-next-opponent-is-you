@@ -102,19 +102,14 @@ def test_response_schema_uses_supported_bounds_and_supplied_id_enum(tmp_path: An
     context = select_response_context(pack, "Python")
     structured = build_response_request("fixture", "Python", context, "structured")
     generic = build_response_request("fixture", "Python", (), "generic")
-    structured_schema = structured["response_format"]["schema"]
-    generic_schema = generic["response_format"]["schema"]
-
     assert structured["seed"] == 0
     assert generic["seed"] == 0
-    unsupported = {"minLength", "maxLength", "const"}
-    assert _schema_keys(structured_schema).isdisjoint(unsupported)
-    assert _schema_keys(generic_schema).isdisjoint(unsupported)
-    structured_ids = structured_schema["properties"]["used_atom_ids"]
-    generic_ids = generic_schema["properties"]["used_atom_ids"]
-    assert structured_ids["maxItems"] == len(context)
-    assert structured_ids["items"]["enum"] == [item.atom_id for item in context]
-    assert generic_ids["maxItems"] == 0
+    assert structured["max_tokens"] == 768
+    assert "response_format" not in structured
+    assert all(item.atom_id not in structured["grammar"] for item in context)
+    assert 'id ::= "\\"c01\\""' in structured["grammar"]
+    assert all(item.atom_id not in generic["grammar"] for item in context)
+    assert 'id-array ::= "[]"' in generic["grammar"]
 
 
 def test_runtime_guard_answers_corpus_residency_without_atoms_or_transport(
@@ -137,6 +132,27 @@ def test_runtime_guard_answers_corpus_residency_without_atoms_or_transport(
     assert result.evidence_receipts == ()
     assert "diskten akışla" in result.response_text
     assert "RAM" in result.response_text
+
+
+def test_biography_projection_quotes_evidence_and_never_calls_model(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    pack = built_pack(tmp_path)[3]
+
+    def unexpected(*_: object, **__: object) -> object:
+        raise AssertionError("deterministic biography projection reached model transport")
+
+    monkeypatch.setattr("ynoy.full_persona.responder.post_json", unexpected)
+    result = responder().respond(
+        pack,
+        "Doğumumdan bugüne hayatım hakkında ne biliyorsun? Uydurma.",
+        arm="structured",
+    )
+
+    assert result.generation_source == "deterministic_evidence_projection"
+    assert result.used_atom_ids
+    assert "Geçmiş kaydında" in result.response_text
+    assert "kalanını uyduramam" in result.response_text
 
 
 def test_unrelated_query_uses_local_model_and_generation_source_is_hashed(

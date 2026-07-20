@@ -59,9 +59,11 @@ def scan_full_corpus(
             )
         head = store.read_head(run_id)
         head = recover_interrupted_run(store, manifest, head)
-        if head.status == "complete":
-            return head
         current = _verify_source_universe(source_root, manifest)
+        _verify_consumed_source_digests(current, manifest, head)
+        if head.status == "complete":
+            verify_committed_run(store, manifest, head)
+            return head
         consumed = 0
         while head.file_index < len(manifest.files):
             remaining = None if max_input_bytes is None else max_input_bytes - consumed
@@ -198,6 +200,17 @@ def _verify_all_source_digests(
     current: dict[str, DiscoveredCodexFile], manifest: FullCorpusManifest
 ) -> None:
     for source in manifest.files:
+        with open_stable_codex_file(current[source.source_key]) as stream:
+            _verify_opened_digest(stream, source)
+
+
+def _verify_consumed_source_digests(
+    current: dict[str, DiscoveredCodexFile],
+    manifest: FullCorpusManifest,
+    head: FullCorpusHead,
+) -> None:
+    consumed_count = head.file_index + int(head.next_byte_offset > 0)
+    for source in manifest.files[:consumed_count]:
         with open_stable_codex_file(current[source.source_key]) as stream:
             _verify_opened_digest(stream, source)
 

@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Literal
+from typing import Literal, cast
 
 from pydantic import Field
 
+from ynoy.full_persona.identity_rules import is_imported_identity_text
+from ynoy.full_persona.response_relevance import diversify_layers, rank_relevant_atoms
 from ynoy.models.base import StrictModel
 from ynoy.models.full_persona import EvidenceRole
 from ynoy.models.full_persona_pack import (
@@ -17,55 +19,11 @@ from ynoy.models.full_persona_pack import (
     PersonaPack,
 )
 
-_TOKEN = re.compile(r"[\wçğıöşü]+", re.I)
-_MAX_CLAIM_CHARS = 600
-_MAX_CONTEXT_CHARS = 3_500
+_MAX_CLAIM_CHARS = 400
+_MAX_DIRECT_CLAIM_CHARS = 2_000
+_MAX_CONTEXT_CHARS = 1_600
 _MAX_RECEIPTS_PER_ATOM = 4
-_MAX_RESPONSE_CONTEXT_ATOMS = 6
-_QUERY_STOPWORDS = {
-    "about",
-    "answer",
-    "bana",
-    "bir",
-    "bu",
-    "bundan",
-    "cevap",
-    "da",
-    "de",
-    "doğal",
-    "et",
-    "göre",
-    "için",
-    "ile",
-    "ilerle",
-    "ilerlemeliyiz",
-    "kısa",
-    "nasıl",
-    "net",
-    "olarak",
-    "proje",
-    "projede",
-    "sonra",
-    "şu",
-    "should",
-    "the",
-    "ver",
-    "ve",
-    "what",
-}
-_ANCHOR_LAYERS = (
-    PersonaLayer.RESPONSE_POLICY,
-    PersonaLayer.VALUES,
-    PersonaLayer.GOALS,
-    PersonaLayer.DECISIONS,
-    PersonaLayer.RISK,
-    PersonaLayer.AUTOBIOGRAPHY,
-    PersonaLayer.KNOWLEDGE,
-    PersonaLayer.SKILLS,
-    PersonaLayer.RELATIONSHIPS,
-    PersonaLayer.CONTRADICTIONS,
-)
-_LAYER_WEIGHT = {layer: len(_ANCHOR_LAYERS) - index for index, layer in enumerate(_ANCHOR_LAYERS)}
+_MAX_RESPONSE_CONTEXT_ATOMS = 4
 _STYLE_RULES: tuple[tuple[str, re.Pattern[str], str], ...] = (
     (
         "evidence_first",
@@ -117,7 +75,7 @@ class PersonaContextEntry(StrictModel):
     truth_status: Literal["observed", "observed_unadopted", "conflicted_observation"]
     evidence_receipts: tuple[str, ...] = Field(max_length=_MAX_RECEIPTS_PER_ATOM)
     evidence_receipt_count: int = Field(ge=1)
-    source_role: Literal["direct_user_expression"] = "direct_user_expression"
+    source_role: Literal["direct_user_expression", "project_instruction"]
     adopted: Literal[False] = False
     authority: Literal["none"] = "none"
 
@@ -137,15 +95,11 @@ class PersonaStyleSignal(StrictModel):
 
 def select_response_context(pack: PersonaPack, query: str) -> tuple[PersonaContextEntry, ...]:
     """Select a small, diverse evidence packet without converting observations to truth."""
-    tokens = _tokens(query)
     limit = min(pack.config.max_retrieval_hits, _MAX_RESPONSE_CONTEXT_ATOMS)
     candidates = tuple(atom for view in pack.layers for atom in view.atoms if _eligible(atom))
-    ranked = sorted(candidates, key=lambda atom: _rank_key(atom, tokens))
-    lexical = [atom for atom in ranked if tokens & _tokens(atom.claim)]
-    if not tokens or not lexical:
-        return ()
-    selected = _unique(lexical[:limit])
-    return _bounded_entries(selected, limit)
+    ranked = rank_relevant_atoms(candidates, query)
+    selected = diversify_layers(ranked, limit)
+    return _bounded_entries(list(selected), limit)
 
 
 def select_style_signals(pack: PersonaPack) -> tuple[PersonaStyleSignal, ...]:
@@ -169,42 +123,19 @@ def select_style_signals(pack: PersonaPack) -> tuple[PersonaStyleSignal, ...]:
 
 def _eligible(atom: PersonaAtom) -> bool:
     return bool(
-        atom.source_role == EvidenceRole.DIRECT
+        atom.source_role in {EvidenceRole.DIRECT, EvidenceRole.PROJECT}
         and atom.status
         in {PersonaAtomStatus.OBSERVED, PersonaAtomStatus.PENDING, PersonaAtomStatus.CONFLICTED}
         and atom.evidence_receipts
         and not atom.adopted
         and atom.layer != PersonaLayer.TIMELINE
+        and len(atom.claim) <= _MAX_DIRECT_CLAIM_CHARS
+        and not is_imported_identity_text(atom.claim)
     )
-
-
-def _rank_key(atom: PersonaAtom, query_tokens: set[str]) -> tuple[int, int, float, str]:
-    overlap = len(query_tokens & _tokens(atom.claim))
-    weight = _LAYER_WEIGHT.get(atom.layer, 0)
-    recency = _timestamp(atom.last_observed_at)
-    return (-overlap, -weight, -recency, atom.atom_id)
 
 
 def _timestamp(value: datetime | None) -> float:
     return value.timestamp() if value is not None else 0.0
-
-
-def _tokens(value: str) -> set[str]:
-    return {
-        normalized
-        for item in _TOKEN.findall(value)
-        if len(normalized := item.casefold()) > 1 and normalized not in _QUERY_STOPWORDS
-    }
-
-
-def _unique(atoms: list[PersonaAtom]) -> list[PersonaAtom]:
-    seen: set[str] = set()
-    result: list[PersonaAtom] = []
-    for atom in atoms:
-        if atom.atom_id not in seen:
-            result.append(atom)
-            seen.add(atom.atom_id)
-    return result
 
 
 def _bounded_entries(atoms: list[PersonaAtom], limit: int) -> tuple[PersonaContextEntry, ...]:
@@ -223,6 +154,10 @@ def _bounded_entries(atoms: list[PersonaAtom], limit: int) -> tuple[PersonaConte
                 truth_status=_truth_status(atom.status),
                 evidence_receipts=receipts,
                 evidence_receipt_count=len(atom.evidence_receipts),
+                source_role=cast(
+                    Literal["direct_user_expression", "project_instruction"],
+                    atom.source_role,
+                ),
             )
         )
         remaining -= len(claim)

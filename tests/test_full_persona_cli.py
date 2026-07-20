@@ -30,6 +30,10 @@ def test_full_persona_parser_exposes_freeze_scan_and_status_commands(tmp_path: P
             "scan-full-persona",
         ),
         (["study", "full-persona-status", study_id, "--synthetic"], "full-persona-status"),
+        (
+            ["study", "build-full-persona-package", study_id, "--synthetic"],
+            "build-full-persona-package",
+        ),
     )
 
     for argv, command in cases:

@@ -19,6 +19,7 @@ class Settings:
     embedding_model: str
     local_reasoner_revision: str | None = None
     local_reasoner_artifact_sha256: str | None = None
+    local_reasoner_artifact_path: Path | None = None
     local_reasoner_model_explicit: bool = False
 
     @classmethod
@@ -47,6 +48,11 @@ class Settings:
             embedding_model=os.environ.get("YNOY_EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL),
             local_reasoner_revision=os.environ.get("YNOY_LOCAL_REASONER_REVISION"),
             local_reasoner_artifact_sha256=os.environ.get("YNOY_LOCAL_REASONER_ARTIFACT_SHA256"),
+            local_reasoner_artifact_path=(
+                Path(value).expanduser().resolve()
+                if (value := os.environ.get("YNOY_LOCAL_REASONER_ARTIFACT_PATH"))
+                else None
+            ),
             local_reasoner_model_explicit=bool(os.environ.get("YNOY_LOCAL_REASONER_MODEL")),
         )
 

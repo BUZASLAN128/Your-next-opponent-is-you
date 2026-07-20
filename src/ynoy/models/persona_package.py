@@ -1,0 +1,108 @@
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Literal
+
+from pydantic import Field, model_validator
+
+from ynoy.models.base import DataClass, StrictModel
+from ynoy.models.full_persona_pack import PersonaLayer
+from ynoy.models.persona_dossier import PersonaDossier
+from ynoy.util import canonical_sha256
+
+type Digest = str
+
+
+class PersonaLayerSummary(StrictModel):
+    layer: PersonaLayer
+    retained_atom_count: int = Field(ge=0)
+    unique_semantic_claim_count: int = Field(ge=0)
+    represented_observation_count: int = Field(ge=0)
+    duplicate_observation_count: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def counts_are_consistent(self) -> PersonaLayerSummary:
+        if self.unique_semantic_claim_count > self.retained_atom_count:
+            raise ValueError("persona package semantic claim count is inconsistent")
+        if self.duplicate_observation_count > self.represented_observation_count:
+            raise ValueError("persona package duplicate count is inconsistent")
+        return self
+
+
+class FullPersonaPackage(StrictModel):
+    """Persistent private package over a complete scan and bounded retained projection."""
+
+    protocol_version: Literal["full-persona-package/0.1"] = "full-persona-package/0.1"
+    package_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    pack_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    pack_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    source_run_id: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    source_manifest_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    source_head_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+    source_head_revision: int = Field(ge=0)
+    expires_at: datetime
+    data_class: DataClass
+    synthetic: bool
+    processed_evidence_count: int = Field(ge=0)
+    retained_atom_count: int = Field(ge=0)
+    unique_semantic_claim_count: int = Field(ge=0)
+    layer_summaries: tuple[PersonaLayerSummary, ...] = Field(min_length=12, max_length=12)
+    dossier: PersonaDossier
+    source_scan_status: Literal["complete_verified"] = "complete_verified"
+    history_scope: Literal["all_retained_pack_history"] = "all_retained_pack_history"
+    retained_projection_exhaustive: Literal[False] = False
+    identity_fact_policy: Literal["literal_evidence_or_unknown"] = "literal_evidence_or_unknown"
+    model_enrichment: Literal["not_used"] = "not_used"
+    calibration_status: Literal["not_calibrated"] = "not_calibrated"
+    semantic_adoption: Literal["not_established"] = "not_established"
+    persona_quality_claimed: Literal[False] = False
+    automatic_core_promotion: Literal[False] = False
+    authority: Literal["none"] = "none"
+    persistent: Literal[True] = True
+    package_sha256: Digest = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def package_is_canonical(self) -> FullPersonaPackage:
+        if tuple(item.layer for item in self.layer_summaries) != tuple(PersonaLayer):
+            raise ValueError("persona package layer order changed")
+        if sum(item.retained_atom_count for item in self.layer_summaries) != (
+            self.retained_atom_count
+        ):
+            raise ValueError("persona package retained atom count is inconsistent")
+        if sum(item.unique_semantic_claim_count for item in self.layer_summaries) != (
+            self.unique_semantic_claim_count
+        ):
+            raise ValueError("persona package semantic claim count is inconsistent")
+        if not _dossier_matches(self):
+            raise ValueError("persona package dossier does not match its source pack")
+        expected_id = canonical_sha256(
+            {
+                "protocol_version": self.protocol_version,
+                "pack_sha256": self.pack_sha256,
+                "dossier_sha256": self.dossier.dossier_sha256,
+            }
+        )
+        if self.package_id != expected_id:
+            raise ValueError("persona package identifier is invalid")
+        payload = self.model_dump(mode="json", exclude={"package_sha256"})
+        if self.package_sha256 != canonical_sha256(payload):
+            raise ValueError("persona package hash does not match")
+        return self
+
+
+def _dossier_matches(package: FullPersonaPackage) -> bool:
+    dossier = package.dossier
+    expected_class = DataClass.PUBLIC_SYNTHETIC if package.synthetic else DataClass.DERIVED_IDENTITY
+    return bool(
+        package.data_class == expected_class
+        and dossier.pack_id == package.pack_id
+        and dossier.pack_sha256 == package.pack_sha256
+        and dossier.source_run_id == package.source_run_id
+        and dossier.source_head_sha256 == package.source_head_sha256
+        and dossier.source_head_revision == package.source_head_revision
+        and dossier.expires_at == package.expires_at
+        and dossier.data_class == package.data_class
+        and dossier.synthetic == package.synthetic
+        and dossier.processed_evidence_count == package.processed_evidence_count
+        and dossier.retained_atom_count == package.retained_atom_count
+    )

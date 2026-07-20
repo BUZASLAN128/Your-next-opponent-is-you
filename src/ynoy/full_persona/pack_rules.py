@@ -4,28 +4,21 @@ from __future__ import annotations
 
 import re
 
+from ynoy.full_persona.identity_rules import (
+    has_biography_claim,
+    has_relationship_claim,
+    has_skill_claim,
+    has_value_claim,
+    is_imported_identity_text,
+    life_facts,
+)
 from ynoy.models.full_persona import EvidenceRole, FullCorpusEvidence
 from ynoy.models.full_persona_pack import PersonaAtomStatus, PersonaLayer
 from ynoy.util import sha256_text
 
-_BIOGRAPHY = re.compile(
-    r"\b(doğdum|doğum günüm|çocukluğ|büyüdüm|yaşındayım|okul|üniversite|sınav|mezun|born)\b",
-    re.I,
-)
-_RELATIONSHIP = re.compile(
-    r"\b(annem(?:le)?|babam(?:la)?|kardeşim(?:le)?|eşim(?:le)?|sevgilim(?:le)?|"
-    r"arkadaşım(?:la)?|ailem(?:le)?|oğlum(?:la)?|kızım(?:la)?)\b",
-    re.I,
-)
-_SKILL = re.compile(
-    r"\b(yapabiliyorum|uzmanım|hakimim|yetkinim|yıllardır kullanıyorum|"
-    r"biliyorum.{0,80}kullanıyorum)\b",
-    re.I,
-)
 _KNOWLEDGE = re.compile(
     r"\b(hakkında okudum|öğrendim|araştırdım|inceledim|biliyorum|bilgim var)\b", re.I
 )
-_VALUE = re.compile(r"\b(benim için|inanıyorum|önemsiyorum|değer ver|doğru olan|asla)\b", re.I)
 _GOAL = re.compile(r"\b(hedefim|istiyorum|planlıyorum|olmak istiyorum|başarmak)\b", re.I)
 _RISK = re.compile(
     r"\b(gizlilik|kişisel veri|güvenlik|sızma|hayal gör|halüsin|ram|çök|risk|private)\b",
@@ -64,17 +57,19 @@ def primary_layer(evidence: FullCorpusEvidence) -> tuple[PersonaLayer, PersonaAt
         return PersonaLayer.EVIDENCE, PersonaAtomStatus.OBSERVED
     if evidence.role == EvidenceRole.PROJECT:
         return _project_layer(evidence)
+    if is_imported_identity_text(text):
+        return PersonaLayer.EVIDENCE, PersonaAtomStatus.OBSERVED
     if _CONTRADICTION_CANDIDATE.search(text):
         return PersonaLayer.CONTRADICTIONS, PersonaAtomStatus.CONFLICTED
-    if _BIOGRAPHY.search(text):
+    if has_biography_claim(text):
         return PersonaLayer.AUTOBIOGRAPHY, PersonaAtomStatus.PENDING
-    if _RELATIONSHIP.search(text):
+    if has_relationship_claim(text):
         return PersonaLayer.RELATIONSHIPS, PersonaAtomStatus.PENDING
-    if _SKILL.search(text):
+    if has_skill_claim(text):
         return PersonaLayer.SKILLS, PersonaAtomStatus.PENDING
     if _KNOWLEDGE.search(text):
         return PersonaLayer.KNOWLEDGE, PersonaAtomStatus.OBSERVED
-    if _VALUE.search(text):
+    if has_value_claim(text):
         return PersonaLayer.VALUES, PersonaAtomStatus.PENDING
     if _GOAL.search(text):
         return PersonaLayer.GOALS, PersonaAtomStatus.PENDING
@@ -88,6 +83,10 @@ def primary_layer(evidence: FullCorpusEvidence) -> tuple[PersonaLayer, PersonaAt
 def claim_for(evidence: FullCorpusEvidence, layer: PersonaLayer, excerpt: str) -> str:
     if layer == PersonaLayer.TIMELINE:
         return f"Observed user conversation evidence at {evidence.event_time.isoformat()}."
+    if layer == PersonaLayer.AUTOBIOGRAPHY:
+        facts = tuple(fact for _topic, fact in life_facts(excerpt))
+        if facts:
+            return "; ".join(facts)
     return excerpt
 
 

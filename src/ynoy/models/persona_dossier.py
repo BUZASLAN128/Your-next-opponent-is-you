@@ -56,7 +56,7 @@ class PersonaDossierCandidate(StrictModel):
     layer: PersonaLayer
     claim: CandidateText
     truth_status: Literal["observed", "observed_unadopted", "conflicted_observation"]
-    source_role: Literal["direct_user_expression"] = "direct_user_expression"
+    source_role: Literal["direct_user_expression", "project_instruction"]
     evidence_receipts: tuple[Digest, ...] = Field(min_length=1, max_length=4)
     evidence_receipt_count: int = Field(ge=1)
     first_observed_at: datetime

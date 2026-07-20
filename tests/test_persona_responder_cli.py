@@ -5,9 +5,9 @@ from typing import Any
 
 import pytest
 from support.persona_pack import built_pack
-from ynoy.cli.handlers.study_full_persona_responder import respond_full_persona
 
 from ynoy.cli.context import CommandContext
+from ynoy.cli.handlers.study_full_persona_responder import respond_full_persona
 from ynoy.cli.parser import parse_args
 from ynoy.config import Settings
 from ynoy.full_persona.pack_store import FullPersonaPackStore
@@ -58,10 +58,16 @@ def test_respond_full_persona_cli_parser_and_handler_are_safe(
     with pytest.raises(SystemExit):
         parse_args(["study", "respond-full-persona", pack.source_run_id, "query", "--send"])
 
-    monkeypatch.setattr(
-        "ynoy.full_persona.responder.post_json",
-        lambda *_args, **_kwargs: model_response(),
-    )
+    def transport(_: str, payload: dict[str, object], **__: object) -> dict[str, object]:
+        content = json.loads(payload["messages"][1]["content"])
+        aliases = [item["atom_id"] for item in content["persona_observations"]]
+        raw = model_response()
+        candidate = json.loads(raw["choices"][0]["message"]["content"])
+        candidate["used_atom_ids"] = aliases[:1] if arm == "structured" else []
+        raw["choices"][0]["message"]["content"] = json.dumps(candidate)
+        return raw
+
+    monkeypatch.setattr("ynoy.full_persona.responder.post_json", transport)
     context = CommandContext(
         settings=Settings.from_environment(private_root=private_root),
         repository_root=tmp_path,

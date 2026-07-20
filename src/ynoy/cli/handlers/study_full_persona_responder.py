@@ -13,7 +13,9 @@ def respond_full_persona(args: argparse.Namespace, context: CommandContext) -> d
     pack = FullPersonaPackStore(
         context.settings.require_private_root(), synthetic=synthetic
     ).read_pack(args.run_id)
-    result = _configured_responder(context).respond(pack, args.query, arm=args.arm)
+    result = _configured_responder(context, require_artifact_file=not synthetic).respond(
+        pack, args.query, arm=args.arm
+    )
     return {
         "status": "unvalidated_persona_simulation",
         **result.model_dump(mode="json"),
@@ -21,13 +23,16 @@ def respond_full_persona(args: argparse.Namespace, context: CommandContext) -> d
     }
 
 
-def _configured_responder(context: CommandContext) -> LocalPersonaResponder:
+def _configured_responder(
+    context: CommandContext, *, require_artifact_file: bool
+) -> LocalPersonaResponder:
     settings = context.settings
     if not (
         settings.local_reasoner_url
         and settings.local_reasoner_model_explicit
         and settings.local_reasoner_revision
         and settings.local_reasoner_artifact_sha256
+        and (settings.local_reasoner_artifact_path or not require_artifact_file)
     ):
         raise PolicyViolation(
             "persona_responder_not_configured",
@@ -38,5 +43,6 @@ def _configured_responder(context: CommandContext) -> LocalPersonaResponder:
         model=settings.local_reasoner_model,
         revision=settings.local_reasoner_revision,
         artifact_sha256=settings.local_reasoner_artifact_sha256,
+        artifact_path=settings.local_reasoner_artifact_path,
         local_attested=settings.local_model_attested,
     )
