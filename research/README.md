@@ -279,6 +279,7 @@ Read the files in the order listed below:
 25. [authorship-receipt-2026-07-18.md](authorship-receipt-2026-07-18.md)
 26. [observable-action-pilot-2026-07-19.md](observable-action-pilot-2026-07-19.md)
 27. [persona-evolution-checkpoint-2026-07-20.md](persona-evolution-checkpoint-2026-07-20.md)
+28. [persona-adoption-similarity-roadmap-2026-07-20.md](persona-adoption-similarity-roadmap-2026-07-20.md)
 
 Then record new sources, negative evidence, questions, and decisions according
 to the local documentation contract. Do not treat an implemented mechanism as
@@ -313,3 +314,9 @@ direct evidence only, keeps scope and semantic adoption unresolved, and limits
 their use to proposal context. This is temporal evidence organization, not a
 persona-similarity result or automatic core learning. See the
 [evolution checkpoint](persona-evolution-checkpoint-2026-07-20.md).
+
+The next delivery sequence is frozen as system adjudication, target-free
+shadow simulation, authenticated represented-user adoption, sealed similarity
+evaluation, executive-agent operation, and reversible outcome learning. An
+assistant may prioritize candidates but cannot manufacture represented-user
+adoption. See the [persona adoption and similarity roadmap](persona-adoption-similarity-roadmap-2026-07-20.md).

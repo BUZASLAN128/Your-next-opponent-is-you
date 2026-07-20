@@ -1425,3 +1425,16 @@ that receipt, then compare generic-advisor, static-current-persona, and
 temporal-persona outputs on identical sealed scenarios. Predeclare support,
 coverage, tie, abstention, and acceptance rules before revealing user ratings.
 A model judge may be diagnostic only.
+
+### RQ-039 — Which Unadopted Hypotheses Survive Shadow Simulation?
+
+**Status:** Open engineering and scientific gate under D-070. The deterministic
+system may recommend a repeated pattern for shadow simulation, but that status
+does not establish personal truth or usefulness.
+
+**Next discriminating check:** Run generic, static, and temporal conditions on
+identical target-free scenarios with equal context budgets. Record basis,
+receipts, abstention, and disagreement without persisting outputs into the
+persona. A candidate advances to authenticated review only if it changes a
+prediction in a traceable way; similarity still requires represented-user
+ratings on sealed outputs.

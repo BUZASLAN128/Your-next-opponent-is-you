@@ -3,6 +3,10 @@ from __future__ import annotations
 from typing import Any, cast
 
 from ynoy.full_persona.dossier import build_persona_dossier
+from ynoy.full_persona.persona_adjudication import (
+    adjudication_action_counts,
+    build_persona_adjudication,
+)
 from ynoy.full_persona.persona_evolution import build_persona_evolution
 from ynoy.models.full_persona_pack import PersonaLayerView, PersonaPack
 from ynoy.models.persona_package import FullPersonaPackage, PersonaLayerSummary
@@ -13,13 +17,15 @@ def build_full_persona_package(pack: PersonaPack) -> FullPersonaPackage:
     """Bind the complete scan receipt, retained pack, dossier, and explicit unknowns."""
     dossier = build_persona_dossier(pack)
     evolution = build_persona_evolution(pack)
+    adjudication = build_persona_adjudication(evolution)
     summaries = tuple(_layer_summary(view) for view in pack.layers)
     package_id = canonical_sha256(
         {
-            "protocol_version": "full-persona-package/0.2",
+            "protocol_version": "full-persona-package/0.3",
             "pack_sha256": pack.pack_sha256,
             "dossier_sha256": dossier.dossier_sha256,
             "evolution_sha256": evolution.evolution_sha256,
+            "adjudication_sha256": adjudication.adjudication_sha256,
         }
     )
     payload: dict[str, object] = {
@@ -39,6 +45,7 @@ def build_full_persona_package(pack: PersonaPack) -> FullPersonaPackage:
         "layer_summaries": summaries,
         "dossier": dossier,
         "evolution": evolution,
+        "adjudication": adjudication,
     }
     draft = cast(Any, FullPersonaPackage).model_construct(**payload, package_sha256="0" * 64)
     canonical = draft.model_dump(mode="json", exclude={"package_sha256"})
@@ -110,6 +117,7 @@ def render_persona_brain_atlas(package: FullPersonaPackage) -> str:
             lines.extend(f"- Receipt: {item}" for item in candidate.evidence_receipts)
         lines.extend(f"- Unknown: {item}" for item in topic.unknowns)
     lines.extend(_evolution_lines(package))
+    lines.extend(_adjudication_lines(package))
     lines.extend(
         (
             "",
@@ -168,6 +176,23 @@ def _receipt_lines(supports: tuple[object, ...]) -> list[str]:
         for support in supports
         for receipt in getattr(support, "evidence_receipts", ())
     ]
+
+
+def _adjudication_lines(package: FullPersonaPackage) -> list[str]:
+    profile = package.adjudication
+    lines = ["", "## System adjudication", ""]
+    lines.append(f"- Recommendations: {len(profile.recommendations)}")
+    lines.append("- Represented-user review: not_performed")
+    lines.append("- Verified adoption: unavailable")
+    lines.append(f"- Review projection: {profile.review_projection_status}")
+    lines.append(
+        f"- Review projection exhaustive: {str(profile.review_projection_exhaustive).lower()}"
+    )
+    lines.append(f"- Omitted source candidates: {profile.omitted_candidate_count}")
+    lines.append("- Authority: none")
+    for action, count in adjudication_action_counts(profile).items():
+        lines.append(f"- {action}: {count}")
+    return lines
 
 
 def _single_line(value: str) -> str:

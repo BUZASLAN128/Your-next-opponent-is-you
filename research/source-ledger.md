@@ -2293,3 +2293,19 @@ These gaps must remain visible until closed.
   similarity, calibration, self-improvement, or executive-action quality.
 - **Next check:** Atomic represented-user candidate review followed by a frozen
   same-scenario generic/static/temporal comparison.
+
+### L-046 — Deterministic system-adjudication checkpoint (2026-07-20)
+
+- **Type:** Public deterministic runtime contract plus private content-free
+  execution summary.
+- **Provenance:** Event 060, D-070, RQ-039, the adoption/similarity roadmap,
+  synthetic adjudication tests, and the existing private evolution profile.
+- **Observed:** A package-bound policy can rank temporal candidates for shadow
+  simulation, review priority, additional evidence, or scope review without a
+  model, provider, or represented-user adoption receipt.
+- **Supports:** Autonomous research progression does not require impersonating
+  the represented user or converting repetition into personal truth.
+- **Does not establish:** Candidate correctness, represented-user adoption,
+  persona similarity, calibration, action authority, or self-improvement.
+- **Next check:** Target-free equal-budget shadow simulation across generic,
+  static, and temporal conditions.

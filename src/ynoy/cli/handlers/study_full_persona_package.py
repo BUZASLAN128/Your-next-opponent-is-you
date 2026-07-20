@@ -4,11 +4,13 @@ import argparse
 
 from ynoy.cli.context import CommandContext
 from ynoy.full_persona.pack_store import FullPersonaPackStore
+from ynoy.full_persona.persona_adjudication import adjudication_action_counts
 from ynoy.full_persona.persona_package import (
     build_full_persona_package,
     render_persona_brain_atlas,
 )
 from ynoy.full_persona.persona_package_store import FullPersonaPackageStore
+from ynoy.models.persona_package import FullPersonaPackage
 from ynoy.util import sha256_text
 
 
@@ -23,8 +25,12 @@ def build_full_persona_package_handler(
     store.write_package(package)
     atlas = render_persona_brain_atlas(package)
     store.write_brain_atlas(package, atlas)
+    return _package_summary(package, atlas)
+
+
+def _package_summary(package: FullPersonaPackage, atlas: str) -> dict[str, object]:
     topic_states = {topic.key: topic.evidence_state for topic in package.dossier.topics}
-    return {
+    result: dict[str, object] = {
         "status": "full_persona_package_built",
         "package_id": package.package_id,
         "package_sha256": package.package_sha256,
@@ -54,4 +60,19 @@ def build_full_persona_package_handler(
         "authority": "none",
         "action_status": "not_performed",
         "private_content_emitted": False,
+    }
+    result.update(_adjudication_summary(package))
+    return result
+
+
+def _adjudication_summary(package: FullPersonaPackage) -> dict[str, object]:
+    adjudication = package.adjudication
+    return {
+        "adjudication_recommendation_count": len(adjudication.recommendations),
+        "adjudication_action_counts": adjudication_action_counts(adjudication),
+        "represented_user_review": "not_performed",
+        "verified_adoption_available": False,
+        "adjudication_review_projection_status": adjudication.review_projection_status,
+        "adjudication_review_projection_exhaustive": adjudication.review_projection_exhaustive,
+        "adjudication_omitted_candidate_count": adjudication.omitted_candidate_count,
     }

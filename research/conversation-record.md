@@ -2715,3 +2715,34 @@ scope, and adoption review. Freeze the resulting receipt before a sealed
 same-scenario comparison of generic, static-persona, and temporal-persona
 responses. Human evaluation remains required; a model judge cannot close the
 similarity gate.
+
+## Event 060 — Delegate Sequencing Without Delegating Personal Truth (2026-07-20)
+
+### User Direction
+
+The user delegated candidate decisions and future sequencing to the system,
+requested a roadmap, and asked implementation to continue without additional
+questions. The user also requested progress when personal facts are missing.
+
+### Safe Interpretation
+
+The delegation authorizes deterministic evidence ranking, system
+recommendations, private shadow simulation, and reversible engineering choices.
+It does not authorize the assistant or a model to claim that an unreviewed
+candidate is represented-user truth. Missing personal evidence remains unknown;
+generic Advisor reasoning may continue with that limitation visible.
+
+### Implemented Direction
+
+The first roadmap phase adds a package-bound system adjudication profile.
+High-repetition direct evidence may enter shadow simulation only as a
+hypothesis. Repeated evidence is prioritized for review, weak evidence is
+deferred, and unscoped contextual transitions remain scope-deferred. Every
+recommendation keeps user adoption absent and authority denied.
+
+### Next Discriminating Check
+
+Build a target-free three-arm shadow simulation: generic Advisor, static
+persona, and temporal persona. Prove equal budgets, target isolation, generic
+fallback, and no persistence before using a local model or requesting an
+authenticated adoption channel.

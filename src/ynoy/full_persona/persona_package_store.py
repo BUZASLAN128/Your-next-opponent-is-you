@@ -8,9 +8,13 @@ from pydantic import ValidationError
 from ynoy.errors import DataValidationError
 from ynoy.full_persona.pack_store import FullPersonaPackStore
 from ynoy.full_persona.store_contract import model_bytes, validate_digest
-from ynoy.models.persona_package import FullPersonaPackage
+from ynoy.models.persona_package import (
+    FullPersonaPackage,
+    PersonaPackageInspection,
+    PersonaPackageProtocol,
+)
 from ynoy.persona_study.storage_paths import reject_link_if_present, require_regular_file
-from ynoy.util import atomic_write_bytes, canonical_json_bytes, utc_now
+from ynoy.util import atomic_write_bytes, canonical_json_bytes, canonical_sha256, utc_now
 
 _MAX_PACKAGE_BYTES = 2 * 1024**2
 _MAX_ATLAS_BYTES = 512 * 1024
@@ -72,6 +76,68 @@ class FullPersonaPackageStore:
             _store_error("persona package pointer is stale")
         self._validate(package)
         return package
+
+    def inspect_package(
+        self, run_id: str, package_id: str | None = None
+    ) -> PersonaPackageInspection:
+        """Classify current or immutable legacy packages without enabling legacy review."""
+        selected, expected = self._selected(run_id, package_id)
+        path = self._path(run_id, selected)
+        try:
+            payload = json.loads(_read_bounded(path, _MAX_PACKAGE_BYTES))
+            if not isinstance(payload, dict):
+                raise ValueError
+            protocol = payload.get("protocol_version")
+            if protocol == "full-persona-package/0.3":
+                package = FullPersonaPackage.model_validate(payload)
+                self._validate(package)
+                _require_pointer_hash(package.package_sha256, expected)
+                return _inspection(
+                    package.protocol_version, package.package_id, package.package_sha256
+                )
+            if protocol == "full-persona-package/0.2":
+                return self._inspect_legacy(run_id, payload, expected)
+            raise ValueError
+        except (KeyError, OSError, TypeError, ValidationError, ValueError) as exc:
+            raise DataValidationError(
+                "persona_package_inspection_invalid",
+                "The private persona package could not be safely inspected.",
+            ) from exc
+
+    def _inspect_legacy(
+        self, run_id: str, payload: dict[str, object], expected: str | None
+    ) -> PersonaPackageInspection:
+        package_id = _digest_field(payload, "package_id")
+        package_sha256 = _digest_field(payload, "package_sha256")
+        pack_id = _digest_field(payload, "pack_id")
+        pack_sha256 = _digest_field(payload, "pack_sha256")
+        if "adjudication" in payload or payload.get("source_run_id") != run_id:
+            raise ValueError("legacy package classification is inconsistent")
+        canonical_payload = {
+            key: value for key, value in payload.items() if key != "package_sha256"
+        }
+        if canonical_sha256(canonical_payload) != package_sha256:
+            raise ValueError("legacy package hash does not match")
+        expected_id = canonical_sha256(
+            {
+                "protocol_version": "full-persona-package/0.2",
+                "pack_sha256": pack_sha256,
+                "dossier_sha256": _nested_digest(payload, "dossier", "dossier_sha256"),
+                "evolution_sha256": _nested_digest(payload, "evolution", "evolution_sha256"),
+            }
+        )
+        if package_id != expected_id:
+            raise ValueError("legacy package identifier does not match")
+        _require_pointer_hash(package_sha256, expected)
+        pack = self.pack_store.read_pack(run_id, pack_id)
+        synthetic = payload.get("synthetic")
+        if (
+            pack.pack_sha256 != pack_sha256
+            or not isinstance(synthetic, bool)
+            or synthetic != self.synthetic
+        ):
+            raise ValueError("legacy package source binding does not match")
+        return _inspection("full-persona-package/0.2", package_id, package_sha256)
 
     def _validate(self, package: FullPersonaPackage) -> None:
         try:
@@ -137,6 +203,39 @@ class FullPersonaPackageStore:
             current /= part
             reject_link_if_present(current)
         return path
+
+
+def _inspection(
+    protocol: PersonaPackageProtocol, package_id: str, package_sha256: str
+) -> PersonaPackageInspection:
+    current = protocol == "full-persona-package/0.3"
+    return PersonaPackageInspection(
+        protocol_version=protocol,
+        package_id=package_id,
+        package_sha256=package_sha256,
+        adjudication_status="present" if current else "absent",
+        review_eligible=current,
+    )
+
+
+def _digest_field(payload: dict[str, object], field: str) -> str:
+    value = payload.get(field)
+    if not isinstance(value, str):
+        raise ValueError(f"persona package {field} is not a digest")
+    validate_digest(value)
+    return value
+
+
+def _nested_digest(payload: dict[str, object], parent: str, field: str) -> str:
+    nested = payload.get(parent)
+    if not isinstance(nested, dict):
+        raise ValueError(f"persona package {parent} is invalid")
+    return _digest_field(nested, field)
+
+
+def _require_pointer_hash(package_sha256: str, expected: str | None) -> None:
+    if expected is not None and package_sha256 != expected:
+        raise ValueError("persona package pointer is stale")
 
 
 def _read_bounded(path: Path, limit: int) -> bytes:

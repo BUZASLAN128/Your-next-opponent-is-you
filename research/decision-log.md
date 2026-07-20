@@ -1342,3 +1342,19 @@ When a decision changes:
   reviews currentness, scope, and adoption.
 - Status: implemented with synthetic contract evidence and a private bounded
   run; persona similarity and semantic adoption remain open.
+
+### D-070 — Separate System Recommendation from Represented-User Adoption (2026-07-20)
+
+- Accept delegated technical sequencing as authority to prioritize evidence,
+  run private shadow simulations, and choose reversible implementation steps.
+- Do not reinterpret that delegation as permission for an assistant or model
+  to author represented-user semantic adoption.
+- Classify high-repetition direct evidence as a shadow-simulation hypothesis,
+  medium repetition as review priority, weak repetition as insufficient, and
+  all unscoped transitions as scope-deferred.
+- Keep every system disposition non-authoritative, non-core, and visibly
+  separate from `VerifiedAdoption`.
+- Follow the ordered roadmap: adjudication, shadow simulation, authenticated
+  adoption, sealed similarity evaluation, executive operation, then reversible
+  outcome learning.
+- Status: system-adjudication phase implemented; later phases remain gated.

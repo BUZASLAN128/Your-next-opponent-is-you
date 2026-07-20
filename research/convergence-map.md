@@ -944,3 +944,15 @@ current atoms do not prove candidate scope, and repetition is not calibrated
 confidence. The convergence path is now explicit: atomic represented-user
 adoption review, frozen currentness and scope, then a sealed comparison among
 generic, static-persona, and temporal-persona conditions.
+
+## System Adjudication Before Adoption — 2026-07-20
+
+The system can now decide which evidence candidates deserve shadow simulation
+or later review without claiming to decide what is true about the represented
+user. This resolves the operational need for autonomous progress while
+preserving the independent adoption boundary.
+
+The convergence order is now fixed: deterministic adjudication, target-free
+shadow simulation, authenticated represented-user adoption, sealed similarity
+measurement, executive-agent operation, and reversible outcome learning. A
+failed or inconclusive phase does not lower the next gate.

@@ -20,6 +20,7 @@ from ynoy.full_persona.pack_builder import build_deterministic_pack
 from ynoy.full_persona.pack_store import FullPersonaPackStore
 from ynoy.full_persona.persona_package import (
     build_full_persona_package,
+    persona_prompt_profile,
     render_persona_brain_atlas,
 )
 from ynoy.full_persona.persona_package_store import FullPersonaPackageStore
@@ -57,8 +58,12 @@ def test_build_full_persona_package_is_deterministic_and_canonical(tmp_path: Pat
             "pack_sha256": first.pack_sha256,
             "dossier_sha256": first.dossier.dossier_sha256,
             "evolution_sha256": first.evolution.evolution_sha256,
+            "adjudication_sha256": first.adjudication.adjudication_sha256,
         }
     )
+    assert first.adjudication.pack_id == first.pack_id
+    assert first.adjudication.pack_sha256 == first.pack_sha256
+    assert first.adjudication.evolution_sha256 == first.evolution.evolution_sha256
     assert first.package_sha256 == canonical_sha256(
         first.model_dump(mode="json", exclude={"package_sha256"})
     )
@@ -120,6 +125,38 @@ def test_package_store_roundtrip_and_tamper_failure(tmp_path: Path) -> None:
     assert error.value.code == "persona_package_invalid"
 
 
+def test_package_store_classifies_legacy_package_without_review_eligibility(
+    tmp_path: Path,
+) -> None:
+    _private_root, run_id, pack, store, current_path = _persisted_package(tmp_path)
+    current = build_full_persona_package(pack)
+    payload = current.model_dump(mode="json")
+    payload.pop("adjudication")
+    payload["protocol_version"] = "full-persona-package/0.2"
+    payload["package_id"] = canonical_sha256(
+        {
+            "protocol_version": payload["protocol_version"],
+            "pack_sha256": payload["pack_sha256"],
+            "dossier_sha256": payload["dossier"]["dossier_sha256"],
+            "evolution_sha256": payload["evolution"]["evolution_sha256"],
+        }
+    )
+    payload["package_sha256"] = canonical_sha256(
+        {key: value for key, value in payload.items() if key != "package_sha256"}
+    )
+    legacy_path = current_path.parent / f"{payload['package_id']}.persona-package.json"
+    legacy_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    inspection = store.inspect_package(run_id, payload["package_id"])
+
+    assert inspection.protocol_version == "full-persona-package/0.2"
+    assert inspection.adjudication_status == "absent"
+    assert inspection.review_eligible is False
+    with pytest.raises(DataValidationError) as error:
+        store.read_package(run_id, payload["package_id"])
+    assert error.value.code == "persona_package_invalid"
+
+
 def test_brain_atlas_is_deterministic_receipt_bound_and_private(tmp_path: Path) -> None:
     _private_root, _run_id, pack, store, _path = _persisted_package(tmp_path)
     package = build_full_persona_package(pack)
@@ -133,6 +170,19 @@ def test_brain_atlas_is_deterministic_receipt_bound_and_private(tmp_path: Path) 
     assert "- Use: proposal_context_only" in first
     assert "- Receipt:" in first
     assert "Persona quality: not claimed" in first
+    assert "## System adjudication" in first
+    assert "- Represented-user review: not_performed" in first
+    assert "- Verified adoption: unavailable" in first
+    assert "- Authority: none" in first
+
+
+def test_adjudication_does_not_enter_responder_persona_profile(tmp_path: Path) -> None:
+    _source_root, _private_root, _manifest, pack = built_pack(tmp_path)
+
+    profile = persona_prompt_profile(build_full_persona_package(pack))
+
+    assert "adjudication" not in profile
+    assert "recommendation_count" not in _strings(profile)
 
 
 def test_package_store_rejects_stale_latest_pointer(tmp_path: Path) -> None:
@@ -154,7 +204,7 @@ def test_package_store_rejects_stale_latest_pointer(tmp_path: Path) -> None:
 
 
 def test_cli_package_summary_does_not_emit_private_paths(tmp_path: Path) -> None:
-    private_root, run_id, _pack, _store, _path = _persisted_package(tmp_path)
+    private_root, run_id, pack, _store, _path = _persisted_package(tmp_path)
     context = CommandContext(
         settings=Settings.from_environment(private_root=private_root),
         repository_root=tmp_path,
@@ -171,6 +221,19 @@ def test_cli_package_summary_does_not_emit_private_paths(tmp_path: Path) -> None
     assert result["private_content_emitted"] is False
     assert result["evolution_status"] == "derived_unadopted"
     assert result["evolution_use"] == "proposal_context_only"
+    assert result["adjudication_recommendation_count"] == len(
+        build_full_persona_package(pack).adjudication.recommendations
+    )
+    assert result["represented_user_review"] == "not_performed"
+    assert result["verified_adoption_available"] is False
+    assert set(result["adjudication_action_counts"]) <= {
+        "simulate_as_hypothesis",
+        "prioritize_for_review",
+        "defer_more_evidence",
+        "defer_scope_required",
+    }
+    assert "recommendations" not in result
+    assert "target_id" not in _strings(result)
     assert _strings(result).isdisjoint({str(private_root), str(private_root.resolve())})
 
 
