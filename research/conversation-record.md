@@ -2659,3 +2659,7 @@ plan, delegation candidates, risks, unknowns, and required user approval.
 - Verified fact: the strict JSON grammar and bounded context retry completed the
   sealed comparison with a negative-directional result; no persona-quality
   claim was made.
+
+- Verified fact: a private executive-manager brief was generated with current
+  state, decision boundary, plan, delegation candidates, unknowns, required
+  user approval, and source receipt identifiers.

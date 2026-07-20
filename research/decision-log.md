@@ -1311,3 +1311,11 @@ When a decision changes:
 - Retain strict JSON grammar and bounded context; each model change requires a
   new sealed comparison.
 - Status: open for represented-user labels and calibrated evaluation.
+
+### D-067 - Manager brief is evidence, not authority (2026-07-20)
+
+- Expose a receipt-bound manager brief as the first user-auditable product
+  output.
+- Keep proposed delegation and decisions non-authoritative until represented
+  user approval is recorded.
+- Status: private artifact produced; operational adoption remains open.

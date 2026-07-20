@@ -1397,3 +1397,7 @@ separate non-reasoning model be selected? No parser relaxation is allowed.
 The strict grammar closes the reasoning leak. The remaining question is whether
 a separately selected non-reasoning model and user-validated labels can separate
 the structured manager from frozen controls.
+
+The first private manager brief exists. The next question is whether the user
+can approve or reject its individual decision candidates without conflating
+project rules and persona evidence.

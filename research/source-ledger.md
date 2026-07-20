@@ -2261,3 +2261,6 @@ These gaps must remain visible until closed.
 
 - Follow-up: strict grammar/context retry completed with a negative-directional
   sealed comparison; proxy labels and private metrics remain outside Git.
+
+- Follow-up: private receipt-bound executive-manager brief generated; content
+  and receipt list remain outside Git.

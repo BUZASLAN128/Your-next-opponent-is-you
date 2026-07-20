@@ -296,3 +296,7 @@ outside this repository.
 \n+The strict JSON grammar and bounded context retry completed the sealed
 comparison with a negative-directional result against a frozen control. This
 is a measurement result, not a persona-quality claim.
+
+The private run now includes a receipt-bound executive-manager brief for the
+selected project. It is outside Git and contains no action authority, automatic
+promotion, or persona-quality claim.
