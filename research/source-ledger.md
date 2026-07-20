@@ -2353,3 +2353,19 @@ These gaps must remain visible until closed.
   authority.
 - **Next check:** An attested proposal-only local-model comparison under the
   unchanged synthetic fixture and trusted observer.
+
+### L-049 — Attested Local Proposal Smoke Observation (2026-07-21)
+
+- **Type:** Local runtime observation with public-synthetic input.
+- **Provenance:** `scripts/start-local-extractor.ps1`, pinned Qwen3-8B artifact,
+  locally verified `llama-server` build 9803, and Event 064.
+- **Observed:** A loopback-only 2K-context request returned three
+  schema-valid typed candidates; each remained proposed and core-ineligible.
+  The temporary server was stopped after the one request.
+- **Supports:** The attested local adapter can be invoked under the current
+  proposal-only contract without an external provider.
+- **Does not establish:** Persona similarity, personal-data safety beyond this
+  synthetic request, planning advantage, calibration, user adoption, general
+  executive behavior, or model selection.
+- **Next check:** A frozen equal-budget D0 fixture comparison against the
+  deterministic planner with the same trusted observer.

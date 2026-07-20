@@ -1407,3 +1407,17 @@ When a decision changes:
   completed-action authority in this spike.
 - Status: implemented and tested. The next candidate is a proposal-only local
   model adapter under the same fixture and unchanged observer boundary.
+
+### D-074 — Permit One Live Synthetic Proposal Smoke Test (2026-07-21)
+
+- Use only the pre-existing pinned local Qwen artifact and validated
+  loopback-only `llama-server` runtime; do not download a model or add a
+  dependency.
+- Bound the run to one public synthetic request, one process, 2K context, and
+  no concurrent heavy workload. Stop the process after the observation.
+- Let the model propose typed atoms only. Deterministic validation retains
+  exact-span binding, proposal status, core ineligibility, and all authority
+  boundaries.
+- Status: completed as a live smoke observation. It is not approval for private
+  corpus input, persistence of model prose, model-directed mutation, persona
+  promotion, or a persona-quality claim.

@@ -338,3 +338,10 @@ adoption. See the [persona adoption and similarity roadmap](persona-adoption-sim
 > observe → plan → patch → verify → finish under fixed budgets. The planner is
 > deterministic (`model_used=false`); this is not yet persona, LLM, or general
 > repository evidence.
+
+## 2026-07-21 Live Local Proposal Smoke Test
+
+The pre-existing pinned Qwen3-8B adapter returned three schema-valid
+public-synthetic candidates over loopback at 2K context. All remained proposed
+and core-ineligible, then the local process was stopped. This proves a live
+bounded adapter path, not persona similarity or planning quality.

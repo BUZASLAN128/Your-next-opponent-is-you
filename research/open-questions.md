@@ -1470,3 +1470,14 @@ malformed, oversized, mismatched, or source-copying proposals before mutation.
 
 **Boundary:** Do not add arbitrary workspaces, commands, private persona input,
 automatic adoption, or external egress to answer this question.
+
+## RQ-041 Update — Live Adapter Availability (2026-07-21)
+
+**New observed fact:** One attested loopback Qwen3-8B request returned three
+schema-valid public-synthetic proposals with proposal-only status and no
+automatic promotion. This establishes adapter availability, not comparative
+planning benefit.
+
+**Still required:** Freeze the D0 fixture plan grammar, proposal budget,
+oracle, failure taxonomy, and comparison rule before measuring the model arm
+against the deterministic planner.

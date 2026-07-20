@@ -2835,3 +2835,28 @@ model output, database access, external egress, or action authority.
 The planner is deterministic and explicitly reports `model_used=false`. This
 is continuity and observer evidence only; it does not establish LLM reasoning,
 persona similarity, arbitrary repository safety, or autonomous authority.
+
+## Event 064 — Attested Local Proposal Smoke Test (2026-07-21)
+
+### User Direction
+
+The user authorized a bounded attempt with the already present local model,
+while preserving the low-RAM operating constraint and the proposal-only
+authority boundary.
+
+### Observed Fact
+
+The pinned local Qwen3-8B Q4_K_M artifact was verified by path, pinned size,
+artifact identity, and the validated `llama-server` build. It started only on
+`127.0.0.1` with a 2K context on the selected GPU. One public synthetic input
+produced three schema-valid atomic proposals. Every returned claim remained
+`proposed`, `core_eligible=false`, and the review exposed
+`automatic_core_promotion=false`. The temporary process was stopped after the
+single request.
+
+### Boundary
+
+This is a live adapter and schema-boundary observation, not a persona-quality,
+planning-quality, user-similarity, or executive-loop success result. No D1-D5
+content, real corpus, user label, credential, or model response text was
+written to Git.

@@ -994,3 +994,15 @@ model, persona evidence, database, send, or external action authority.
 only a one-shot manager response. This does not yet establish the contribution
 of a model or persona; those variables must be introduced separately against
 the unchanged fixture and observer.
+
+## Live Local Proposal Adapter Smoke Test
+
+**Observed fact:** The existing attested Qwen3-8B loopback adapter completed
+one public-synthetic extraction at 2K context and returned schema-valid
+proposal-only atoms. Deterministic code retained all target-layer, source-span,
+and promotion restrictions, then the process was stopped.
+
+**Inference:** The next D0 comparison can use a live proposal producer without
+adding a provider or exposing private content. This is not evidence that the
+model improves the deterministic executive planner; only a frozen equal-budget
+comparison can answer that.
