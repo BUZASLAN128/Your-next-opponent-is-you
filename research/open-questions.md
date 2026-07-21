@@ -1481,3 +1481,8 @@ planning benefit.
 **Still required:** Freeze the D0 fixture plan grammar, proposal budget,
 oracle, failure taxonomy, and comparison rule before measuring the model arm
 against the deterministic planner.
+
+**Contract update (2026-07-21):** The fixture grammar, one-call model budget,
+eight-step arm budget, oracle, response boundary, and failure outcomes are now
+implemented and tested. The remaining discriminating check is one safe live
+run; until then, no completion or planning-quality conclusion is available.

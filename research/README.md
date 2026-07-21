@@ -345,3 +345,10 @@ The pre-existing pinned Qwen3-8B adapter returned three schema-valid
 public-synthetic candidates over loopback at 2K context. All remained proposed
 and core-ineligible, then the local process was stopped. This proves a live
 bounded adapter path, not persona similarity or planning quality.
+
+## 2026-07-21 Equal-Budget Executive Comparison
+
+The executive spike now compares deterministic and local-model proposal arms
+under the same D0 fixture, trusted oracle, step budget, and negative authority
+flags. Full synthetic validation passed. A live 8B comparison was deferred by
+the low-RAM guard, so no model-performance result is claimed.

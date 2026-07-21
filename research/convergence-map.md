@@ -1006,3 +1006,15 @@ and promotion restrictions, then the process was stopped.
 adding a provider or exposing private content. This is not evidence that the
 model improves the deterministic executive planner; only a frozen equal-budget
 comparison can answer that.
+
+## Equal-Budget Planner Comparison Contract
+
+**Observed fact:** The D0 runtime now produces two traceable arms over the same
+fixture and observer. A model response can select the fixed repair identifier
+or abstain; strict rejection occurs before a patch for invalid output. The
+public comparison record omits response content and retains negative authority
+flags.
+
+**Open evidence:** A safe live run was deferred because available system RAM
+was lower than the prior model working set. The implementation result does not
+substitute for a measured model outcome.

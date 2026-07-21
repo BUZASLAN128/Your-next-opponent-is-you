@@ -9,6 +9,7 @@ from ynoy.errors import DataValidationError
 from ynoy.executive_spike.contracts import (
     ExecutiveEvent,
     ExecutiveManifest,
+    PlannerKind,
     seal_event,
     seal_manifest,
 )
@@ -26,13 +27,17 @@ class ExecutiveSpikeStore:
         self.root = assessment.root / "executive-spikes"
         reject_link_if_present(self.root)
 
-    def create(self, mission: str) -> ExecutiveManifest:
+    def create(
+        self, mission: str, *, planner_kind: PlannerKind, model_identity: str | None
+    ) -> ExecutiveManifest:
         """Allocate one mission directory and immutable manifest without overwriting."""
         manifest = seal_manifest(
             {
                 "mission_id": new_id(),
                 "mission": mission,
                 "created_at": utc_now(),
+                "planner_kind": planner_kind,
+                "model_identity": model_identity,
             }
         )
         root = self.mission_root(manifest.mission_id)

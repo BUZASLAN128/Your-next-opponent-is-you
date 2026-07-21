@@ -2369,3 +2369,16 @@ These gaps must remain visible until closed.
   executive behavior, or model selection.
 - **Next check:** A frozen equal-budget D0 fixture comparison against the
   deterministic planner with the same trusted observer.
+
+### L-050 — Equal-Budget D0 Planner Comparison Contract (2026-07-21)
+
+- **Type:** Local deterministic implementation and full-suite test evidence.
+- **Provenance:** `src/ynoy/executive_spike/proposer.py`, comparison contracts,
+  and `tests/test_executive_spike_comparison.py`.
+- **Observed:** Valid model selection, abstention, malformed JSON, and wrong
+  model identity each produce bounded and distinct outcomes. No rejected or
+  abstaining proposal changes the synthetic fixture.
+- **Does not establish:** Live local-model completion, planning advantage,
+  latency, persona quality, or any general action capability.
+- **Next check:** A single low-RAM-safe live comparison with the pinned local
+  artifact, then immediate process shutdown.

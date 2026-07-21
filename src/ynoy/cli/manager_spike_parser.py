@@ -18,3 +18,6 @@ def add_manager_spike_parsers(
     trace = subcommands.add_parser("spike-trace")
     trace.add_argument("mission_id")
     trace.add_argument("--synthetic", action="store_true", required=True)
+    compare = subcommands.add_parser("spike-compare")
+    compare.add_argument("--mission", required=True)
+    compare.add_argument("--synthetic", action="store_true", required=True)

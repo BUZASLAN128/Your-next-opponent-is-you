@@ -1421,3 +1421,14 @@ When a decision changes:
 - Status: completed as a live smoke observation. It is not approval for private
   corpus input, persistence of model prose, model-directed mutation, persona
   promotion, or a persona-quality claim.
+
+### D-075 — Freeze Equal-Budget D0 Planner Comparison (2026-07-21)
+
+- Compare deterministic and attested-local-model planner arms only on separate
+  instances of `config-repair-v1`.
+- Fix the fixture, oracle, eight-step budget, one model-call cap, public input,
+  and all negative authority flags before a live result is read.
+- Permit only `apply_config_repair` or `abstain` from the model. Any malformed,
+  mismatched, or out-of-contract response records rejection without mutation.
+- Status: implemented and fully synthetic-tested. Live comparison remains
+  pending safe RAM availability; no performance conclusion is authorized.
