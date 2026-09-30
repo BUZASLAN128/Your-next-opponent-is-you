@@ -14,6 +14,7 @@ from ynoy.direct_memory import (
     RevisionKind,
 )
 from ynoy.direct_memory.codec import claim_revision_payload_sha256, correction_payload_sha256
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import DataValidationError
 from ynoy.models import (
     ClaimModality,
@@ -111,7 +112,9 @@ def _scope_then_prepare_temporary(store, review, stored, clock):
 
 def test_scope_to_temporary_cannot_drop_existing_scope_and_rolls_back(tmp_path: Path) -> None:
     clock = [NOW]
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: clock[0])
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: clock[0], data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     review, stored = _review(store, "scope-sequence-source")
     before_revision, before_history, temporary, temporary_auth = _scope_then_prepare_temporary(
         store, review, stored, clock
@@ -193,7 +196,9 @@ def _failed_tool_authorization(store, result):
 def test_failed_or_cancelled_tool_receipt_cannot_verify_a_claim(
     tmp_path: Path, result: dict[str, object]
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     tool, payload, evidence, authorization, before_revision = _failed_tool_authorization(
         store, result
     )

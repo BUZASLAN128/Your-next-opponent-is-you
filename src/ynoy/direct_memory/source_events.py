@@ -111,7 +111,9 @@ class SourceEventOperations:
                 "direct_memory_source_missing", "Direct-memory source event does not exist."
             )
         try:
-            return SourceEvent.model_validate(dict(row))
+            return SourceEvent.model_validate(
+                {**dict(row), "data_plane": self.database.data_plane}
+            )
         except Exception as exc:
             raise DataValidationError(
                 "direct_memory_source_integrity",
@@ -143,6 +145,7 @@ class SourceEventOperations:
             if source_type == SourceType.LIVE_USER_INPUT:
                 assert_project_subject(connection, project, live_subject_id)
             event = SourceEvent(
+                data_plane=self.database.data_plane,
                 source_id=source_id,
                 project=project,
                 speaker=safe_speaker,

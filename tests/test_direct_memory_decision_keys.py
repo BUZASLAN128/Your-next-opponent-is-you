@@ -8,6 +8,7 @@ import pytest
 from tests.direct_memory_fixtures import NOW, PROJECT, SOURCE_TEXT, make_native_review
 from ynoy.direct_memory import AuthorizationIntent, DirectMemoryStore, FactProposal
 from ynoy.direct_memory.codec import correction_payload_sha256
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.interaction_review import build_interaction_review
 from ynoy.models import ClaimModality, ConfirmClaimDecision, TargetLayer
 
@@ -87,7 +88,9 @@ def _confirm(store: DirectMemoryStore, review, stored, source_id: str) -> None:
 def test_cross_review_conflict_grouping_uses_reviewed_fact_key(
     tmp_path: Path, same_key: bool, same_statement: bool, conflicts: bool
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     positive, positive_row = _persist_review(
         store,
         "key-positive-source",
@@ -122,7 +125,9 @@ def test_cross_review_conflict_grouping_uses_reviewed_fact_key(
 
 
 def test_same_fact_key_on_different_layers_does_not_conflict(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     positive, positive_row = _persist_review(
         store,
         "layer-positive-source",

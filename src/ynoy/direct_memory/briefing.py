@@ -42,6 +42,7 @@ class BriefOperations:
         reasons = _abstention_reasons(native_briefs, conflicts)
         return DirectMemoryBrief(
             project=project,
+            data_plane=self.database.data_plane,
             as_of=as_of,
             known_at=known_at,
             source_events=source_events,

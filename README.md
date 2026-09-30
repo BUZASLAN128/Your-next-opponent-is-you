@@ -59,17 +59,39 @@ self. It supports synthetic and locally authorized experiments around:
   target-isolated benchmark commands;
 - an in-progress, scoped direct-main-assistant memory path whose approved
   architecture uses provenance-preserving local append storage and
-  deterministic navigation of explicitly supplied prepared page trees. The
-  current synthetic aggregate reports 935 passed, 31 conditional skips, and no
-  failures; the prepared index retains
+  deterministic navigation of explicitly supplied prepared page trees. A
+  historical synthetic aggregate reports 935 passed, 31 conditional skips,
+  and no failures; it is not final evidence for the current P1 remediation.
+  The prepared index retains
   exact source text in a private bundle, and real-corpus readiness remains
   gated on source binding, registered deletion/backup handlers, sidecar
   cleanup, and interrupted-import recovery. It makes no full deletion or privacy claim, as
   recorded in
   [the adapter architecture note](research/direct-assistant-memory-adapter.md).
 
-The current aggregate passed 935 tests, skipped 31, and had no failures, with
-197 warnings and 83.55% measured branch coverage in 461.27 seconds. The
+Independent review of the original manifest-33 candidate found a P1 in the
+ordinary `correct` path, which the source owner reports fixed in manifest 36
+(`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`). The
+post-fix aggregate passed 949, skipped 37, and had zero failures, with 83.39%
+measured branch coverage in 472.95 seconds. The final wheel passed 16 cases
+in 4.45 seconds, and 21 production sources matched its bytes. Ruff, mypy over
+318 modules, source limits, compile, and diff checks passed. Full evidence is
+in [the final validation record](research/source-ledger.md#l-059--final-post-fix-aggregate-and-delta-security-status-at-report-time-2026-09-30).
+The earlier 947/37/83.39% result is pre-fix; 935/31/83.55% is an older
+historical checkpoint. General correctness review of the original candidate
+is complete with no remaining P0/P1 and one P2; total open P2 findings are
+seven (six remote, one local). The bounded GPT-6.1 Sol/ultra review closed
+the three-file P1 delta with no residual P0/P1 in that fix. Its native schema-2
+SQLite probes confirmed empty supersessions across both clock callbacks,
+successful correction/claim reloads, and rejection of authorization reuse.
+Exact-head GitHub review is pending and the PR remains draft; POSIX runtime,
+PostgreSQL, CI, and real-corpus lifecycle/deletion gaps remain. See [the
+security closure record](research/source-ledger.md#l-060--final-three-file-p1-delta-security-review-closure-2026-09-30).
+
+The historical checkpoint at published head
+`b9f96e3733ae5ddf3f0ccc0b67f956ea6a80af4d` passed 935 tests, skipped 31, and
+had no failures, with 197 warnings and 83.55% measured branch coverage in
+461.27 seconds. This is not a final result for the current P1 remediation. The
 unchanged 70% gate passed. Separate checks passed 31 focused tests and six
 installed-wheel CLI tests with model, network, and PostgreSQL calls blocked;
 two changed production modules matched the installed wheel bytes. The
@@ -80,7 +102,8 @@ matches, contrary to that grouping's decision-key contract. Native per-review
 `DecisionBrief` detection still uses its existing layer-plus-normalized-prose
 rule. Four tracked outer-grouping cases cover same/different keys, wording,
 and layers. Ruff, mypy
-on 311 files, source limits, compileall, and diff check passed. The 31 skips
+on 311 files, source limits, compileall, and diff check passed. That
+checkpoint's 31 skips
 were database/platform conditional, so this is not PostgreSQL-green or
 real-corpus privacy evidence.
 

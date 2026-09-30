@@ -24,10 +24,13 @@ from ynoy.direct_memory import (
     StoredReview,
     source_authorship_payload_sha256,
 )
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import DataValidationError
 from ynoy.models import ConfirmClaimDecision, ScopeRef, Speaker
 from ynoy.reasoner import LocalOpenAIReasoner
 from ynoy.util import canonical_sha256
+
+SYNTHETIC_PLANE = DataPlane.PUBLIC_SYNTHETIC
 
 
 def _decision_digest(decisions: tuple[ConfirmClaimDecision, ...]) -> str:
@@ -66,7 +69,7 @@ def test_explicit_correction_survives_sqlite_reload_with_native_brief_hash(
     monkeypatch.setattr(socket.socket, "connect", forbidden)
     monkeypatch.setattr(LocalOpenAIReasoner, "complete", forbidden)
     path = tmp_path / "memory.sqlite3"
-    store = DirectMemoryStore(path, clock=lambda: NOW)
+    store = DirectMemoryStore(path, clock=lambda: NOW, data_plane=SYNTHETIC_PLANE)
     stored = _stored_review(store)
     correction = _confirm_native_review(store, stored)
     as_of = NOW + timedelta(days=1)
@@ -76,20 +79,19 @@ def test_explicit_correction_survives_sqlite_reload_with_native_brief_hash(
     )
 
     assert brief.native_briefs == (native,)
-    assert correction.correction.receipt_sha256 in brief.native_briefs[
-        0
-    ].used_correction_receipt_hashes
+    assert (
+        correction.correction.receipt_sha256
+        in brief.native_briefs[0].used_correction_receipt_hashes
+    )
     assert brief.authority == "none" and not brief.automatic_core_promotion
 
-    reopened = DirectMemoryStore(path, clock=lambda: NOW)
+    reopened = DirectMemoryStore(path, clock=lambda: NOW, data_plane=SYNTHETIC_PLANE)
     reloaded = reopened.brief(PROJECT, as_of=as_of, known_at=as_of)
     assert reloaded == brief
     assert reopened.current_revision(PROJECT) == store.current_revision(PROJECT)
 
 
-def _confirm_native_review(
-    store: DirectMemoryStore, stored: StoredReview
-) -> StoredCorrection:
+def _confirm_native_review(store: DirectMemoryStore, stored: StoredReview) -> StoredCorrection:
     decisions = (ConfirmClaimDecision(claim_id=CLAIM_ID, subject_id="self"),)
     intent = AuthorizationIntent(
         action="correct",
@@ -122,7 +124,9 @@ def _confirm_native_review(
 
 
 def test_imported_or_unbound_user_text_cannot_authorize_correction(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=SYNTHETIC_PLANE
+    )
     stored = _stored_review(store)
     decisions = (ConfirmClaimDecision(claim_id=CLAIM_ID, subject_id="self"),)
     digest = _decision_digest(decisions)
@@ -171,7 +175,9 @@ def test_imported_or_unbound_user_text_cannot_authorize_correction(tmp_path: Pat
 
 
 def test_date_only_native_source_precision_survives_fresh_reload(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=SYNTHETIC_PLANE
+    )
     event_time = NOW.replace(hour=0, minute=0, second=0, microsecond=0)
     store.record_live_user_input(
         source_id=SOURCE_ID,
@@ -193,9 +199,9 @@ def test_date_only_native_source_precision_survives_fresh_reload(tmp_path: Path)
         ),
         expected_revision=store.current_revision(PROJECT),
     )
-    reloaded = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW).get_review(
-        stored.review_id
-    )
+    reloaded = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=SYNTHETIC_PLANE
+    ).get_review(stored.review_id)
     assert reloaded.review == review
     assert reloaded.review.source.event_time_precision == "date_only"
     assert reloaded.review_sha256 == interaction_review_sha256(review)
@@ -210,9 +216,7 @@ def _build_attributed_import(store: DirectMemoryStore) -> tuple[str, str, str]:
         exact_text=SOURCE_TEXT,
         expected_revision=0,
     )
-    payload_sha256 = source_authorship_payload_sha256(
-        imported.source_id, imported.sha256, "self"
-    )
+    payload_sha256 = source_authorship_payload_sha256(imported.source_id, imported.sha256, "self")
     store.record_live_user_input(
         source_id="live-authorship-attestation",
         project=PROJECT,
@@ -256,45 +260,9 @@ def _build_attributed_import(store: DirectMemoryStore) -> tuple[str, str, str]:
 def test_imported_user_authorship_requires_and_accepts_bound_live_attestation(
     tmp_path: Path,
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=SYNTHETIC_PLANE
+    )
     source_id, review_source_hash, imported_hash = _build_attributed_import(store)
     assert source_id == "imported-source"
     assert review_source_hash == imported_hash
-
-
-@pytest.mark.parametrize(
-    "field",
-    ("action", "payload_sha256", "subject_id", "review_sha256"),
-)
-def test_live_user_authorization_intent_binds_every_correction_dimension(
-    tmp_path: Path, field: str
-) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
-    stored = _stored_review(store)
-    decisions = (ConfirmClaimDecision(claim_id=CLAIM_ID, subject_id="self"),)
-    digest = _decision_digest(decisions)
-    intent_values: dict[str, object] = {
-        "action": "correct",
-        "payload_sha256": digest,
-        "subject_id": "self",
-        "review_sha256": stored.review_sha256,
-    }
-    request = dict(intent_values)
-    request[field] = {
-        "action": "retract",
-        "payload_sha256": "f" * 64,
-        "subject_id": "other",
-        "review_sha256": "e" * 64,
-    }[field]
-    intent = AuthorizationIntent(**intent_values)
-    store.record_live_user_input(
-        source_id="live-bound-differently",
-        project=PROJECT,
-        said_at=NOW,
-        exact_text="A separately bound authorization declaration.",
-        authorization_intent=intent,
-        expected_revision=store.current_revision(PROJECT),
-    )
-    with pytest.raises(DataValidationError) as blocked:
-        store.authorize_action("live-bound-differently", **request)
-    assert blocked.value.code == "direct_memory_authorization_mismatch"

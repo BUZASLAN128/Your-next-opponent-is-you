@@ -1,52 +1,64 @@
 from __future__ import annotations
 
-import os
 import re
 from collections.abc import Sequence
 from pathlib import Path
-from typing import BinaryIO, cast
-from uuid import uuid4
+from typing import cast
 
 from ynoy.errors import DataValidationError, StorageError
 from ynoy.full_persona.run_lock import exclusive_run_lock
-from ynoy.persona_study.storage_paths import reject_link_if_present, require_regular_file
-from ynoy.policy import require_private_root
-from ynoy.util import atomic_write_bytes
+from ynoy.persona_study.storage_paths import reject_link_if_present
 
 from . import read_support
 from .contracts import DocumentRef, NodeRead, PageRead, PreparedDocument
-from .json_codec import canonical_json_bytes, strict_json_object
-from .normalization import normalize_document, verify_stored_document
-from .validation import MAX_DOCUMENT_BYTES
+from .json_codec import canonical_json_bytes
+from .normalization import normalize_document
+from .plane_storage import (
+    check_index_root,
+    ensure_index_root,
+    index_integrity_error,
+    list_documents_locked,
+    prepare_index_lock_file,
+    publish_verified_document,
+    read_document_path,
+    resolve_index_plane,
+)
 
 _DOCUMENT_ID = re.compile(r"^[0-9a-f]{64}$")
-_LOCK_MARKER = b"full-persona-os-lock/0.1"
-_MAX_DOCUMENTS = 50_000
 
 
 class StructuralIndex:
     """Private, immutable, deterministic index for prepared documents."""
 
     def __init__(self, root: Path, *, synthetic: bool = False) -> None:
-        assessment = require_private_root(root, real_data=not synthetic)
-        self.root = assessment.root / "structural-index"
+        self.root, self._data_plane = resolve_index_plane(root, synthetic)
         reject_link_if_present(self.root)
 
     def import_document(self, bundle: PreparedDocument) -> DocumentRef:
         """Persist one validated prepared document, idempotently by stable content ID."""
-        payload = normalize_document(bundle)
+        payload = normalize_document(bundle, data_plane=self._data_plane)
         encoded = canonical_json_bytes(payload)
-        self._ensure_root()
+        ensure_index_root(self.root)
         try:
+            prepare_index_lock_file(self.root)
             with exclusive_run_lock(self.root / "index.lock"):
                 path = self.root / f"{payload['document_id']}.json"
                 reject_link_if_present(path)
                 if path.exists():
-                    existing = self._read_path(path)
+                    existing = read_document_path(
+                        path,
+                        private_root=self.root,
+                        expected_data_plane=self._data_plane,
+                    )
                     if canonical_json_bytes(existing) != encoded:
-                        raise self._integrity_error("immutable document ID collision")
+                        raise index_integrity_error("immutable document ID collision")
                     return read_support.document_ref(existing)
-                self._publish_verified(path, encoded)
+                publish_verified_document(
+                    path,
+                    encoded,
+                    private_root=self.root,
+                    expected_data_plane=self._data_plane,
+                )
         except DataValidationError:
             raise
         except OSError as exc:
@@ -57,12 +69,13 @@ class StructuralIndex:
 
     def list_documents(self) -> list[DocumentRef]:
         """Return verified documents in stable ID order."""
-        self._check_root()
+        check_index_root(self.root)
         if not self.root.exists():
             return []
         try:
+            prepare_index_lock_file(self.root)
             with exclusive_run_lock(self.root / "index.lock", expose_handle=True) as handle:
-                return self._list_documents_locked(handle)
+                return list_documents_locked(self.root, handle, self._data_plane)
         except DataValidationError:
             raise
         except OSError as exc:
@@ -124,32 +137,12 @@ class StructuralIndex:
             )
         return result
 
-    def _list_documents_locked(self, lock_handle: BinaryIO) -> list[DocumentRef]:
-        self._check_root()
-        entries: list[Path] = []
-        for entry in self.root.iterdir():
-            if entry.name == "index.lock":
-                self._verify_lock_file(entry, lock_handle)
-                continue
-            if not _DOCUMENT_ID.fullmatch(entry.stem) or entry.suffix != ".json":
-                raise self._integrity_error("index directory contains an unknown artifact")
-            entries.append(entry)
-            if len(entries) > _MAX_DOCUMENTS:
-                raise self._integrity_error("index exceeds the document-count limit")
-        result: list[DocumentRef] = []
-        for path in sorted(entries, key=lambda item: item.stem):
-            payload = self._read_path(path)
-            if payload["document_id"] != path.stem:
-                raise self._integrity_error("document ID does not match its immutable path")
-            result.append(read_support.document_ref(payload))
-        return result
-
     def _load_document(self, document_id: str) -> dict[str, object]:
         if not isinstance(document_id, str) or not _DOCUMENT_ID.fullmatch(document_id):
             raise DataValidationError(
                 "structural_index_input_invalid", "Document ID must be a stable SHA-256 ID."
             )
-        self._check_root()
+        check_index_root(self.root)
         path = self.root / f"{document_id}.json"
         reject_link_if_present(path)
         if not path.exists():
@@ -157,69 +150,13 @@ class StructuralIndex:
                 "structural_index_document_not_found", "Structural document was not found."
             )
         try:
-            payload = self._read_path(path)
+            payload = read_document_path(
+                path, private_root=self.root, expected_data_plane=self._data_plane
+            )
         except OSError as exc:
             raise StorageError(
                 "structural_index_storage_failed", "Structural document could not be read."
             ) from exc
         if payload["document_id"] != document_id:
-            raise self._integrity_error("document ID does not match its immutable path")
+            raise index_integrity_error("document ID does not match its immutable path")
         return payload
-
-    def _read_path(self, path: Path) -> dict[str, object]:
-        require_regular_file(path)
-        with path.open("rb") as stream:
-            content = stream.read(MAX_DOCUMENT_BYTES + 1)
-        if len(content) > MAX_DOCUMENT_BYTES:
-            raise self._integrity_error("stored document exceeds the storage size limit")
-        try:
-            return verify_stored_document(strict_json_object(content))
-        except DataValidationError as exc:
-            if exc.code == "structural_index_integrity_invalid":
-                raise
-            raise self._integrity_error("stored document failed schema validation") from exc
-
-    def _publish_verified(self, path: Path, encoded: bytes) -> None:
-        stage = path.with_name(f".{path.stem}.{uuid4().hex}.tmp")
-        try:
-            atomic_write_bytes(stage, encoded)
-            verified = self._read_path(stage)
-            if canonical_json_bytes(verified) != encoded:
-                raise self._integrity_error("prepared document failed reload verification")
-            reject_link_if_present(path)
-            if path.exists():
-                raise self._integrity_error("immutable document appeared during publication")
-            os.replace(stage, path)
-        finally:
-            stage.unlink(missing_ok=True)
-
-    def _ensure_root(self) -> None:
-        self._check_root()
-        self.root.mkdir(parents=True, exist_ok=True)
-        self._check_root()
-
-    def _check_root(self) -> None:
-        reject_link_if_present(self.root)
-        if self.root.exists() and not self.root.is_dir():
-            raise self._integrity_error("index root is not a directory")
-
-    def _verify_lock_file(self, path: Path, handle: BinaryIO) -> None:
-        require_regular_file(path)
-        position = handle.tell()
-        try:
-            handle.seek(0, 2)
-            if handle.tell() > 128:
-                raise self._integrity_error("index lock file has an unexpected format")
-            handle.seek(0)
-            if handle.read(129) != _LOCK_MARKER:
-                raise self._integrity_error("index lock file has an unexpected format")
-        finally:
-            handle.seek(position)
-
-    @staticmethod
-    def _integrity_error(reason: str) -> DataValidationError:
-        return DataValidationError(
-            "structural_index_integrity_invalid",
-            "Stored structural index failed integrity validation.",
-            details={"reason": reason},
-        )

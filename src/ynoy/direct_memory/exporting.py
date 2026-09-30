@@ -13,6 +13,7 @@ from ynoy.direct_memory.codec import (
     strict_loads,
 )
 from ynoy.direct_memory.corrections import CorrectionOperations
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.models import AuthorizationIntent, SourceType, UserAuthorizationReceipt
 from ynoy.direct_memory.reviews import ReviewOperations
@@ -57,7 +58,12 @@ class ExportOperations:
             ).fetchall()
         for row in sources:
             event = self.sources.get_source_event(str(row["source_id"]))
-            entries.append(_entry("source_event", project, event.revision, event.source_id, event))
+            entries.append(
+                _entry(
+                    "source_event", project, event.revision, event.source_id, event,
+                    data_plane=self.database.data_plane,
+                )
+            )
             self._export_live_input(event.source_id, project, event.revision, entries)
             self._export_tool_receipt(event.source_id, project, event.revision, entries)
             self._export_attribution(event.source_id, project, entries)
@@ -65,7 +71,10 @@ class ExportOperations:
         self._export_authorization_uses(project, entries)
         for revision in self.claims.list_claim_revisions(project):
             entries.append(
-                _entry("claim_revision", project, revision.revision, revision.revision_id, revision)
+                _entry(
+                    "claim_revision", project, revision.revision, revision.revision_id, revision,
+                    data_plane=self.database.data_plane,
+                )
             )
         return entries
 
@@ -96,6 +105,7 @@ class ExportOperations:
                     int(row["revision"]),
                     row["live_user_source_id"],
                     record,
+                    data_plane=self.database.data_plane,
                 )
             )
 
@@ -114,14 +124,24 @@ class ExportOperations:
             else None
         )
         value = {"source_id": source_id, "subject_id": row["subject_id"], "intent": intent}
-        entries.append(_entry("live_input", project, revision, source_id, value))
+        entries.append(
+            _entry(
+                "live_input", project, revision, source_id, value,
+                data_plane=self.database.data_plane,
+            )
+        )
 
     def _export_tool_receipt(
         self, source_id: str, project: str, revision: int, entries: list[dict[str, object]]
     ) -> None:
         receipt = self.claims._tool_receipt(source_id)
         if receipt is not None:
-            entries.append(_entry("tool_receipt", project, revision, source_id, receipt))
+            entries.append(
+                _entry(
+                    "tool_receipt", project, revision, source_id, receipt,
+                    data_plane=self.database.data_plane,
+                )
+            )
 
     def _export_attribution(
         self, source_id: str, project: str, entries: list[dict[str, object]]
@@ -158,7 +178,10 @@ class ExportOperations:
             "revision": int(row["revision"]),
         }
         entries.append(
-            _entry("source_attribution", project, int(row["revision"]), source_id, value)
+            _entry(
+                "source_attribution", project, int(row["revision"]), source_id, value,
+                data_plane=self.database.data_plane,
+            )
         )
 
     def _export_reviews(self, project: str, entries: list[dict[str, object]]) -> None:
@@ -177,7 +200,12 @@ class ExportOperations:
                 "recorded_at": row["recorded_at"],
                 "revision": stored.revision,
             }
-            entries.append(_entry("review", project, stored.revision, stored.review_id, value))
+            entries.append(
+                _entry(
+                    "review", project, stored.revision, stored.review_id, value,
+                    data_plane=self.database.data_plane,
+                )
+            )
             for correction in self.corrections.list_corrections(stored.review_id):
                 entries.append(
                     _entry(
@@ -186,15 +214,23 @@ class ExportOperations:
                         correction.revision,
                         str(correction.correction.record_id),
                         correction,
+                        data_plane=self.database.data_plane,
                     )
                 )
 
 
 def _entry(
-    record_type: str, project: str, revision: int, record_id: str, value: object
+    record_type: str,
+    project: str,
+    revision: int,
+    record_id: str,
+    value: object,
+    *,
+    data_plane: DataPlane,
 ) -> dict[str, object]:
     return {
         "record_type": record_type,
+        "data_plane": data_plane.value,
         "project": project,
         "revision": revision,
         "id": record_id,

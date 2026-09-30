@@ -1523,3 +1523,59 @@ including one incompatible with the adapter's outer cross-review fact-key
 contract; it is not reported as all green. The old `811f6fd` targeted comparison reproduced three
 failures and two passes. GitHub review remains a separate exact-head gate; the
 earlier checkpoint review does not cover these changes.
+
+**Remediation record (2026-09-30; not a new user decision):** At the
+architecture-only checkpoint, direct-memory P1 work was documented in Event
+067 and L-056. It specifies
+immutable strict-JSON capture before authorization and reload verification,
+private-by-default schema-2 plane identity, explicit synthetic separation,
+read-only rejection of legacy/unlabelled formats, index envelope 0.2 plane
+metadata outside content identity, native-hash preservation, and owner-only
+POSIX creation checks. At that checkpoint, three P1 items awaited gates and
+review. The historical 935/31/83.55% aggregate was not final evidence for
+this remediation. Event 068 and L-057 supersede the interim status with final
+local counts. Six remote P2 findings remain open and nonblocking.
+Windows ACL behavior is unverified; POSIX runtime validation could not run
+because `wsl --list` returned `E_ACCESSDENIED`. No decision changes D-076's
+scope or authorizes real-archive lifecycle, deletion, or invalidation work.
+
+**Final local validation update (2026-09-30):** The frozen-manifest-33
+candidate passed its reported local implementation gates: 947 passed, 37
+skipped, zero failed; 73 focused tests passed with six POSIX skips; 14 CLI
+plus plane/index wheel cases passed; 19 changed sources matched the installed
+wheel; Ruff, mypy (317 files), source limits, compile, and diff passed. Full
+details and hashes are in L-057. At that manifest-33 checkpoint, independent
+review and exact-head GitHub review were pending. Event 069 supersedes that
+review status. The 935/31 checkpoint remains historical; six P2 findings
+remain open and nonblocking.
+
+**Corrective review update (2026-09-30; not a new user decision):** The
+independent reviews found a P1 in the manifest-33 `correct` path; the source
+owner reports it fixed with detached `MappingProxyType` selection before
+validation/hash and a new SQL insert extraction module. The correction/auth/
+history/CLI slice passed 30 tests, and static gates over 318 modules passed.
+Post-fix manifest 36 is
+`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`; at
+that report time the full aggregate was still running. Event 070/L-059 later
+recorded the result. The old 947/37 result is pre-fix. One
+additional local P2 in `payload_snapshot.py:205` is open, bringing the total
+to seven; see L-058 for evidence limits. At that report time, delta-security
+review and exact-head GitHub review were pending; L-060 records the completed
+security delta review. Exact-head review remains pending. D-076 scope is
+unchanged.
+
+**Final post-fix validation update (2026-09-30; not a new user decision):**
+Manifest 36 (`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`)
+passed the full aggregate with 949 passed, 37 skipped, zero failures, and
+83.39% measured branch coverage in 472.95 seconds. The final wheel passed 16
+cases; 21 production sources matched its bytes. Ruff, mypy over 318 modules,
+source limits, compile, and diff passed. L-059 records the log and wheel hash.
+The 947/37 result is pre-fix; 935/31 is older history.
+
+GPT-6.1 Sol/ultra completed bounded review of the three-file P1 delta and
+closed that P1 with no residual P0/P1 in the fix; L-060 records its probe.
+Exact-head GitHub review remains pending and the PR remains draft.
+Original-candidate general correctness review concluded with no remaining
+P0/P1 and one P2. Seven P2 issues remain open in total. CI, POSIX runtime,
+PostgreSQL, and real-corpus lifecycle/deletion gaps remain. D-076 scope is
+unchanged.

@@ -144,7 +144,7 @@ def test_actual_cli_persists_native_review_correction_reload_without_model_calls
     _block_calls(monkeypatch)
     event, review = _propose(tmp_path, capsys)
     correction = _confirm(tmp_path, capsys, review)
-    assert (tmp_path / "direct-memory.sqlite3").is_file()
+    assert (tmp_path / "direct-memory-synthetic.sqlite3").is_file()
     assert _cli(tmp_path, capsys, "revision", PROJECT)["revision"] == 4
     source = _cli(tmp_path, capsys, "source", SOURCE_ID)
     assert source["exact_text"] == SOURCE_TEXT
@@ -217,7 +217,7 @@ def test_prepared_index_actual_cli_roundtrip_returns_exact_source(
     assert pages[0]["text"] == "Exact page ✓"
     assert pages[0]["content_sha256"] == sha256_text("Exact page ✓")
     assert pages[0]["source_ref"] == f"{document_id}#page=1"
-    assert not (tmp_path / "direct-memory.sqlite3").exists()
+    assert not (tmp_path / "direct-memory-synthetic.sqlite3").exists()
 
 
 @pytest.mark.parametrize("extra", ["recorded_at", "authorization_intent", "source_type"])

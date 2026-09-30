@@ -4,7 +4,7 @@ from collections.abc import Callable, Mapping, Sequence
 from contextlib import closing
 from datetime import datetime
 
-from ynoy.direct_memory.codec import claim_revision_payload_sha256, strict_dumps, strict_loads
+from ynoy.direct_memory.codec import strict_dumps, strict_loads
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.ledger import append_revision_record, load_claim_revisions
 from ynoy.direct_memory.models import (
@@ -14,6 +14,13 @@ from ynoy.direct_memory.models import (
     SourceType,
     ToolReceipt,
     UserAuthorizationReceipt,
+)
+from ynoy.direct_memory.payload_snapshot import (
+    PayloadSnapshot,
+    manual_claim_state,
+    snapshot_payload,
+    tool_result_has_negative_outcome,
+    verify_revision_sources,
 )
 from ynoy.direct_memory.source_events import trusted_time
 from ynoy.direct_memory.sources import SourceOperations
@@ -40,15 +47,15 @@ class ClaimOperations:
         tool_receipt_id: str | None = None,
         subject_id: str = "self",
     ) -> ClaimRevision:
-        safe_state = _manual_state(state)
+        state = manual_claim_state(state)
         evidence = self._project_evidence(project, evidence_ids)
-        self._validate_tool_binding(project, safe_state, tool_receipt_id, evidence, payload)
-        digest = claim_revision_payload_sha256(
+        snapshot = snapshot_payload(payload)
+        self._check_tool_binding(project, state, tool_receipt_id, evidence, snapshot)
+        digest = snapshot.digest_for_claim_revision(
             fact_key=fact_key,
             evidence_ids=evidence,
-            state=safe_state,
+            state=state,
             kind=RevisionKind.ASSERTION,
-            payload=payload,
             event_time=event_time,
             tool_receipt_id=tool_receipt_id,
         )
@@ -68,8 +75,8 @@ class ClaimOperations:
             project,
             fact_key,
             evidence,
-            safe_state,
-            payload,
+            state,
+            snapshot,
             authorization,
             expected_revision,
             event_time,
@@ -90,13 +97,13 @@ class ClaimOperations:
             )
         return evidence
 
-    def _validate_tool_binding(
+    def _check_tool_binding(
         self,
         project: str,
         state: ProvenanceState,
         receipt_id: str | None,
         evidence: tuple[str, ...],
-        payload: Mapping[str, object],
+        payload: PayloadSnapshot,
     ) -> None:
         receipt = self._tool_receipt(receipt_id) if receipt_id else None
         if state == ProvenanceState.TOOL_VERIFIED and (
@@ -118,7 +125,7 @@ class ClaimOperations:
         if (
             state == ProvenanceState.TOOL_VERIFIED
             and receipt is not None
-            and strict_dumps(payload) != strict_dumps(receipt.result)
+            and payload.canonical_json != strict_dumps(receipt.result)
         ):
             raise DataValidationError(
                 "direct_memory_tool_result_mismatch",
@@ -136,7 +143,7 @@ class ClaimOperations:
         fact_key: str,
         evidence: tuple[str, ...],
         state: ProvenanceState,
-        payload: Mapping[str, object],
+        payload: PayloadSnapshot,
         authorization: UserAuthorizationReceipt,
         expected_revision: int,
         event_time: datetime | None,
@@ -158,7 +165,8 @@ class ClaimOperations:
                 evidence_ids=evidence,
                 state=state,
                 kind=RevisionKind.ASSERTION,
-                payload=payload,
+                payload=payload.materialize(),
+                payload_json=payload.canonical_json,
                 event_time=event_time,
                 recorded_at=recorded_at,
                 authorization=authorization,
@@ -178,7 +186,7 @@ class ClaimOperations:
             revisions = load_claim_revisions(
                 connection, project=project, known_at=known_at, as_of=as_of
             )
-        _verify_revision_sources(self, revisions)
+        verify_revision_sources(self, revisions)
         return revisions
 
     def _tool_receipt(self, receipt_id: str | None) -> ToolReceipt | None:
@@ -216,66 +224,3 @@ class ClaimOperations:
 
 
 __all__ = ["ClaimOperations"]
-
-
-def _manual_state(value: ProvenanceState) -> ProvenanceState:
-    safe_state = ProvenanceState(value)
-    if safe_state in {
-        ProvenanceState.PROPOSED,
-        ProvenanceState.ACCEPTED,
-        ProvenanceState.REJECTED,
-        ProvenanceState.CORRECTED,
-    }:
-        raise DataValidationError(
-            "direct_memory_native_review_required",
-            "Proposal and review outcomes must use the existing YNOY review lifecycle.",
-        )
-    return safe_state
-
-
-def _verify_revision_sources(
-    operations: ClaimOperations, revisions: Sequence[ClaimRevision]
-) -> None:
-    for revision in revisions:
-        for source_id in revision.evidence_ids:
-            if operations.sources.get_source_event(source_id).project != revision.project:
-                raise DataValidationError(
-                    "direct_memory_claim_revision_integrity",
-                    "Stored claim evidence source belongs to another project.",
-                )
-        if revision.state == ProvenanceState.TOOL_VERIFIED:
-            receipt = operations._tool_receipt(revision.tool_receipt_id)
-            if (
-                receipt is None
-                or receipt.project != revision.project
-                or receipt.tool_receipt_id not in revision.evidence_ids
-            ):
-                raise DataValidationError(
-                    "direct_memory_claim_revision_integrity",
-                    "Stored tool-verified claim has no valid tool result.",
-                )
-            if tool_result_has_negative_outcome(receipt.result):
-                raise DataValidationError(
-                    "direct_memory_tool_result_contradiction",
-                    "Stored tool result explicitly records a failed or cancelled operation.",
-                )
-            if strict_dumps(revision.payload) != strict_dumps(receipt.result):
-                raise DataValidationError(
-                    "direct_memory_tool_result_mismatch",
-                    "Stored tool-verified claim does not match its persisted tool result.",
-                )
-
-
-def tool_result_has_negative_outcome(result: Mapping[str, object]) -> bool:
-    """Check only documented top-level completion fields in persisted tool results."""
-    if result.get("executed") is False:
-        return True
-    if result.get("cancelled") is True or result.get("canceled") is True:
-        return True
-    status = result.get("status")
-    return isinstance(status, str) and status.strip().casefold() in {
-        "canceled",
-        "cancelled",
-        "failed",
-        "aborted",
-    }

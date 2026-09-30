@@ -8,6 +8,7 @@ from tests.direct_memory_fixtures import NOW, PROJECT
 from tests.test_direct_memory_temporal import _append_authorized_revision
 from ynoy.direct_memory import DirectMemoryStore, ProvenanceState, json_bounds
 from ynoy.direct_memory.codec import strict_dumps, strict_loads
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import DataValidationError
 
 
@@ -48,7 +49,9 @@ def test_malformed_unicode_duplicate_and_nonfinite_json_are_domain_errors(invali
 
 
 def test_project_partition_rejects_second_subject_atomically(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     store.record_live_user_input(
         source_id="first-subject",
         project=PROJECT,
@@ -77,15 +80,17 @@ def test_project_partition_rejects_second_subject_atomically(tmp_path: Path) -> 
         exact_text="Synthetic independent subject context.",
         expected_revision=0,
     )
-    assert [event.source_id for event in store.brief(
-        PROJECT, as_of=NOW, known_at=NOW
-    ).source_events] == ["first-subject"]
+    assert [
+        event.source_id for event in store.brief(PROJECT, as_of=NOW, known_at=NOW).source_events
+    ] == ["first-subject"]
 
 
 def test_interrupted_backup_has_no_final_file_and_allows_retry(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     connect = store.database.connect
     source = connect()
 
@@ -104,21 +109,35 @@ def test_interrupted_backup_has_no_final_file_and_allows_retry(
     assert sorted(path.name for path in tmp_path.iterdir()) == ["memory.sqlite3"]
     monkeypatch.setattr(store.database, "connect", connect)
     store.backup(destination)
-    assert DirectMemoryStore(destination).current_revision(PROJECT) == 0
+    assert (
+        DirectMemoryStore(destination, data_plane=DataPlane.PUBLIC_SYNTHETIC).current_revision(
+            PROJECT
+        )
+        == 0
+    )
 
 
 def test_backup_verification_failure_is_not_published(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3")
+    store = DirectMemoryStore(tmp_path / "memory.sqlite3", data_plane=DataPlane.PUBLIC_SYNTHETIC)
 
-    def reject(path: Path) -> None:
+    validate = store.database._validate_file
+    rejected: list[Path] = []
+
+    def reject(path: Path, private_root: Path) -> None:
+        if path == store.database.path:
+            validate(path, private_root)
+            return
+        rejected.append(path)
         raise DataValidationError("synthetic_backup_invalid", "Synthetic verification failure.")
 
     monkeypatch.setattr(store.database, "_validate_file", reject)
     destination = tmp_path / "unpublished.sqlite3"
     with pytest.raises(DataValidationError):
         store.backup(destination)
+    assert len(rejected) == 1
+    assert rejected[0].name.endswith(".backup.tmp")
     assert not destination.exists()
     assert sorted(path.name for path in tmp_path.iterdir()) == ["memory.sqlite3"]
 
@@ -127,16 +146,27 @@ def test_backup_verification_failure_is_not_published(
 def test_unrelated_tool_operation_or_item_cannot_verify_another_result(
     tmp_path: Path, changed: dict[str, object]
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     result = {"operation": "check", "item": "synthetic-B", "status": "succeeded"}
     tool = store.record_tool_result(
-        source_id="synthetic-check-result", project=PROJECT, tool_name="synthetic-check",
-        operation="check", inputs={"item": "synthetic-B"}, result=result, expected_revision=0,
+        source_id="synthetic-check-result",
+        project=PROJECT,
+        tool_name="synthetic-check",
+        operation="check",
+        inputs={"item": "synthetic-B"},
+        result=result,
+        expected_revision=0,
     )
     with pytest.raises(DataValidationError) as rejected:
         _append_authorized_revision(
-            store, 99, ProvenanceState.TOOL_VERIFIED, {**result, **changed},
-            evidence_ids=(tool.tool_receipt_id,), tool_receipt_id=tool.tool_receipt_id,
+            store,
+            99,
+            ProvenanceState.TOOL_VERIFIED,
+            {**result, **changed},
+            evidence_ids=(tool.tool_receipt_id,),
+            tool_receipt_id=tool.tool_receipt_id,
         )
     assert rejected.value.code == "direct_memory_tool_result_mismatch"
     assert store.list_claim_revisions(PROJECT) == ()

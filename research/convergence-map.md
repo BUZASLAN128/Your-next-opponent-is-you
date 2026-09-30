@@ -1174,3 +1174,90 @@ comparison reproduced three failures and two passes; those outcomes are
 historical. GitHub review remains a separate exact-head gate; the earlier
 checkpoint review does not cover these changes. These results do not establish
 PostgreSQL integration or real-corpus, retrieval, or persona claims.
+
+## Direct-Memory P1 Remediation Contract — 2026-09-30
+
+The reported remediation contract strengthens three system boundaries:
+immutable strict-JSON capture before authorization plus reload verification;
+explicit private-by-default versus synthetic data-plane identity carried
+outside native content hashes; and owner/link-safe creation checks for new
+POSIX roots/files. Legacy schema v1 and unlabelled index 0.1 are rejected
+read-only. New index envelope 0.2 stores plane outside content identity and
+uses separate private and D0 synthetic structural-index directories. Source,
+brief, and export envelopes retain the outer plane label while native hashes
+remain unchanged.
+
+This is an implementation contract update, not a claim that the remediation
+passes. At this architecture-only checkpoint, three P1 items awaited gates
+and exact-head review. Historical
+935/31/83.55% results belong to published head
+`b9f96e3733ae5ddf3f0ccc0b67f956ea6a80af4d`; current test counts are not final.
+Windows ACL behavior is OS-managed and unverified, and POSIX runtime
+verification was unavailable (`wsl --list` returned `E_ACCESSDENIED`). Six
+remote P2 findings remain open and nonblocking. Deferred real-archive
+lifecycle, deletion, and invalidation remain outside this update. See Event
+067, L-056, RQ-044, and the [adapter architecture note](direct-assistant-memory-adapter.md).
+
+## Pre-Fix Local P1 Implementation Checkpoint — 2026-09-30
+
+The frozen-manifest-33 candidate
+(`a3b71e82f04ccad07324db2ac120a6fa147d8bcf38b52910710bb7603189f5c2`)
+passed the reported local implementation gates: 947 passed, 37 skipped, zero
+failed; 73 focused cases passed with six POSIX skips; the final wheel passed
+14 CLI plus plane/index cases; 19 changed sources matched wheel bytes; and
+Ruff, mypy over 317 files, source limits, compile, and diff checks passed.
+L-057 records timings, log path, and wheel hash. The 37 aggregate skips are
+the prior 31 database/platform skips plus six POSIX skips, so PostgreSQL and
+POSIX runtime behavior remain unverified.
+
+At this manifest-33 checkpoint, independent review and exact-head GitHub
+review were pending. Event 069 supersedes this review status. This result
+does not change the historical 935/31/83.55%
+checkpoint, the six open nonblocking P2 findings, or deferred real-corpus
+lifecycle/deletion/invalidation scope.
+
+## Corrective Review and Manifest-36 Fix — 2026-09-30
+
+Independent Sol/high correctness and GPT-6.1 Sol/ultra security review found
+the same P1 on the manifest-33 candidate: ordinary `correct` could build from
+an empty supersessions mapping while build-clock state changed after
+authorization, commit an inadmissible wrapper, consume the receipt, and fail
+reload. The source owner reports fixing it by detaching `MappingProxyType`
+selection before validation/hash and extracting only the SQL insert into
+`correction_records.py`, preserving native hash and API.
+
+Manifest 36 SHA-256 is
+`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`; prior
+manifest-33 hashes are reported unchanged. The correction/auth/history/CLI
+slice passed 30 tests in 8.25 seconds; static checks including mypy over 318
+modules passed. At that report time, the full aggregate was still running;
+L-059 now records the final post-fix result. Manifest-33's 947/37 results
+remain pre-fix only.
+
+The reviews also deduplicated one additional open P2 in
+`payload_snapshot.py:205`, where the correction-derived state/kind/time/
+revision matcher only partially binds state. A helper/memory probe accepted
+wrong state when the row-unkeyed digest was recomputed; no end-to-end
+corrupted-file proof is available, while native brief replay still receives
+the correct receipt. This finding remains unfixed. Seven P2 findings are open
+in total; source/transcript review reported no P0. At that report time, final
+delta-security review was pending. L-060 records the completed review; exact-
+head GitHub review remains pending. See Event 069, L-058, L-060, and RQ-044.
+
+## Final Post-Fix Aggregate — 2026-09-30
+
+Manifest 36 (`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`)
+passed the full aggregate: 949 passed, 37 skipped, zero failures, 197
+warnings, and 83.39% measured branch coverage in 472.95 seconds. The final
+wheel passed 16 cases in 4.45 seconds, and 21 production sources matched
+wheel bytes. Ruff, mypy over 318 modules, source limits, compile, and diff
+checks passed. L-059 records the log path and wheel hash. The 947/37/83.39%
+manifest-33 result is pre-fix; 935/31/83.55% is older history.
+
+Original-candidate general correctness review concluded with no remaining
+P0/P1 and one P2; seven P2 findings remain open overall. GPT-6.1 Sol/ultra
+completed bounded review of the three-file fix and closed that P1 with no
+residual P0/P1 in the reviewed delta (L-060). Exact-head GitHub review remains
+pending. The PR remains draft. CI, POSIX runtime,
+PostgreSQL, and real-corpus lifecycle/deletion gaps remain; no production-ready
+claim follows.

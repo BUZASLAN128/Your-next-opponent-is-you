@@ -14,6 +14,7 @@ from ynoy.direct_memory import (
     RevisionKind,
 )
 from ynoy.direct_memory.codec import claim_revision_payload_sha256
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import DataValidationError
 from ynoy.models import Speaker
 
@@ -21,7 +22,9 @@ from ynoy.models import Speaker
 def test_claim_history_preserves_x_y_x_without_treating_intent_as_done(
     tmp_path: Path,
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     store.record_live_user_input(
         source_id=SOURCE_ID,
         project=PROJECT,
@@ -48,7 +51,9 @@ def test_event_time_and_recorded_knowledge_cutoffs_are_independent(
     tmp_path: Path,
 ) -> None:
     clock = [NOW]
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: clock[0])
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: clock[0], data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     store.record_live_user_input(
         source_id="early-source",
         project=PROJECT,
@@ -144,7 +149,9 @@ def _append_authorized_revision(
 def test_tool_verified_claim_requires_a_persisted_matching_tool_source(
     tmp_path: Path,
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     store.record_live_user_input(
         source_id=SOURCE_ID,
         project=PROJECT,
@@ -153,9 +160,7 @@ def test_tool_verified_claim_requires_a_persisted_matching_tool_source(
         expected_revision=0,
     )
     with pytest.raises(DataValidationError) as missing:
-        _append_authorized_revision(
-            store, 1, ProvenanceState.TOOL_VERIFIED, {"status": "verified"}
-        )
+        _append_authorized_revision(store, 1, ProvenanceState.TOOL_VERIFIED, {"status": "verified"})
     assert missing.value.code == "direct_memory_tool_evidence_required"
 
     tool = store.record_tool_result(

@@ -34,22 +34,19 @@ def append_revision_record(
     tool_receipt_id: str | None,
     related_fact_key: str | None,
     revision: int,
+    payload_json: str | None = None,
 ) -> ClaimRevision:
+    snapshot_json, parsed_payload = _canonical_payload_snapshot(payload, payload_json)
     digest = claim_revision_payload_sha256(
         fact_key=fact_key,
         evidence_ids=evidence_ids,
         state=state,
         kind=kind,
-        payload=payload,
+        payload=parsed_payload,
         event_time=event_time,
         tool_receipt_id=tool_receipt_id,
         related_fact_key=related_fact_key,
     )
-    parsed_payload = strict_loads(strict_dumps(payload))
-    if not isinstance(parsed_payload, dict):
-        raise DataValidationError(
-            "direct_memory_json_invalid", "Claim revision payload must be a JSON object."
-        )
     revision_id = str(uuid4())
     item = ClaimRevision(
         revision_id=revision_id,
@@ -66,11 +63,31 @@ def append_revision_record(
         related_fact_key=related_fact_key,
         revision=revision,
     )
-    _insert_revision(connection, item, digest)
+    _insert_revision(connection, item, digest, snapshot_json)
     return item
 
 
-def _insert_revision(connection: sqlite3.Connection, item: ClaimRevision, digest: str) -> None:
+def _canonical_payload_snapshot(
+    payload: Mapping[str, object], payload_json: str | None
+) -> tuple[str, dict[str, object]]:
+    snapshot_json = strict_dumps(payload) if payload_json is None else payload_json
+    parsed = strict_loads(snapshot_json)
+    if not isinstance(parsed, dict):
+        raise DataValidationError(
+            "direct_memory_json_invalid", "Claim revision payload must be a JSON object."
+        )
+    if strict_dumps(parsed) != snapshot_json or (
+        payload_json is not None and strict_dumps(payload) != snapshot_json
+    ):
+        raise DataValidationError(
+            "direct_memory_json_invalid", "Claim revision payload snapshot is not canonical."
+        )
+    return snapshot_json, parsed
+
+
+def _insert_revision(
+    connection: sqlite3.Connection, item: ClaimRevision, digest: str, payload_json: str
+) -> None:
     connection.execute(
         "INSERT INTO claim_revisions VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (
@@ -80,7 +97,7 @@ def _insert_revision(connection: sqlite3.Connection, item: ClaimRevision, digest
             strict_dumps(list(item.evidence_ids)),
             item.state.value,
             item.kind.value,
-            strict_dumps(item.payload),
+            payload_json,
             item.event_time.isoformat() if item.event_time else None,
             item.recorded_at.isoformat(),
             strict_dumps(item.authorization.model_dump(mode="json"))

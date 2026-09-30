@@ -10,6 +10,7 @@ from tests.direct_memory_fixtures import NOW, PROJECT, SOURCE_TEXT, make_native_
 from ynoy.decision_brief import resolve_decision_brief
 from ynoy.direct_memory import AuthorizationIntent, DirectMemoryStore, FactProposal
 from ynoy.direct_memory.codec import correction_payload_sha256
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import DataValidationError
 from ynoy.interaction_review import build_interaction_review
 from ynoy.models import ClaimModality, ConfirmClaimDecision, RejectClaimDecision, ScopeRef
@@ -109,7 +110,9 @@ def test_native_correction_history_preserves_x_y_x_ids_and_temporal_prefix(
     tmp_path: Path,
 ) -> None:
     clock = [NOW]
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: clock[0])
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: clock[0], data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     review, stored = _store_review(store, "history-source", 8200)
     claim_id = review.claims[0].record_id
     first = _correct(
@@ -146,7 +149,9 @@ def test_native_correction_history_preserves_x_y_x_ids_and_temporal_prefix(
 
 
 def test_cross_review_conflicts_are_preserved_and_brief_abstains(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     positive, positive_row = _store_review(store, "conflict-positive", 8300)
     negative, negative_row = _store_review(store, "conflict-negative", 8400, negative=True)
     _correct(
@@ -173,7 +178,9 @@ def test_cross_review_conflicts_are_preserved_and_brief_abstains(tmp_path: Path)
 
 
 def test_one_live_authorization_cannot_be_consumed_twice(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     review, stored = _store_review(store, "one-use-source", 8500)
     decision = ConfirmClaimDecision(claim_id=review.claims[0].record_id, subject_id="self")
     correction = _correct(store, review, stored, "one-use-auth", decision)
@@ -192,7 +199,9 @@ def test_late_known_rejection_changes_retrospective_brief_without_source_rewrite
     tmp_path: Path,
 ) -> None:
     clock = [NOW]
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: clock[0])
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: clock[0], data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     review, stored = _store_review(store, "retrospective-source", 8600)
     source_hash = store.get_source_event("retrospective-source").sha256
     claim_id = review.claims[0].record_id
@@ -224,9 +233,7 @@ def test_late_known_rejection_changes_retrospective_brief_without_source_rewrite
     )
     scope = ScopeRef(person_id="self", project=PROJECT)
     expected_first = resolve_decision_brief(first.state, scope, NOW + timedelta(days=1))
-    expected_rejection = resolve_decision_brief(
-        rejected.state, scope, NOW + timedelta(days=1)
-    )
+    expected_rejection = resolve_decision_brief(rejected.state, scope, NOW + timedelta(days=1))
     assert earlier_knowledge.native_briefs == (expected_first,)
     assert later_knowledge.native_briefs == (expected_rejection,)
     assert store.get_source_event("retrospective-source").sha256 == source_hash

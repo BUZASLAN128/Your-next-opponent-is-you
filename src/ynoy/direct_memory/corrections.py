@@ -3,11 +3,13 @@ from __future__ import annotations
 import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
+from types import MappingProxyType
 from typing import Literal, cast
 
 from ynoy.correction import build_correction_receipt
 from ynoy.direct_memory.codec import correction_payload_sha256, strict_dumps, strict_loads
 from ynoy.direct_memory.correction_reader import CorrectionReader
+from ynoy.direct_memory.correction_records import insert_correction_record
 from ynoy.direct_memory.correction_revisions import append_outcome_revisions
 from ynoy.direct_memory.correction_validation import (
     validate_correction_continuity,
@@ -45,14 +47,22 @@ class CorrectionOperations:
         supersessions: Mapping[str, str] | None = None,
     ) -> StoredCorrection:
         validate_kind(operation)
+        selected_supersessions: Mapping[str, str] = MappingProxyType(
+            {} if supersessions is None else dict(supersessions.items())
+        )
         stored = self.reviews.get_review(review_id)
         safe_decisions = tuple(decisions)
         facts = self.reviews.review_facts(review_id)
         claim_to_fact = validate_operation(
-            self.database, operation, safe_decisions, stored.project, facts, supersessions
+            self.database,
+            operation,
+            safe_decisions,
+            stored.project,
+            facts,
+            selected_supersessions,
         )
         digest = correction_payload_sha256(
-            safe_decisions, operation=operation, supersessions=supersessions
+            safe_decisions, operation=operation, supersessions=selected_supersessions
         )
         self.sources.verify_authorization(
             authorization,
@@ -73,7 +83,7 @@ class CorrectionOperations:
             authorization,
             expected_revision,
             operation,
-            supersessions or {},
+            selected_supersessions,
         )
 
     def list_corrections(self, review_id: str) -> tuple[StoredCorrection, ...]:
@@ -174,7 +184,7 @@ def _write_correction(
         recorded_at = trusted_time(clock)
         _consume_authorization(sources, connection, stored, authorization, recorded_at, revision)
         _assert_chain_head(connection, stored.review_id, correction)
-        _insert_correction_record(
+        insert_correction_record(
             connection,
             stored,
             correction,
@@ -216,34 +226,6 @@ def _consume_authorization(
         project=stored.project,
         revision=revision,
         recorded_at=recorded_at,
-    )
-
-
-def _insert_correction_record(
-    connection: sqlite3.Connection,
-    stored: StoredReview,
-    correction: InteractionCorrectionReceipt,
-    state: ReviewedInteractionState,
-    auth_json: str,
-    operation: str,
-    supersessions: Mapping[str, str],
-    recorded_at: datetime,
-    revision: int,
-) -> None:
-    connection.execute(
-        "INSERT INTO corrections VALUES(?,?,?,?,?,?,?,?,?,?)",
-        (
-            str(correction.record_id),
-            stored.review_id,
-            stored.project,
-            operation,
-            strict_dumps(correction.model_dump(mode="json")),
-            strict_dumps(state.model_dump(mode="json")),
-            auth_json,
-            strict_dumps(dict(sorted(supersessions.items()))),
-            recorded_at.isoformat(),
-            revision,
-        ),
     )
 
 

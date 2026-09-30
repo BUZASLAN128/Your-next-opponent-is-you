@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.models import AtomicClaimProposal, InteractionReview, Speaker, StrictModel
 from ynoy.models.correction import InteractionCorrectionReceipt
 from ynoy.models.decision_brief import DecisionBrief
@@ -40,6 +41,7 @@ class RevisionKind(StrEnum):
 
 
 class SourceEvent(StrictModel):
+    data_plane: DataPlane
     source_id: str = Field(min_length=1)
     project: str = Field(min_length=1)
     speaker: Speaker
@@ -203,6 +205,7 @@ class ClaimRevision(StrictModel):
 
 
 class DirectMemoryBrief(StrictModel):
+    data_plane: DataPlane
     project: str = Field(min_length=1)
     as_of: datetime
     known_at: datetime

@@ -1587,3 +1587,75 @@ The independent external-witness slice passed 15 cases and deselected two
 cases that require a privacy-blind opaque index and external source mutation.
 Those requirements are outside the current authorized adapter, so they remain
 deferred rather than treated as failures or implemented behavior.
+
+### RQ-044 — Do the Direct-Memory P1 Remediations Pass Their Final Gates?
+
+**Status:** Manifest 36 passed the final reported local aggregate and
+packaging/static gates (L-059). The bounded GPT-6.1 Sol/ultra delta-security
+review closed the P1 with no residual P0/P1 in the three-file fix (L-060).
+Exact-head GitHub review remains open; the PR is draft and not production-
+ready. CI, POSIX runtime, PostgreSQL, and real-corpus lifecycle gaps remain.
+
+**Reported contract:** Capture an immutable strict-JSON payload before
+authorization and verify it on reload. Keep `DataPlane.PRIVATE` as default
+(schema 2, application ID `0x594E4D32`); require explicit
+`PUBLIC_SYNTHETIC` (application ID `0x594E5332`) and separate CLI database
+filenames. Reject schema v1 and unlabelled index 0.1 read-only without
+migration. Use index envelope 0.2 with plane outside content identity,
+separate private and D0 synthetic structural-index directories, outer plane
+labels on sources/briefs/exports, and unchanged native hashes. Apply owner
+and link-safety checks with 0700/0600 only to newly created POSIX roots/files;
+do not mutate existing ACLs or modes.
+
+**Evidence and limits:** Provenance and full contract are in Event 067 and
+L-056; final local validation is Event 068 and L-057. The 935 passed, 31
+skipped, 83.55% report is historical for published head
+`b9f96e3733ae5ddf3f0ccc0b67f956ea6a80af4d`. The final candidate's 37 skips
+include six POSIX skips; database/platform skips also leave PostgreSQL
+unverified. Windows ACL behavior remains OS-managed and unverified. POSIX
+runtime tests were unavailable because `wsl --list` returned
+`E_ACCESSDENIED`, so no POSIX test claim is supported.
+
+**Related disclosed issues:** Six remote P2 findings remain open and
+nonblocking: non-monotonic wall-clock handling at the known-at prefix; manual
+fact-key canonical guard; index maximum-document admission; tool source-ID
+whitespace; index lock initialization race; and partial JSONL publication.
+These are not represented as resolved by the P1 architecture update.
+
+**Next discriminating check:** Complete exact-head GitHub review. Keep all
+seven P2 findings disclosed and real-archive lifecycle/deletion/invalidation
+deferred.
+
+**Pre-fix local implementation checkpoint (2026-09-30):** The frozen-
+manifest-33 candidate (`a3b71e82f04ccad07324db2ac120a6fa147d8bcf38b52910710bb7603189f5c2`)
+passed the aggregate and local checks recorded in L-057. Review then found a
+P1, so those results do not validate the post-fix candidate. The 37 skips
+included six POSIX-specific skips; database/platform skips also leave
+PostgreSQL and POSIX runtime behavior unverified.
+
+**Corrective review update (2026-09-30):** The source owner reports a fix for
+the confirmed `correct`-path issue using a detached `MappingProxyType`
+selection before validation/hash, with SQL insert extraction in
+`correction_records.py`. The current correction/auth/history/CLI slice passed
+30 in 8.25 seconds; Ruff, mypy over 318 modules, source limits, compile, and
+diff passed. Frozen manifest 36 SHA-256 is
+`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`; prior
+manifest-33 hashes are reported unchanged. At this update, the full aggregate
+was still running; Event 070 and L-059 now provide the completed result.
+
+**Review status update:** Original-candidate independent reviews
+deduplicated one new open P2 in `payload_snapshot.py:205`, concerning partial
+binding of correction-derived state/kind/time/revision. A helper/memory probe
+accepted wrong state if the row-unkeyed digest was recomputed; there is no
+end-to-end corrupted-file proof, and native brief replay still gets the
+correct receipt. This P2 is not auto-fixed. The total is seven open P2
+findings (six remote and one local). The source/transcript review reported no
+P0. Original-candidate general correctness review is complete with no
+remaining P0/P1. The bounded GPT-6.1 Sol/ultra review closed the manifest-36
+three-file P1 delta with no residual P0/P1; its probes are recorded in L-060.
+Exact-head GitHub review remains pending and the PR remains draft. Event
+070/L-059 record the final post-fix aggregate
+(949 passed, 37 skipped, 83.39%); the 947/37 manifest-33 run and 935/31 older
+checkpoint are historical. The 37 skips leave POSIX and database/platform
+behavior unverified; CI and real-corpus lifecycle, deletion, and invalidation
+also remain open.

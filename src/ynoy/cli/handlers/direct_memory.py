@@ -8,8 +8,14 @@ from ynoy.cli.handlers.direct_memory_index import handle_index
 from ynoy.cli.handlers.direct_memory_reviews import handle_reviews
 from ynoy.cli.handlers.direct_memory_sources import handle_sources
 from ynoy.direct_memory import DirectMemoryStore
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.errors import StorageError
 from ynoy.policy import require_private_root
+from ynoy.private_files import (
+    create_private_parents,
+    ensure_private_root,
+    open_exclusive_private_utf8,
+)
 
 _INDEX_COMMANDS = {"import-document", "list-documents", "tree", "read-nodes", "read-pages"}
 _SOURCE_COMMANDS = {
@@ -23,13 +29,14 @@ _REVIEW_COMMANDS = {"review", "correct", "claim-revision"}
 
 
 def handle_direct_memory(args: argparse.Namespace, context: CommandContext) -> dict[str, object]:
-    root = require_private_root(
-        context.settings.require_private_root(), real_data=not bool(args.synthetic)
-    ).root
+    root = ensure_private_root(context.settings.require_private_root())
+    require_private_root(root, real_data=not bool(args.synthetic))
+    plane = DataPlane.PUBLIC_SYNTHETIC if args.synthetic else DataPlane.PRIVATE
     operation = args.direct_memory_command
     if operation in _INDEX_COMMANDS:
         return handle_index(args, context, root)
-    store = DirectMemoryStore(root / "direct-memory.sqlite3")
+    filename = "direct-memory-synthetic.sqlite3" if args.synthetic else "direct-memory.sqlite3"
+    store = DirectMemoryStore(root / filename, data_plane=plane)
     if operation in _SOURCE_COMMANDS:
         return handle_sources(args, context, store)
     if operation in _REVIEW_COMMANDS:
@@ -47,8 +54,8 @@ def handle_direct_memory(args: argparse.Namespace, context: CommandContext) -> d
         return {"backup_path": str(store.backup(destination))}
     content = store.export_jsonl(project=args.project)
     try:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("x", encoding="utf-8", newline="\n") as stream:
+        create_private_parents(destination.parent, private_root=root)
+        with open_exclusive_private_utf8(destination, private_root=root) as stream:
             stream.write(content)
     except OSError as exc:
         raise StorageError(

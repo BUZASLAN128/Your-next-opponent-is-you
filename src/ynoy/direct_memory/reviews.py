@@ -21,6 +21,7 @@ from ynoy.direct_memory.models import (
     StoredReview,
     UserAuthorizationReceipt,
 )
+from ynoy.direct_memory.plane_guard import assert_review_data_plane
 from ynoy.direct_memory.source_authorship import SourceAuthorshipOperations
 from ynoy.direct_memory.source_events import trusted_time
 from ynoy.direct_memory.sources import SourceOperations
@@ -56,6 +57,7 @@ class ReviewOperations:
         expected_revision: int,
     ) -> StoredReview:
         event = self.sources.get_source_event(source_id)
+        assert_review_data_plane(receipt, self.database.data_plane)
         self._bind_receipt(event, receipt)
         self.attributions.require_reviewable_source(event, receipt.subject_id)
         safe_claims = _validate_fact_claims(source_id, event.project, claims, self.sources)
@@ -64,6 +66,7 @@ class ReviewOperations:
             tuple(item.proposal for item in safe_claims),
             provider_evidence=None,
         )
+        assert_review_data_plane(review, self.database.data_plane)
         return self._persist_review(event, receipt, review, safe_claims, expected_revision)
 
     def _persist_review(
@@ -128,6 +131,7 @@ class ReviewOperations:
             )
         try:
             review = InteractionReview.model_validate(strict_loads(row["review_json"]))
+            assert_review_data_plane(review, self.database.data_plane)
             digest = interaction_review_sha256(review)
             if digest != row["review_sha256"] or str(review.source.record_id) != review_id:
                 raise ValueError("review digest or identifier mismatch")
@@ -159,6 +163,8 @@ class ReviewOperations:
             raise DataValidationError(
                 "direct_memory_review_missing", "Direct-memory interaction review does not exist."
             )
+
+
         value = strict_loads(row["facts_json"])
         if not isinstance(value, dict) or not isinstance(value.get("facts"), list):
             raise DataValidationError(

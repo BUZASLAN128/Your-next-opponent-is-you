@@ -7,6 +7,7 @@ from pathlib import Path
 from ynoy.direct_memory.briefing import BriefOperations
 from ynoy.direct_memory.claims import ClaimOperations
 from ynoy.direct_memory.corrections import CorrectionOperations
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.exporting import ExportOperations
 from ynoy.direct_memory.models import (
@@ -28,8 +29,14 @@ from ynoy.util import utc_now
 
 
 class DirectMemoryStore:
-    def __init__(self, path: Path, *, clock: Callable[[], datetime] = utc_now) -> None:
-        self.database = DirectMemoryDatabase(path)
+    def __init__(
+        self,
+        path: Path,
+        *,
+        data_plane: DataPlane = DataPlane.PRIVATE,
+        clock: Callable[[], datetime] = utc_now,
+    ) -> None:
+        self.database = DirectMemoryDatabase(path, data_plane=data_plane)
         self.clock = clock
         self.sources = SourceOperations(self.database, clock)
         self.reviews = ReviewOperations(self.database, clock)

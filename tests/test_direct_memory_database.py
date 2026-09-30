@@ -10,6 +10,7 @@ from threading import Barrier
 import pytest
 
 from ynoy.direct_memory.codec import strict_dumps, strict_loads
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.sources import SourceOperations
 from ynoy.errors import DataValidationError
@@ -20,7 +21,9 @@ NOW = datetime(2026, 9, 30, 12, tzinfo=UTC)
 
 
 def _operations(path: Path) -> SourceOperations:
-    return SourceOperations(DirectMemoryDatabase(path), clock=lambda: NOW)
+    return SourceOperations(
+        DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC), clock=lambda: NOW
+    )
 
 
 def _append(operations: SourceOperations, source_id: str = "synthetic", revision: int = 0):
@@ -65,25 +68,27 @@ def test_foreign_database_is_rejected_without_changing_bytes(tmp_path: Path) -> 
         connection.execute("INSERT INTO unrelated VALUES('synthetic retained')")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     with pytest.raises(DataValidationError) as blocked:
-        DirectMemoryDatabase(path)
+        DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC)
     assert blocked.value.code == "direct_memory_database_identity"
     assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
 
 
 def test_missing_append_only_trigger_rejects_existing_schema(tmp_path: Path) -> None:
     path = tmp_path / "synthetic.sqlite3"
-    database = DirectMemoryDatabase(path)
+    database = DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC)
     with database.connect() as connection:
         connection.execute("DROP TRIGGER immutable_source_events_update")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     with pytest.raises(DataValidationError) as blocked:
-        DirectMemoryDatabase(path)
+        DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC)
     assert blocked.value.code == "direct_memory_database_identity"
     assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
 
 
 def test_transaction_failure_rolls_back_payload_and_revision(tmp_path: Path) -> None:
-    database = DirectMemoryDatabase(tmp_path / "synthetic.sqlite3")
+    database = DirectMemoryDatabase(
+        tmp_path / "synthetic.sqlite3", data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     with pytest.raises(DataValidationError):
         with database.mutation("synthetic-db", 0) as (connection, revision):
             connection.execute(
@@ -120,7 +125,7 @@ def test_append_only_triggers_preserve_original_source(tmp_path: Path) -> None:
 
 def test_concurrent_stale_writers_admit_exactly_one_successor(tmp_path: Path) -> None:
     path = tmp_path / "synthetic.sqlite3"
-    DirectMemoryDatabase(path)
+    DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC)
     barrier = Barrier(2)
 
     def write(source_id: str) -> str:
@@ -136,7 +141,7 @@ def test_concurrent_stale_writers_admit_exactly_one_successor(tmp_path: Path) ->
     with ThreadPoolExecutor(max_workers=2) as executor:
         results = list(executor.map(write, ("writer-a", "writer-b")))
     assert sorted(results) == ["committed", "direct_memory_stale_revision"]
-    database = DirectMemoryDatabase(path)
+    database = DirectMemoryDatabase(path, data_plane=DataPlane.PUBLIC_SYNTHETIC)
     assert database.current_revision("synthetic-db") == 1
     with database.connect() as connection:
         assert connection.execute("SELECT COUNT(*) FROM source_events").fetchone()[0] == 1

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Sequence
-from typing import cast
+from typing import Literal, cast
 
 from ynoy.errors import DataValidationError
 
@@ -22,10 +22,16 @@ from .validation import (
     validate_scopes,
 )
 
+DataPlaneName = Literal["private", "public_synthetic"]
 
-def normalize_document(bundle: PreparedDocument) -> dict[str, object]:
+
+def normalize_document(
+    bundle: PreparedDocument, *, data_plane: DataPlaneName
+) -> dict[str, object]:
     if not isinstance(bundle, PreparedDocument):
         raise input_error("bundle must be a PreparedDocument")
+    if data_plane not in ("private", "public_synthetic"):
+        raise input_error("data plane is invalid")
     name = bounded_text(bundle.name, "name", 512, required=True)
     description = bounded_text(
         bundle.description, "description", MAX_DESCRIPTION_BYTES, required=False
@@ -54,7 +60,8 @@ def normalize_document(bundle: PreparedDocument) -> dict[str, object]:
         for number, text in enumerate(pages, start=1)
     ]
     payload: dict[str, object] = {
-        "schema_version": "ynoy-structural-index/0.1",
+        "schema_version": "ynoy-structural-index/0.2",
+        "data_plane": data_plane,
         "document_id": document_id,
         "name": name,
         "description": description,
@@ -69,12 +76,15 @@ def normalize_document(bundle: PreparedDocument) -> dict[str, object]:
     return payload
 
 
-def verify_stored_document(value: object) -> dict[str, object]:
+def verify_stored_document(
+    value: object, *, expected_data_plane: DataPlaneName
+) -> dict[str, object]:
     if not isinstance(value, dict) or not all(isinstance(key, str) for key in value):
         raise integrity_error("stored document must be an object")
     payload = cast(dict[str, object], value)
     expected_fields = {
         "schema_version",
+        "data_plane",
         "document_id",
         "name",
         "description",
@@ -86,9 +96,11 @@ def verify_stored_document(value: object) -> dict[str, object]:
     }
     if (
         set(payload) != expected_fields
-        or payload.get("schema_version") != "ynoy-structural-index/0.1"
+        or payload.get("schema_version") != "ynoy-structural-index/0.2"
     ):
         raise integrity_error("stored schema is foreign or malformed")
+    if payload.get("data_plane") != expected_data_plane:
+        raise integrity_error("stored data plane does not match the selected index")
     pages = _stored_pages(payload.get("pages"))
     tree = payload.get("tree")
     shape = payload.get("tree_shape")
@@ -104,7 +116,7 @@ def verify_stored_document(value: object) -> dict[str, object]:
             tree=prepared_tree,
             description=cast(str | None, payload.get("description")),
         )
-        normalized = normalize_document(prepared)
+        normalized = normalize_document(prepared, data_plane=expected_data_plane)
         stored = canonical_json_bytes(payload)
     except (DataValidationError, TypeError, ValueError) as exc:
         raise integrity_error("stored content failed schema validation") from exc

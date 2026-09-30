@@ -16,6 +16,7 @@ from ynoy.direct_memory import (
     StoredReview,
 )
 from ynoy.direct_memory.codec import correction_payload_sha256
+from ynoy.direct_memory.data_plane import DataPlane
 from ynoy.direct_memory.models import UserAuthorizationReceipt
 from ynoy.errors import DataValidationError
 from ynoy.interaction_review import build_interaction_review
@@ -104,7 +105,9 @@ def _apply(
 def test_later_partial_rejection_leaves_other_confirmed_fact_visible(
     tmp_path: Path,
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     review, stored = _two_fact_review(store)
     confirm_both = (
         ConfirmClaimDecision(claim_id=review.claims[0].record_id, subject_id="self"),
@@ -132,7 +135,9 @@ def test_later_partial_rejection_leaves_other_confirmed_fact_visible(
     )
     assert review.claims[0].record_id not in {item.claim_id for item in native_brief.all_entries()}
 
-    reopened = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    reopened = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     assert reopened.brief(PROJECT, as_of=as_of, known_at=as_of) == brief
 
 
@@ -166,7 +171,9 @@ def _supersession_intent(store: DirectMemoryStore):
 def test_supersession_without_native_binding_fails_and_preserves_revision(
     tmp_path: Path,
 ) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: NOW, data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
     stored, decisions, mapping, digest, revision = _supersession_intent(store)
     previous_claim_revisions = store.list_claim_revisions(PROJECT)
     altered_mapping_digest = correction_payload_sha256(
