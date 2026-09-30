@@ -59,24 +59,38 @@ self. It supports synthetic and locally authorized experiments around:
   target-isolated benchmark commands;
 - an in-progress, scoped direct-main-assistant memory path whose approved
   architecture uses provenance-preserving local append storage and
-  deterministic navigation of explicitly supplied prepared page trees; its
-  focused test slices and final synthetic aggregate have been reported passing
-  (931 passed, 31 conditional skips, no failures). The prepared index retains
+  deterministic navigation of explicitly supplied prepared page trees. The
+  current synthetic aggregate reports 935 passed, 31 conditional skips, and no
+  failures; the prepared index retains
   exact source text in a private bundle, and real-corpus readiness remains
   gated on source binding, registered deletion/backup handlers, sidecar
   cleanup, and interrupted-import recovery. It makes no full deletion or privacy claim, as
   recorded in
   [the adapter architecture note](research/direct-assistant-memory-adapter.md).
 
-The first integrated run reported 900 passed, 31 skipped, and four failed;
-the history oracle/setup and clock-only baseline fixtures were corrected. The
-final aggregate run passed 931, skipped 31, and had no failures, with 83.54%
-measured branch coverage. Skips were database/platform conditional, so this is
-not a PostgreSQL-green or real-corpus privacy result. Ruff, mypy on 311 files,
-source limits, compileall, and diff check passed. The final wheel was rebuilt
-and ran through the bundled-pip isolated install; full offline `uv sync` still
-hits Windows PE-launcher handling. GitHub review remains pending after the
-draft pull request.
+The current aggregate passed 935 tests, skipped 31, and had no failures, with
+197 warnings and 83.55% measured branch coverage in 461.27 seconds. The
+unchanged 70% gate passed. Separate checks passed 31 focused tests and six
+installed-wheel CLI tests with model, network, and PostgreSQL calls blocked;
+two changed production modules matched the installed wheel bytes. The
+independent witness run passed 14 and explicitly deselected three tests: two
+require deferred corpus APIs, and one expects the adapter's outer cross-review
+grouping to conflict across different explicit fact keys because wording
+matches, contrary to that grouping's decision-key contract. Native per-review
+`DecisionBrief` detection still uses its existing layer-plus-normalized-prose
+rule. Four tracked outer-grouping cases cover same/different keys, wording,
+and layers. Ruff, mypy
+on 311 files, source limits, compileall, and diff check passed. The 31 skips
+were database/platform conditional, so this is not PostgreSQL-green or
+real-corpus privacy evidence.
+
+At prior checkpoint `811f6fd`, the first integrated run reported 900 passed,
+31 skipped, and four failed; its corrected aggregate passed 931. The targeted
+baseline reproduced three failures and two passes for the new supersession and
+conflict cases. GitHub review remains a separate exact-head gate; the earlier
+checkpoint review does not cover these changes. The full offline
+`uv sync` limitation on Windows PE-launcher handling remains recorded in the
+adapter architecture note.
 
 The repository has synthetic test evidence plus bounded private correction,
 full-persona, and persona-study observations whose content remains outside

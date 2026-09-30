@@ -1497,3 +1497,29 @@ The final wheel rebuilt and installed through the bundled-pip isolated path;
 full offline `uv sync` remains blocked by Windows PE-launcher handling. GitHub
 review remains pending. This validation does not close real-corpus lifecycle,
 deletion, privacy, or persona-quality gates.
+
+**Implementation update (2026-09-30):** The prior aggregate above belongs to
+checkpoint `811f6fd`. The adapter now refuses `operation='supersede'` before
+consuming authorization because `FactProposal` does not carry the canonical
+active/query-valid receipt tuple for the same subject, layer, and decision key
+required by the implementation-test contract. This guard does not implement
+the binding protocol or cycle-safe supersession; `correct` and `retract` remain
+supported. The adapter's outer cross-review
+`DirectMemoryBrief.unresolved_conflicts` grouping uses subject, layer, and
+explicit `fact_key`, so distinct keys are independent and opposite modalities
+on the same key conflict even with different wording. Native per-review
+`DecisionBrief` detection retains its layer-plus-normalized-prose behavior;
+the native resolver, payload, and hashes were not migrated. The current
+aggregate for these changes is
+pending. See [L-054](source-ledger.md#l-054--supersession-binding-guard-and-conflict-key-semantics)
+and [RQ-042](open-questions.md#rq-042--does-the-direct-memory-path-preserve-source-and-decision-boundaries-in-operation).
+
+**Follow-up validation update (2026-09-30):** The current aggregate passed 935
+with 31 conditional skips and zero failures; focused tests, installed-wheel
+CLI tests, source/static checks, and package-byte comparisons are recorded in
+[L-055](source-ledger.md#l-055--supersessionconflict-follow-up-validation).
+The independent witness run passed 14 and explicitly deselected three cases,
+including one incompatible with the adapter's outer cross-review fact-key
+contract; it is not reported as all green. The old `811f6fd` targeted comparison reproduced three
+failures and two passes. GitHub review remains a separate exact-head gate; the
+earlier checkpoint review does not cover these changes.

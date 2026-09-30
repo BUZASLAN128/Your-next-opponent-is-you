@@ -1136,3 +1136,41 @@ cleanup, interrupted-import recovery, retrieval quality, or persona fidelity.
 The two deselected witness cases require an opaque privacy-blind index and
 external source mutation, capabilities outside this adapter. RQ-043 remains
 open.
+
+## Supersession Binding and Conflict-Key Follow-Up — 2026-09-30
+
+The implementation now refuses `operation='supersede'` before consuming
+authorization. `FactProposal` lacks the canonical active/query-valid receipt
+tuple for the same subject, layer, and decision key required by the
+implementation-test contract. This is a fail-closed boundary, not implemented
+supersession binding or cycle-safe supersession; `correct` and `retract` remain
+supported.
+
+The adapter's outer, cross-review
+`DirectMemoryBrief.unresolved_conflicts` grouping keys on subject, layer, and
+explicit `fact_key`. Independent keys do not create a false cross-review
+conflict, while opposite modalities on one key conflict even if wording
+differs. Native per-review `DecisionBrief` detection retains its existing
+layer-plus-normalized-prose behavior; the native resolver and hashes were not
+migrated. The previous 931-pass aggregate is
+the `811f6fd` checkpoint and predates this change.
+
+## Follow-Up Validation Checkpoint — 2026-09-30
+
+The current full suite passed 935 with 31 conditional skips and zero failures,
+197 warnings, and 83.55% measured branch coverage in 461.27 seconds. The 70%
+gate passed. Thirty-one focused tests and six installed-wheel CLI tests passed;
+model, network, and PostgreSQL calls were blocked for the CLI run. Two changed
+production modules matched the installed-wheel bytes. Ruff, mypy over 311
+files, source limits, compileall, and diff check passed.
+
+The independent witness run passed 14 and explicitly deselected three cases.
+Two require deferred corpus APIs; one conflicts with the adapter's outer
+cross-review contract by expecting different explicit keys to conflict
+because their prose is alike.
+Four tracked decision-key cases cover distinct keys, same-key modality
+conflicts across wording, and layer separation. The baseline `811f6fd` targeted
+comparison reproduced three failures and two passes; those outcomes are
+historical. GitHub review remains a separate exact-head gate; the earlier
+checkpoint review does not cover these changes. These results do not establish
+PostgreSQL integration or real-corpus, retrieval, or persona claims.

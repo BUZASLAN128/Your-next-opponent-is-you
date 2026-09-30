@@ -1490,9 +1490,9 @@ run; until then, no completion or planning-quality conclusion is available.
 ### RQ-042 — Does the Direct Memory Path Preserve Source and Decision Boundaries in Operation?
 
 **Status:** Structural implementation question partially answered under D-076.
-The final synthetic aggregate and additional focused store/CLI checks pass, but
-this establishes contract behavior only. Retrieval usefulness, real-source
-completeness, and represented-user decision fidelity remain open.
+The current synthetic aggregate and focused checks pass, establishing
+contract behavior only. Retrieval usefulness, real-source completeness, and
+represented-user decision fidelity remain open.
 
 **Known boundary:** Append integrity and deterministic prepared-tree reads can
 show structural behavior. They cannot establish that retrieved facts are
@@ -1504,6 +1504,34 @@ adoption gates pass, audit real source-backed reads and corrections with the
 represented user before making any accuracy claim. Continue to distinguish
 retrieval quality from structure, provenance integrity, and personal
 authorship.
+
+**Implementation boundary update (2026-09-30):** `correct` and `retract`
+remain supported. The adapter now refuses `operation='supersede'` before
+authorization consumption because `FactProposal` does not bind the canonical
+active/query-valid receipt tuple for the same subject, layer, and decision key.
+This is a fail-closed refusal, not implemented binding or cycle-safe
+supersession; enabling it requires a compatible proposal and adoption protocol
+that meets the implementation-test contract. The adapter's outer
+cross-review `DirectMemoryBrief.unresolved_conflicts` grouping uses
+subject/layer/fact-key identity: different fact keys remain independent, while
+opposite modalities for one key conflict even when wording differs. Native
+per-review `DecisionBrief` conflict detection retains its existing
+layer-plus-normalized-prose behavior; the native resolver and hashes were not
+migrated. The new aggregate and focused cases are recorded in L-055; they do
+not implement supersession binding or cycle-safe supersession.
+
+**Follow-up validation (2026-09-30):** The full suite passed 935, skipped 31
+conditionally, and had zero failures. The 31 focused tests and six installed-
+wheel CLI tests also passed with model, network, and PostgreSQL calls blocked;
+two changed production modules matched the installed wheel bytes. The
+independent witness run passed 14 and deselected three cases: two require
+deferred corpus APIs, and one expects the adapter's outer cross-review
+grouping to conflict across different explicit keys because prose matches,
+contrary to that grouping's fact-key rule. Four tracked outer-grouping cases
+cover key identity, wording, and layer behavior. The
+baseline at `811f6fd` reproduced three failures and two passes against the new
+cases; that outcome remains historical evidence. Retrieval and represented-
+user quality remain unmeasured.
 
 ### RQ-043 — What Privacy and Recovery Contracts Block Real-Corpus Use?
 

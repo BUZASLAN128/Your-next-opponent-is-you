@@ -1,8 +1,8 @@
 # Direct Main-Assistant Memory Adapter
 
-**Status: Confirmed scoped architecture direction; partial focused test
-evidence and the final synthetic aggregate are reported passing (931 passed,
-31 conditional skips, zero failures); real-corpus readiness remains blocked.**
+**Status: Confirmed scoped architecture direction. The current synthetic
+aggregate passed 935, skipped 31 conditionally, and had zero failures. Real-
+corpus readiness remains blocked.**
 This document records the
 approved continuation path for the existing YNOY main assistant. It does not
 replace the product constitution or claim that this adapter is a complete
@@ -54,19 +54,30 @@ rejected instead of silently rebased.
 `known_at` selects the append-time prefix of source events, reviews, correction
 wrappers, and claim revisions. `as_of` filters by source event time and native
 valid-time scope. Native `correct`, `retract`, and `supersede` operations are
-retrospective interpretation revisions over their source evidence. They do
-not mean that the world changed at the time the correction was recorded. A
-real-world change must be a separate assertion with its own event time and
-native validity interval.
+retrospective interpretation revisions over their source evidence. The
+adapter currently supports `correct` and `retract`; it refuses
+`operation='supersede'` before consuming authorization because proposals do
+not yet carry the canonical active/query-valid same-subject, same-layer,
+same-decision-key receipt tuple required by the repository's implementation
+contract. The refusal does not implement supersession binding or cycle-safe
+supersession. These operations do not mean that the world changed at the time
+the correction was recorded. A real-world change must be a separate assertion
+with its own event time and native validity interval.
 
 The original source payload, digest, and native review `created_at` remain
 unchanged. A correction is an appended wrapper event whose `event_time` is the
 original source event time (or its source `said_at` when the review has no
 event time), preserving source chronology while `known_at` determines when
-that interpretation becomes visible. Conflicting
-claims remain visible and the decision operation abstains rather than
-selecting a truth. These contracts do not establish that an imported claim is
-accurate or current.
+that interpretation becomes visible. The adapter's outer,
+cross-review `DirectMemoryBrief.unresolved_conflicts` grouping uses subject,
+layer, and explicit `fact_key`: independent keys do not create a false
+cross-review conflict, while opposite modalities for the same key conflict
+even when wording differs. This is an additional adapter-level grouping.
+Native per-review `DecisionBrief` conflict detection retains its existing
+layer-plus-normalized-prose behavior; native conflict resolution, payloads,
+and hashes were not migrated. Outer conflicts remain visible and the adapter
+abstains rather than selecting a truth. These contracts do not establish that
+an imported claim is accurate or current.
 
 For a reviewed atom whose prior correction changed effective fields, unsafe
 incremental continuation is rejected because it could restore stale fields.
@@ -172,38 +183,68 @@ source mutation, neither of which is in the current API. Full Ruff, mypy over
 authorization, correction/reload, hashes, JSONL, backup, and prepared-index
 operations with network, providers, and PostgreSQL blocked.
 
-The initial integrated run reported 900 passed, 31 skipped, and four failed.
+The prior integrated checkpoint at `811f6fd` initially reported 900 passed,
+31 skipped, and four failed.
 The history-test oracle/setup was corrected. Three baseline expiry failures
 were verified against the untouched base; a clock-only fixture correction
-then passed its three focused tests. The final aggregate run passed 931 tests,
-skipped 31, had no failures, reported 197 warnings, and measured 83.54% branch
+then passed its three focused tests. The final aggregate at `811f6fd` reported
+931 tests passed, 31 skipped, zero failures, 197 warnings, and 83.54% branch
 coverage in 481.88 seconds. The unchanged 70% coverage gate passed. The skips
 were database/platform conditional (no `YNOY_TEST_DATABASE_URL`; Windows
 symlink/file-identity conditions), so no PostgreSQL-green claim follows.
 
-Additional separate checks passed: 33 focused defect tests; 15 independent
-external-witness correctness tests with two deferred-capability cases
-deselected; six installed-wheel CLI tests; Ruff; mypy on 311 files; source
-limits; compileall; and diff check. The six CLI tests exercised SQLite
+Additional separate checks at that checkpoint included 33 focused defect
+tests; 15 independent external-witness correctness tests with two deferred-
+capability cases deselected; six installed-wheel CLI tests; Ruff; mypy on 311
+files; source limits; compileall; and diff check. The six CLI tests exercised SQLite
 persistence, source review, live-user authorization, correction/reload, hashes,
 JSONL/backup, and prepared-index operations with network, providers, and
 PostgreSQL blocked. The two deselected witness cases require a privacy-blind
 opaque index and external source mutation, both outside the current API.
 
-The code-only 53-file review reported no confirmed P0/P1/P2 findings. The final
-wheel was rebuilt and installed through the bundled-pip isolated path; the real
-`ynoy.exe` ran. The full offline `uv sync` path still encounters Windows
-PE-launcher handling; pinned dependencies synced with `--no-install-project`.
-The aggregate result establishes synthetic/runtime conformance only. It does
+The code-only 53-file review reported no confirmed P0/P1/P2 findings. The
+previous wheel was rebuilt and installed through the bundled-pip isolated path;
+the real `ynoy.exe` ran. The full offline `uv sync` path still encounters
+Windows PE-launcher handling; pinned dependencies synced with
+`--no-install-project`. That earlier aggregate establishes synthetic/runtime
+conformance only. It does
 not establish PostgreSQL integration, real-corpus privacy or deletion,
 external-source binding, retrieval quality, or persona fidelity. GitHub review
-remains pending after the draft pull request.
+remains a separate exact-head gate; the earlier checkpoint review does not
+cover these changes.
 
 See [Event 066](conversation-record.md#event-066--scoped-direct-assistant-memory-adapter),
 [D-076](decision-log.md#d-076--authorize-a-scoped-direct-assistant-memory-adapter),
 [L-051](source-ledger.md#l-051--scoped-direct-assistant-memory-adapter-contract),
 the runtime update [L-052](source-ledger.md#l-052--direct-memory-time-authority-and-current-validation),
+the guard update [L-054](source-ledger.md#l-054--supersession-binding-guard-and-conflict-key-semantics),
+and [L-055](source-ledger.md#l-055--supersessionconflict-follow-up-validation),
 and [RQ-042](open-questions.md#rq-042--does-the-direct-memory-path-preserve-source-and-decision-boundaries-in-operation).
 See [RQ-043](open-questions.md#rq-043--what-privacy-and-recovery-contracts-block-real-corpus-use),
 the [erasure contract](mathematical-foundation/state-privacy-erasure.md), and
 the [test acceptance boundary](mathematical-foundation/implementation-test-contract.md).
+
+## Current Follow-Up Validation — 2026-09-30
+
+The aggregate passed 935 tests, skipped 31 conditionally, and had zero
+failures, with 197 warnings and 83.55% measured branch coverage in 461.27
+seconds. The existing 70% coverage gate passed. Thirty-one focused tests
+passed. Six installed-wheel CLI tests passed with model, network, and
+PostgreSQL calls blocked; two changed production modules matched the installed
+wheel bytes. Ruff, mypy over 311 files, source limits, compileall, and diff
+check passed.
+
+The independent witness run passed 14 and explicitly deselected three cases.
+Two require deferred corpus APIs. The third expects different explicit fact
+keys to conflict based on matching prose, contrary to the formal decision-key
+contract. Four tracked tests cover different keys with identical wording,
+same-key cases with matching and differing wording, and layer separation. The
+independent witness result is not all green. Targeted checks against baseline
+`811f6fd` reproduced three failures and two passes; these are historical
+baseline results, not current failures.
+
+The new guard refuses supersession before authorization consumption. It does
+not implement the binding protocol or cycle-safe supersession. Current test
+results establish neither PostgreSQL integration nor real-corpus privacy,
+retrieval quality, or persona fidelity. GitHub review remains a separate
+exact-head gate; the earlier checkpoint review does not cover these changes.

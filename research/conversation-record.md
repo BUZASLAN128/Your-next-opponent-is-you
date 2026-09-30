@@ -3033,3 +3033,47 @@ confirmed P0/P1/P2 findings. GitHub review remains pending after the draft PR.
 None of these results closes source lifecycle, deletion/backup registry,
 sidecar cleanup, interrupted-import recovery, real-corpus readiness, retrieval
 quality, or persona evidence.
+
+### Supersession Binding and Conflict-Key Update — 2026-09-30
+
+The implementation lead reports a newly added fail-closed guard: the adapter
+refuses `operation='supersede'` before consuming authorization because its
+`FactProposal` shape does not bind the canonical active/query-valid receipt
+tuple for the same subject, layer, and decision key required by
+`research/mathematical-foundation/implementation-test-contract.md`. The guard
+does not implement supersession binding or cycle-safe supersession; `correct`
+and `retract` remain the supported correction operations.
+
+The implementation lead also reports that the adapter's outer cross-review
+`DirectMemoryBrief.unresolved_conflicts` grouping uses explicit subject, layer,
+and fact-key identity. Different keys are independent there; opposite
+modalities on the same key conflict even when wording differs. Native
+per-review `DecisionBrief` conflict detection retains its layer-plus-normalized-
+prose behavior; the native resolver and hashes were not migrated.
+The previously reported 931-pass aggregate belongs to checkpoint `811f6fd` and
+predates these changes. At this point in the record, a fresh aggregate was
+pending; the subsequent validation report follows.
+
+### Follow-Up Validation for Supersession and Conflict-Key Changes — 2026-09-30
+
+**Implementation-team report:** The full suite passed 935, skipped 31
+conditionally, and had zero failures, with 197 warnings and 83.55% measured
+branch coverage in 461.27 seconds. The existing 70% coverage gate passed.
+Thirty-one focused tests passed. Six installed-wheel CLI tests passed with
+model, network, and PostgreSQL calls blocked; two changed production modules
+matched the installed wheel bytes. Ruff, mypy over 311 files, source limits,
+compileall, and diff check passed.
+
+The independent witness run passed 14 and explicitly deselected three tests.
+Two require deferred corpus APIs. The third expects the adapter's outer
+cross-review grouping to conflict across different explicit fact keys because
+prose matches, contrary to that grouping's decision-key contract. Four tracked
+outer-grouping cases cover different keys with the same wording, same-key
+same- and different-wording conflicts, and separate layers. Against baseline
+`811f6fd`, the targeted tests reproduced
+three failures and two passes. These baseline outcomes are historical and do
+not alter the current aggregate result.
+
+GitHub review remains a separate exact-head gate; the earlier checkpoint
+review does not cover these changes. The test report does not establish PostgreSQL
+integration, real-corpus privacy, retrieval quality, or persona fidelity.

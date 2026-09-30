@@ -2526,3 +2526,55 @@ implemented, so real-corpus readiness remains blocked.
   producer-registered deletion/backup completeness, WAL/SHM cleanup,
   interrupted-import recovery, real-corpus readiness, retrieval quality, or
   persona fidelity. RQ-043 remains open.
+
+### L-054 — Supersession Binding Guard and Conflict-Key Semantics (2026-09-30)
+
+- **Type:** Implementation-lead report of source changes; fresh aggregate
+  validation pending.
+- **Provenance:** Conversation Event 066 follow-up; implementation-test
+  contract at `research/mathematical-foundation/implementation-test-contract.md`.
+- **Observed behavior:** The adapter rejects `operation='supersede'` before
+  consuming authorization because its `FactProposal` does not bind the
+  required canonical active/query-valid same-subject, same-layer,
+  same-decision-key receipt tuple. This refusal is not supersession binding or
+  cycle-safe supersession. `correct` and `retract` remain available.
+- **Conflict semantics:** The adapter's outer, cross-review
+  `DirectMemoryBrief.unresolved_conflicts` grouping uses subject, layer, and
+  explicit fact key. Different keys are independent; opposite modalities on
+  one key conflict even with different wording. Native per-review
+  `DecisionBrief` conflict detection retains its existing layer-plus-
+  normalized-prose behavior; the native resolver and hashes were not migrated.
+- **Validation status:** The 931-pass aggregate was run at checkpoint
+  `811f6fd` before these updates. No aggregate or focused result for the new
+  changes has yet been reported.
+- **Does not establish:** That the deferred binding protocol or cycle-safe
+  supersession is implemented, that unresolved conflict selects truth, or
+  that a future aggregate will validate the new behavior.
+
+### L-055 — Supersession/Conflict Follow-Up Validation (2026-09-30)
+
+- **Type:** Implementation-team aggregate, focused-test, installed-wheel,
+  independent-witness, and static-check report.
+- **Provenance:** Conversation Event 066 follow-up; counts and wheel comparison
+  supplied by the implementation lead.
+- **Current aggregate:** 935 passed, 31 conditionally skipped, 0 failed, 197
+  warnings, 83.55% measured branch coverage, 461.27 seconds, exit code 0. The
+  existing 70% coverage gate passed.
+- **Additional checks:** 31 focused tests passed; six installed-wheel CLI tests
+  passed with model/network/PostgreSQL calls blocked. Two changed production
+  modules matched installed wheel bytes. Ruff, mypy over 311 files, source
+  limits, compileall, and diff check passed.
+- **Independent witness scope:** 14 passed, three explicitly deselected. Two
+  require deferred corpus APIs. One expects a conflict between different
+  explicit fact keys based on matching prose, contrary to the adapter's outer
+  cross-review fact-key grouping contract.
+  Four tracked outer-grouping cases cover different keys with same wording,
+  same-key conflicts with same/different wording, and distinct layers. The
+  independent witness result is not an all-green run.
+- **Baseline comparison:** Targeted checks against `811f6fd` reproduced three
+  failures and two passes for the supersession/conflict changes. These are
+  historical baseline results, not current failures.
+- **Review/delivery:** GitHub review remains a separate exact-head gate; the
+  earlier checkpoint review does not cover these changes.
+- **Does not establish:** PostgreSQL integration, real-corpus privacy or
+  deletion, external-source lifecycle, retrieval quality, or persona fidelity.

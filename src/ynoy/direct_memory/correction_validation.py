@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from contextlib import closing
 
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.errors import DataValidationError
@@ -19,6 +18,11 @@ def validate_operation(
     facts: Sequence[Mapping[str, object]],
     supersessions: Mapping[str, str] | None,
 ) -> dict[str, str]:
+    if operation == "supersede":
+        raise DataValidationError(
+            "direct_memory_supersession_binding_required",
+            "Supersession requires a query-valid canonical claim binding that this adapter lacks.",
+        )
     claim_to_fact = {str(item["claim_id"]): str(item["fact_key"]) for item in facts}
     selected = {claim_to_fact.get(str(item.claim_id)) for item in decisions}
     if not decisions or None in selected:
@@ -40,8 +44,6 @@ def validate_operation(
             "direct_memory_retraction_invalid",
             "Retraction requires explicit native rejection decisions.",
         )
-    if operation == "supersede":
-        _validate_supersessions(database, decisions, project, facts, supersessions, selected)
     return claim_to_fact
 
 
@@ -50,43 +52,6 @@ def validate_kind(operation: str) -> None:
         raise DataValidationError(
             "direct_memory_correction_kind",
             "Correction operation must be correct, retract, or supersede.",
-        )
-
-
-def _validate_supersessions(
-    database: DirectMemoryDatabase,
-    decisions: Sequence[ClaimReviewDecision],
-    project: str,
-    facts: Sequence[Mapping[str, object]],
-    supersessions: Mapping[str, str] | None,
-    selected: set[str | None],
-) -> None:
-    if any(not isinstance(item, RejectClaimDecision) for item in decisions):
-        raise DataValidationError(
-            "direct_memory_supersession_invalid",
-            "Supersession must explicitly reject each replaced native claim.",
-        )
-    if not supersessions or set(supersessions) != selected:
-        raise DataValidationError(
-            "direct_memory_supersession_target_required",
-            "Supersession must map each rejected fact key to its replacement fact key.",
-        )
-    if any(old == new for old, new in supersessions.items()):
-        raise DataValidationError(
-            "direct_memory_supersession_target_invalid", "A fact cannot supersede itself."
-        )
-    with closing(database.connect()) as connection:
-        known = {
-            str(row[0])
-            for row in connection.execute(
-                "SELECT DISTINCT fact_key FROM claim_revisions WHERE project=?", (project,)
-            )
-        }
-    known.update(str(item["fact_key"]) for item in facts)
-    if set(supersessions.values()) - known:
-        raise DataValidationError(
-            "direct_memory_supersession_target_missing",
-            "Supersession replacement fact must already exist in the project.",
         )
 
 

@@ -129,12 +129,18 @@ def _unresolved_conflicts(
     groups: dict[tuple[str, str, str], list[tuple[ClaimModality, str]]] = defaultdict(list)
     for brief in briefs:
         for entry in brief.all_entries():
+            fact_key = fact_keys.get(str(entry.source_claim_id))
+            if not fact_key:
+                raise DataValidationError(
+                    "direct_memory_fact_link_missing",
+                    "Every active decision must retain its explicit fact key.",
+                )
             key = (
                 brief.subject_id,
                 entry.target_layer.value,
-                " ".join(entry.statement.casefold().split()),
+                fact_key,
             )
-            groups[key].append((entry.modality, fact_keys.get(str(entry.source_claim_id), "")))
+            groups[key].append((entry.modality, fact_key))
     conflicts = []
     for entries in groups.values():
         modalities = {item[0] for item in entries}

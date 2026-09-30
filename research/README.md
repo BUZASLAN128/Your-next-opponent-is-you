@@ -3,25 +3,28 @@
 > 2026-09-30 scoped direct-assistant memory decision: the user authorized a
 > local SQLite append adapter and deterministic PageIndex navigation for
 > continued work in the existing main assistant. The existing PostgreSQL V1
-> core remains in force for its current paths. Source-admission, database,
-> structural-index, CLI, static-check, and final synthetic aggregate checks
-> have passed (931 passed, 31 conditional skips, zero failures). The prepared
-> index retains exact
-> source text in a private bundle; it is not a privacy-blind metadata index.
+> core remains in force for its current paths. The current aggregate passed
+> 935 tests, skipped 31, and had zero failures, with 197 warnings and 83.55%
+> branch coverage. Focused, installed-wheel CLI, independent-witness,
+> static-check, and package checks are separately recorded below. The prepared
+> index retains exact source text in a private bundle; it is not a privacy-
+> blind metadata index.
 > Real-corpus readiness remains blocked on source binding, deletion/backup and
 > SQLite sidecar cleanup, interrupted-import recovery, and adoption gates. No
 > full executive-agent parity, retrieval accuracy, or real-corpus claim follows.
-> The first integrated run reported 900 passed, 31 skipped, and 4 failures;
-> its history oracle/setup and clock-only baseline fixtures were corrected.
-> The final aggregate passed 931 tests, skipped 31, had no failures, and
-> measured 83.54% branch coverage (70% gate unchanged). Skips were
-> database/platform conditional; no PostgreSQL integration or real-corpus
-> privacy claim follows. Ruff, mypy on 311 files, source limits, compileall,
-> and diff check passed. The final wheel ran through bundled-pip isolated
-> installation; full offline `uv sync` still hits Windows PE-launcher
-> handling. GitHub review remains pending after the draft pull request.
+> The first integrated run at prior checkpoint `811f6fd` reported 900 passed,
+> 31 skipped, and 4 failures; its history oracle/setup and clock-only baseline
+> fixtures were corrected. That checkpoint's aggregate passed 931 tests,
+> skipped 31, had no failures, and measured 83.54% branch coverage (70% gate
+> unchanged). The current 31 skips were database/platform conditional; no
+> PostgreSQL integration or real-corpus privacy claim follows. Ruff, mypy on
+> 311 files, source limits, compileall, and diff check passed. The prior
+> checkpoint wheel ran through bundled-pip isolated installation; full offline `uv sync` still hits Windows PE-launcher
+> handling. GitHub review remains a separate exact-head gate; the earlier
+> checkpoint review does not cover these changes. See L-055 for
+> the current follow-up validation and witness exclusions.
 > See the [architecture note](direct-assistant-memory-adapter.md), Event 066,
-> D-076, L-051, RQ-042, and RQ-043.
+> D-076, L-051, L-054, L-055, RQ-042, and RQ-043.
 
 > 2026-07-20 product-direction checkpoint: the confirmed target is a personal
 > executive agent that carries the user's decision logic, manages projects,
@@ -101,10 +104,13 @@
 > bounded assisted review implemented; the private audit awaits represented-
 > user labels and the first new proposal receipt remains unreliable, while real
 > persona evidence, sealed comparison, and production security proofs remain
-> pending. A scoped direct-main-assistant memory adapter has passed its final
-> synthetic aggregate; 31 database/platform-conditional skips remain, so no
-> PostgreSQL integration or real-corpus claim is implied. Real-corpus source binding, registered erasure,
-> backup/WAL-SHM cleanup, and import recovery also remain open.
+> pending. A scoped direct-main-assistant memory adapter's current synthetic
+> aggregate passed 935 tests with 31 conditional skips and zero failures; the
+> separate 14-pass/3-deselected independent-witness result is not all green.
+> The 31 database/platform-conditional skips mean no PostgreSQL integration or
+> real-corpus claim is implied. Real-corpus
+> source binding, registered erasure, backup/WAL-SHM cleanup, and import
+> recovery also remain open.
 > Last updated: 2026-09-30
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private

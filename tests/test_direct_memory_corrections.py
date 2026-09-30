@@ -4,6 +4,8 @@ from datetime import timedelta
 from pathlib import Path
 from uuid import UUID
 
+import pytest
+
 from tests.direct_memory_fixtures import NOW, PROJECT, SOURCE_TEXT, make_native_review
 from ynoy.decision_brief import resolve_decision_brief
 from ynoy.direct_memory import (
@@ -15,6 +17,7 @@ from ynoy.direct_memory import (
 )
 from ynoy.direct_memory.codec import correction_payload_sha256
 from ynoy.direct_memory.models import UserAuthorizationReceipt
+from ynoy.errors import DataValidationError
 from ynoy.interaction_review import build_interaction_review
 from ynoy.models import (
     ClaimReviewDecision,
@@ -127,16 +130,13 @@ def test_later_partial_rejection_leaves_other_confirmed_fact_visible(
     assert tuple(item.claim_id for item in native_brief.persona_candidates) == (
         review.claims[1].record_id,
     )
-    assert review.claims[0].record_id not in {
-        item.claim_id for item in native_brief.all_entries()
-    }
+    assert review.claims[0].record_id not in {item.claim_id for item in native_brief.all_entries()}
 
     reopened = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
     assert reopened.brief(PROJECT, as_of=as_of, known_at=as_of) == brief
 
 
-def test_supersession_binds_mapping_and_persists_native_fact_relation(tmp_path: Path) -> None:
-    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+def _supersession_intent(store: DirectMemoryStore):
     review, stored = _two_fact_review(store)
     decisions = (
         RejectClaimDecision(
@@ -160,6 +160,29 @@ def test_supersession_binds_mapping_and_persists_native_fact_relation(tmp_path: 
         ),
         expected_revision=store.current_revision(PROJECT),
     )
+    return stored, decisions, mapping, digest, store.current_revision(PROJECT)
+
+
+def test_supersession_without_native_binding_fails_and_preserves_revision(
+    tmp_path: Path,
+) -> None:
+    store = DirectMemoryStore(tmp_path / "memory.sqlite3", clock=lambda: NOW)
+    stored, decisions, mapping, digest, revision = _supersession_intent(store)
+    previous_claim_revisions = store.list_claim_revisions(PROJECT)
+    altered_mapping_digest = correction_payload_sha256(
+        decisions,
+        operation="supersede",
+        supersessions={"communication.concise": "communication.different"},
+    )
+    with pytest.raises(DataValidationError) as tampered:
+        store.authorize_action(
+            "auth-supersede-one",
+            action="supersede",
+            payload_sha256=altered_mapping_digest,
+            subject_id="self",
+            review_sha256=stored.review_sha256,
+        )
+    assert tampered.value.code == "direct_memory_authorization_mismatch"
     authorization = store.authorize_action(
         "auth-supersede-one",
         action="supersede",
@@ -167,20 +190,23 @@ def test_supersession_binds_mapping_and_persists_native_fact_relation(tmp_path: 
         subject_id="self",
         review_sha256=stored.review_sha256,
     )
-    result = store.apply_correction(
-        stored.review_id,
-        decisions,
-        authorization=authorization,
-        expected_revision=store.current_revision(PROJECT),
-        operation="supersede",
-        supersessions=mapping,
+    with pytest.raises(DataValidationError) as unbound:
+        store.apply_correction(
+            stored.review_id,
+            decisions,
+            authorization=authorization,
+            expected_revision=revision,
+            operation="supersede",
+            supersessions=mapping,
+        )
+    assert unbound.value.code == "direct_memory_supersession_binding_required"
+    assert store.current_revision(PROJECT) == revision
+    assert store.list_corrections(stored.review_id) == ()
+    assert store.list_claim_revisions(PROJECT) == previous_claim_revisions
+    assert store.authorize_action(
+        "auth-supersede-one",
+        action="supersede",
+        payload_sha256=digest,
+        subject_id="self",
+        review_sha256=stored.review_sha256,
     )
-
-    replaced = [
-        item
-        for item in store.list_claim_revisions(PROJECT)
-        if item.fact_key == "communication.concise"
-    ]
-    assert result.operation == "supersede"
-    assert result.supersessions == mapping
-    assert replaced[-1].related_fact_key == "communication.format"
