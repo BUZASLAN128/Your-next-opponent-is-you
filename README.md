@@ -57,6 +57,26 @@ self. It supports synthetic and locally authorized experiments around:
 - a resumable, bounded-memory full-persona scanner that writes source-bound
   private shards, plus deterministic pack, life-profile, response, and
   target-isolated benchmark commands;
+- an in-progress, scoped direct-main-assistant memory path whose approved
+  architecture uses provenance-preserving local append storage and
+  deterministic navigation of explicitly supplied prepared page trees; its
+  focused test slices and final synthetic aggregate have been reported passing
+  (931 passed, 31 conditional skips, no failures). The prepared index retains
+  exact source text in a private bundle, and real-corpus readiness remains
+  gated on source binding, registered deletion/backup handlers, sidecar
+  cleanup, and interrupted-import recovery. It makes no full deletion or privacy claim, as
+  recorded in
+  [the adapter architecture note](research/direct-assistant-memory-adapter.md).
+
+The first integrated run reported 900 passed, 31 skipped, and four failed;
+the history oracle/setup and clock-only baseline fixtures were corrected. The
+final aggregate run passed 931, skipped 31, and had no failures, with 83.54%
+measured branch coverage. Skips were database/platform conditional, so this is
+not a PostgreSQL-green or real-corpus privacy result. Ruff, mypy on 311 files,
+source limits, compileall, and diff check passed. The final wheel was rebuilt
+and ran through the bundled-pip isolated install; full offline `uv sync` still
+hits Windows PE-launcher handling. GitHub review remains pending after the
+draft pull request.
 
 The repository has synthetic test evidence plus bounded private correction,
 full-persona, and persona-study observations whose content remains outside
@@ -157,6 +177,16 @@ fail-closed deterministic replay
               |
 scoped decision brief or abstention
 ```
+
+The separately authorized direct-main-assistant adapter is being implemented
+as a scoped path over local SQLite append records and deterministic PageIndex
+navigation of caller-supplied prepared page trees. It preserves exact source
+payloads and provenance, reuses the review/correction/replay/decision
+contracts, and keeps imported user-role material unattributed until a separate
+claim-holder operation binds it. This does not replace PostgreSQL in existing
+V1 paths or establish complete executive-agent or persona parity. Its
+implementation and synthetic validation status are tracked in the
+[architecture note](research/direct-assistant-memory-adapter.md).
 
 Responsibilities are split across small modules for corpus parsing, policy,
 typed models, storage repositories, inference, benchmarking, reporting, and

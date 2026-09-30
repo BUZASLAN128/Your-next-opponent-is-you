@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 from support.harvest_authorship import authorship_submission, prepare_authorship_fixture
-from ynoy.persona_study.harvest_authorship import submit_harvest_authorship
 
 from ynoy.errors import DataValidationError, PolicyViolation
 from ynoy.models.persona_harvest import HarvestLimits
 from ynoy.persona_study.artifacts import PersonaStudyStore
 from ynoy.persona_study.harvest import prepare_harvest, resume_harvest
+from ynoy.persona_study.harvest_authorship import submit_harvest_authorship
 
 
 def _reject(private: Path, now, submission) -> None:
@@ -33,8 +33,9 @@ def test_wrong_revision_is_rejected(tmp_path: Path) -> None:
     _reject(private, now, submission)
 
 
-def test_stale_revision_after_resume_is_rejected(tmp_path: Path) -> None:
+def test_stale_revision_after_resume_is_rejected(tmp_path: Path, monkeypatch) -> None:
     source, private, prepared, now = prepare_authorship_fixture(tmp_path)
+    monkeypatch.setattr("ynoy.persona_study.artifacts.utc_now", lambda: now)
     resumed = resume_harvest(source, private, prepared.manifest.run_id, synthetic=True)
     assert resumed.checkpoint.cursor.revision > prepared.checkpoint.cursor.revision
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 
+from ynoy.cli.direct_memory_parser import add_direct_memory_parsers
 from ynoy.cli.full_persona_parser import add_full_persona_parsers
 from ynoy.cli.manager_spike_parser import add_manager_spike_parsers
 from ynoy.models import CandidateKind, DecisionLabel, PersonaStratum
@@ -26,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     _erase_parser(commands)
     _review_parser(commands)
     _study_parser(commands)
+    add_direct_memory_parsers(commands)
     return parser
 
 

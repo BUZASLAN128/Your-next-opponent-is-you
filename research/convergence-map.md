@@ -1,7 +1,7 @@
 # Research Convergence Map
 
 > Status: living, technology-neutral product model
-> Last updated: 2026-07-16
+> Last updated: 2026-09-30
 > Authority: organizes confirmed requirements, research findings, candidates,
 > and evidence gates; it does not select infrastructure
 
@@ -1018,3 +1018,121 @@ flags.
 **Open evidence:** A safe live run was deferred because available system RAM
 was lower than the prior model working set. The implementation result does not
 substitute for a measured model outcome.
+
+## Direct Main-Assistant Memory Adapter — 2026-09-30
+
+**Confirmed decision:** The existing YNOY main assistant may continue through
+a scoped local SQLite append store and deterministic PageIndex navigation of
+explicitly supplied prepared page trees. The existing PostgreSQL core remains
+the baseline for paths that already use it. The adapter reuses native review,
+correction, replay, and decision-brief contracts while preserving exact source
+payloads, append-time provenance, separate valid and known time, and
+claim-holder and action-authorization boundaries.
+
+**Implementation status:** The implementation lead reports stable
+`DirectMemoryStore` and `StructuralIndex` interfaces and a `ynoy direct-memory`
+CLI namespace. Focused slices reportedly passed 49 relevant source-admission,
+correction, and replay tests plus 21 Windows structural-index acceptance tests
+after a lock-handle fix. Facade/CLI integration and aggregate validation remain
+pending, so no full pass is claimed. This report therefore describes the
+approved contract and bounded reported evidence, not complete integrated
+behavior.
+
+**Inference:** If these boundaries hold in the integrated path, the project
+gains a direct assistant memory substrate without an intermediary model or
+mandatory embeddings. This would close an operational integration gap, not a
+persona-evidence or retrieval-quality gap. The inference is disproved by any
+source mutation, stale-write acceptance, role-to-user promotion without an
+explicit binding, summary presented as page evidence, or conflict resolution
+that chooses a truth without review.
+
+**Next convergence gate:** Verify the implemented API/CLI against synthetic
+source, timestamp, revision, correction, attribution, authorization, conflict,
+and bounded exact-read cases. Keep real-corpus use and scientific accuracy
+claims behind their separate authorization and evaluation gates.
+
+## Direct-Memory CLI and Real-Corpus Readiness Update — 2026-09-30
+
+**Reported interface:** The CLI help now exposes
+`ynoy --private-root ROOT direct-memory [--synthetic]` with 18 subcommands;
+every ledger mutation requires an expected revision. Real file inputs are
+constrained to the explicit private root, output files are exclusive-created
+outside Git, and prepared-index operations do not initialize SQLite. The
+unchanged native brief is returned with a separate `native_brief_hashes`
+canonical hash.
+
+**Reported checks:** The source-admission/correction/replay slice has 49
+passing cases (14 new plus 35 relevant existing); the database-focused slice
+has 12 passing cases; the Windows structural-index acceptance slice has 21
+passing cases after a lock-handle fix; and focused mypy passes for seven
+modules. Combined store/CLI issues remain under repair. These are separate
+focused results; aggregate validation has not passed.
+
+**Privacy boundary:** The prepared index persists exact text, document name,
+and navigation summaries in a private source bundle. It is not a
+privacy-blind metadata index. The adapter has no canonical external-file
+binding, registered erasure/backup producer registry, WAL/SHM cleanup
+contract, or interrupted-import cursor. Real-corpus readiness remains blocked
+on these contracts and the existing adoption gates. No full pipeline deletion
+or real-corpus privacy claim is supported.
+
+## Direct-Memory Review and Temporal Contract Update — 2026-09-30
+
+**Observed source contract:** Corrections, retractions, and supersessions are
+retrospective interpretation revisions. They preserve the original source
+payload/hash and native review creation time. `known_at` selects the appended
+prefix; `as_of` filters source event time and native validity. A correction
+wrapper retains the source event time. A world-state change requires a separate
+assertion event. One project accepts only one live subject, and mixed-subject
+legacy briefs fail closed.
+
+**Authority boundary:** A tool receipt is imported by the trusted local caller,
+not cryptographically produced by an executor. Its exact canonical result must
+match the `tool_verified` claim payload, and failed, cancelled, or explicitly
+unexecuted results are rejected. It provides no truth oracle or execution
+authority. Scope-changing corrections require complete typed replacement
+claims so replay does not restore stale inference/scope fields.
+
+**Validation status:** The first integrated run reported 900 passed, 31
+skipped, and 4 failed. One history-test oracle is being corrected; three
+pre-existing harvest clock fixtures (July test dates against a September
+runtime) are under verified-base review. Root final review remains pending.
+Offline full dependency sync hits Windows PE-launcher handling. Dependency sync
+without project installation, offline wheel build, and bundled-pip isolated
+installation are reported successful; the updated wheel rebuild is pending.
+This is not aggregate-green evidence.
+
+**Persistent readiness boundary:** The PageIndex source bundle stores exact
+text, document name, and summaries, so it is not privacy-blind. External-file
+identity binding, registered erasure/backup producers, WAL/SHM cleanup, and
+restartable import cursors remain absent. These gaps, plus separate adoption
+gates, keep real-corpus use and full deletion claims blocked.
+
+## Final Synthetic Acceptance Checkpoint — 2026-09-30
+
+**Observed test result:** The final aggregate passed 931 tests, skipped 31, and
+had zero failures, 197 warnings, and 83.54% measured branch coverage in 481.88
+seconds. The unchanged 70% branch gate passed. Skips were database/platform
+conditional (no `YNOY_TEST_DATABASE_URL` and Windows symlink/file-identity
+conditions), so PostgreSQL integration is unverified.
+
+**Additional evidence:** 33 focused defect tests, 15 independent external-
+witness correctness tests (two capability-dependent cases deselected), and six
+installed-wheel CLI tests passed. Ruff, mypy on 311 files, source limits,
+compileall, and diff check passed. The rebuilt wheel installed via bundled pip
+and the installed `ynoy.exe` ran. A code-only review of a 53-file manifest
+reported no confirmed P0/P1/P2 findings; GitHub review remains pending after
+the draft PR.
+
+**Validation history:** The first aggregate was 900 passed, 31 skipped, four
+failed. The history-test oracle/setup was corrected. Three baseline expiry
+failures were verified against the untouched base, then a clock-only fixture
+change passed three focused tests. The final aggregate above covers the
+corrected state; the initial result remains preserved as history.
+
+**Limits:** Neither aggregate nor witness results establish real-corpus
+privacy, source lifecycle/deletion, registered backup erasure, WAL/SHM
+cleanup, interrupted-import recovery, retrieval quality, or persona fidelity.
+The two deselected witness cases require an opaque privacy-blind index and
+external source mutation, capabilities outside this adapter. RQ-043 remains
+open.

@@ -14,6 +14,7 @@ from ynoy.models.interaction import (
     ReviewProviderEvidence,
 )
 from ynoy.models.review_vocab import ReviewAction
+from ynoy.source_spans import validate_exact_source_spans
 
 _UNKNOWNS = (
     "classification_not_user_confirmed",
@@ -125,16 +126,10 @@ def _validate_claim_link(receipt: InteractionReceipt, claim: AtomicClaimProposal
         raise DataValidationError(
             "atomic_claim_subject_mismatch", "Atomic claim belongs to another subject."
         )
-    for span in claim.source_spans:
-        if span.character_end > len(receipt.response):
-            raise DataValidationError(
-                "atomic_claim_span_invalid", "Atomic claim source span is outside the response."
-            )
-        exact = receipt.response[span.character_start : span.character_end]
-        if exact != span.text:
-            raise DataValidationError(
-                "atomic_claim_span_mismatch", "Atomic claim source span does not match evidence."
-            )
+    validate_exact_source_spans(
+        receipt.response,
+        ((span.character_start, span.character_end, span.text) for span in claim.source_spans),
+    )
 
 
 def _claim_key(claim: AtomicClaimProposal) -> tuple[int, int, str]:

@@ -1,6 +1,6 @@
 # Decision Log
 
-> Last updated: 2026-07-16
+> Last updated: 2026-09-30
 > Promotion rule: only explicit user approval can convert a candidate into a
 > confirmed decision.
 
@@ -1432,3 +1432,68 @@ When a decision changes:
   mismatched, or out-of-contract response records rejection without mutation.
 - Status: implemented and fully synthetic-tested. Live comparison remains
   pending safe RAM availability; no performance conclusion is authorized.
+
+### D-076 — Authorize a Scoped Direct-Assistant Memory Adapter (2026-09-30)
+
+- Continue the existing YNOY application through direct operations of its main
+  assistant, using local SQLite append storage and deterministic navigation of
+  explicitly supplied prepared page trees for this memory path.
+- Reuse the native interaction-review, correction, replay, and decision-brief
+  contracts. Preserve source bytes and provenance; capture append time
+  independently from nullable source/event time; separate valid-time `as_of`
+  from `known_at`; reject stale expected revisions.
+- Keep imported user-role content distinct from a source-authorship attestation
+  binding exact source ID, source hash, and subject. Imported assistant and
+  third-party sources cannot become direct-user evidence. Keep action
+  authorization separate, exact-intent-bound, and receipt-backed. Proposals,
+  assistant text, and navigation summaries remain non-authoritative; summaries
+  guide navigation while exact page reads supply source evidence.
+- Corrections use complete typed native-atom replacements; reject unsafe
+  incremental continuation that could lose scope or inference semantics.
+- Preserve the confirmed PostgreSQL core for existing paths. This scoped
+  choice does not revise `AGENTS.md`, claim complete executive-agent parity,
+  establish retrieval/persona accuracy, authorize real-corpus use, or authorize
+  merge, deployment, or release.
+- The user also authorized opening a draft stacked pull request on the existing
+  work. That delivery instruction does not grant merge or deployment authority.
+- Status: partial slices reported: 49 source-admission/correction/replay
+  regression tests and 21 Windows structural-index acceptance tests passed.
+  Facade/CLI integration and aggregate validation remain pending; no full pass
+  is claimed.
+
+**Implementation update (2026-09-30):** The reported CLI surface is now
+`ynoy --private-root ROOT direct-memory [--synthetic]` with the command list in
+the [architecture note](direct-assistant-memory-adapter.md). Additional
+reported slices are 12 database-focused tests and focused mypy for seven
+modules. Combined store/CLI issues remain under repair, so the independent
+slice results do not establish an aggregate pass. The prepared index stores
+exact source text, name, and summaries in a private bundle; it is not a
+privacy-blind index. Real-corpus readiness remains blocked on canonical
+external-source binding, registered erasure/backup and WAL/SHM cleanup,
+interrupted-import recovery, and the existing adoption gates.
+
+**Implementation update (2026-09-30):** Native correction, retraction, and
+supersession are retrospective interpretation revisions over unchanged source
+payload/hash and native review creation time. `known_at` selects the append
+prefix; `as_of` applies source event and native validity scopes. Actual-world
+changes require new assertion events. Each project admits one live subject;
+mixed-subject legacy briefs fail closed. `tool_verified` requires a local
+caller-imported receipt whose canonical result equals the claimed payload and
+whose outcome is not failed, cancelled, or explicitly unexecuted. It supplies
+no executor signature, truth oracle, or action authority. Scope-changing
+corrections require complete typed replacement claims.
+
+The first integrated run reported 900 passed, 31 skipped, and four failures.
+One direct-memory history oracle is being corrected; three harvest clock
+fixtures are under verified-base review. Windows full-sync launcher handling,
+the updated wheel rebuild, and root final review remain open. No aggregate
+green result or real-corpus readiness is claimed.
+
+**Final validation update (2026-09-30):** The final aggregate passed 931 tests,
+skipped 31, and had zero failures, 197 warnings, and 83.54% branch coverage in
+481.88 seconds. The unchanged 70% coverage floor passed. The skips were
+database/platform conditional, so PostgreSQL integration remains unclaimed.
+The final wheel rebuilt and installed through the bundled-pip isolated path;
+full offline `uv sync` remains blocked by Windows PE-launcher handling. GitHub
+review remains pending. This validation does not close real-corpus lifecycle,
+deletion, privacy, or persona-quality gates.

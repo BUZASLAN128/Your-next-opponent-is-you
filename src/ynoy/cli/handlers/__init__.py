@@ -2,6 +2,7 @@ from ynoy.cli.handlers.benchmark import handle_benchmark
 from ynoy.cli.handlers.bootstrap import handle_bootstrap
 from ynoy.cli.handlers.corpus import handle_corpus
 from ynoy.cli.handlers.database import handle_database
+from ynoy.cli.handlers.direct_memory import handle_direct_memory
 from ynoy.cli.handlers.doctor import handle_doctor
 from ynoy.cli.handlers.erase import handle_erase
 from ynoy.cli.handlers.inference import handle_advisor, handle_mirror
@@ -17,6 +18,7 @@ __all__ = [
     "handle_bootstrap",
     "handle_corpus",
     "handle_database",
+    "handle_direct_memory",
     "handle_doctor",
     "handle_erase",
     "handle_manager",

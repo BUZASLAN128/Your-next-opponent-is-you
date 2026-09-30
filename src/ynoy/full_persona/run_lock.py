@@ -2,18 +2,36 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 from importlib import import_module
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Literal, overload
 
 from ynoy.errors import DataValidationError
 from ynoy.persona_study.storage_paths import reject_link_if_present
 
 
+@overload
+def exclusive_run_lock(
+    path: Path, *, expose_handle: Literal[True]
+) -> AbstractContextManager[BinaryIO]: ...
+
+
+@overload
+def exclusive_run_lock(
+    path: Path, *, expose_handle: Literal[False] = False
+) -> AbstractContextManager[None]: ...
+
+
+def exclusive_run_lock(
+    path: Path, *, expose_handle: bool = False
+) -> AbstractContextManager[BinaryIO | None]:
+    """Hold an OS lock; optionally expose its open handle to the lock owner."""
+    return _exclusive_run_lock(path, expose_handle=expose_handle)
+
+
 @contextmanager
-def exclusive_run_lock(path: Path) -> Iterator[None]:
-    """Hold an OS lock that is released automatically when the process exits."""
+def _exclusive_run_lock(path: Path, *, expose_handle: bool) -> Iterator[BinaryIO | None]:
     path.parent.mkdir(parents=True, exist_ok=True)
     reject_link_if_present(path.parent)
     reject_link_if_present(path)
@@ -27,7 +45,7 @@ def exclusive_run_lock(path: Path) -> Iterator[None]:
                 "Another process currently owns this full-persona run lock.",
             ) from exc
         try:
-            yield
+            yield handle if expose_handle else None
         finally:
             _release(handle)
 

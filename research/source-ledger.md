@@ -1,6 +1,6 @@
 # Source Ledger
 
-> Last updated: 2026-07-16
+> Last updated: 2026-09-30
 > Access date for external sources below: 2026-07-15
 
 This ledger records what was actually consulted, what it supports, and what it
@@ -2382,3 +2382,147 @@ These gaps must remain visible until closed.
   latency, persona quality, or any general action capability.
 - **Next check:** A single low-RAM-safe live comparison with the pinned local
   artifact, then immediate process shutdown.
+
+### L-051 — Scoped Direct-Assistant Memory Adapter Contract (2026-09-30)
+
+- **Type:** User-approved scoped architecture direction and implementation-team
+  status report; not yet an independently verified source-code observation.
+- **Provenance:** Event 066 and the delegated implementation contract; see the
+  [architecture note](direct-assistant-memory-adapter.md).
+- **Reported interfaces:** `DirectMemoryStore`, `StructuralIndex`, and the
+  `ynoy direct-memory` CLI namespace. Store operations include source-event
+  append with store-captured `recorded_at`, separate live-user input, native
+  review, provenance-bound correction, brief resolution with separate `as_of`
+  and `known_at`, JSONL export, and backup. Index operations accept explicit
+  prepared documents and expose import, list, tree, node, and page reads.
+- **Reported focused test evidence:** The shared source-admission builder,
+  model, hashing, correction, and replay regression slice passed 14 new tests
+  plus 35 relevant existing tests (49 passed). A Windows structural-index
+  acceptance slice passed 21 tests after a lock-handle fix. The adapter
+  facade/CLI integration and aggregate validation remain pending; these slice
+  counts do not constitute a full test pass.
+- **Reported attribution/correction contract:** `source_authorship` binds
+  `source_id`, `source_sha256`, and `subject_id`; imported assistant or
+  third-party sources cannot become direct-user authorship. The receipt type
+  is `UserAuthorizationReceipt`. Correction uses complete typed native-atom
+  replacements and rejects unsafe incremental continuation that could discard
+  scope or inference semantics.
+- **Supports if confirmed in code:** A direct assistant memory path can
+  preserve source provenance, temporal distinctions, claim-holder boundaries,
+  conflict abstention, and bounded deterministic source navigation without a
+  mandatory intermediary model or embeddings.
+- **Does not establish:** Integrated behavior, successful tests, retrieval
+  quality, real-corpus performance, persona fidelity, executive-agent parity,
+  or external-action authority.
+- **Next check:** Finish facade/CLI integration and aggregate validation, then
+  verify public interfaces and synthetic behavior for source preservation,
+  append time, revision conflicts, correction replay, authorship and
+  authorization binding, conflict abstention, bounded page spans, and exact-
+  read hashes.
+
+**Implementation update (2026-09-30; implementation-lead report):** The CLI
+surface is reported as `ynoy --private-root ROOT direct-memory [--synthetic]`
+with 18 subcommands listed in the architecture note. Mutations require an
+expected revision; private file inputs are constrained to the explicit data
+root; output files are exclusive-create and outside Git. The prepared index
+operates without SQLite initialization. The native `DecisionBrief` payload is
+unchanged; `native_brief_hashes` separately contains `canonical_sha256` of that
+payload.
+
+Reported checks: 12 database-focused tests passed, 21 Windows structural-index
+acceptance tests passed after the lock-handle fix, and focused mypy passed for
+seven modules, alongside the 49 native-builder/correction/replay slice above.
+These separate counts are not a combined pass; store/CLI issues remain under
+repair. The persisted index bundle contains exact text, name, and navigation
+summary, and is not privacy-blind. No canonical external file binding,
+registered erasure/backup and WAL/SHM cleanup, or interrupted-corpus cursor is
+implemented, so real-corpus readiness remains blocked.
+
+### L-052 — Direct-Memory Time, Authority, and Current Validation (2026-09-30)
+
+- **Type:** Direct source inspection plus implementation-team test/build report.
+- **Provenance:** Event 066. Relevant code: `src/ynoy/direct_memory/briefing.py`,
+  `corrections.py`, `correction_revisions.py`, `correction_validation.py`,
+  `claims.py`, `tool_results.py`, `subject_scope.py`,
+  `src/ynoy/structural_index/validation.py`, `normalization.py`, `storage.py`,
+  `src/ynoy/direct_memory/json_bounds.py`, and `backup_publish.py`.
+- **Observed time behavior:** Correct/retract/supersede append retrospective
+  interpretation revisions. `known_at` selects the appended record prefix;
+  `as_of` filters source event time and native valid-time scope. The correction
+  wrapper event time comes from the original native review source event time,
+  or source `said_at` if that is absent. Original source payload/hash and
+  native review `created_at` remain unchanged. A real-world change requires a
+  separate assertion event with its own time and validity interval.
+- **Observed subject partition:** One live subject per project. A different
+  second subject is rejected inside the mutation transaction; a brief also
+  fails closed when legacy reviews contain mixed subjects.
+- **Observed tool-result boundary:** `tool_verified` requires a persisted
+  trusted-local-caller tool receipt and a canonical-JSON-equal claim payload.
+  Receipt context includes operation and input/result digests. Explicit
+  `executed: false`, cancelled, and failed outcomes are rejected. The importer
+  does not cryptographically attest executor identity, establish a truth
+  oracle, or grant execution authority; the caller must capture the actual
+  tool result. Assistant assertions belong in `reported_done` or `uncertain`.
+- **Observed correction continuity:** Unsafe incremental continuation is
+  rejected when it could restore original fields. Complete typed replacements
+  or explicit confirmation of a rejected original are required; split claims
+  require complete replacement claims.
+- **Observed structural guards:** Prepared-document and JSON byte limit is
+  64 MiB; JSON depth/item limits are 128/250,000; tree depth/node limits are
+  128/50,000. Validated document-scope annotations are removed before
+  canonical persistence. Backup publication is atomic and does not overwrite.
+- **Reported current full run:** 900 passed, 31 skipped, four failed. One
+  direct-memory history-test oracle is being fixed. Three pre-existing harvest
+  clock fixtures use July timestamps while the current runtime clock is in
+  September; their verified-base check is underway. Root final review remains
+  pending. No aggregate green result is claimed.
+- **Reported build state:** Offline full `uv sync` fails at Windows PE-launcher
+  handling. Pinned dependency sync with `--no-install-project`, an offline
+  wheel build, and bundled-pip isolated installation are reported successful;
+  rebuilding the updated wheel remains pending.
+- **Does not establish:** Real-corpus readiness, canonical external-source
+  binding, registered deletion/backup completeness, WAL/SHM cleanup,
+  interrupted-import recovery, retrieval quality, or persona fidelity. The
+  project-wide contract is recorded in
+  `research/mathematical-foundation/state-privacy-erasure.md` and its synthetic
+  test limitation in `research/mathematical-foundation/implementation-test-contract.md`.
+- **Next check:** Resolve the history oracle and verified-base fixture check,
+  finish the full validation and wheel rebuild, and close root review. Keep
+  real-corpus use blocked until the RQ-043 lifecycle and adoption gates pass.
+
+### L-053 — Final Synthetic Aggregate and Packaging Checkpoint (2026-09-30)
+
+- **Type:** Implementation-team aggregate test, focused test, static-check,
+  packaging, and code-only review report.
+- **Provenance:** Event 066 and the implementation checkpoint. The code-only
+  review covered a 53-file manifest; test and package counts are reported by
+  the implementation lead.
+- **Final aggregate:** 931 passed, 31 skipped, 0 failed, 197 warnings, 83.54%
+  measured branch coverage, 481.88 seconds. The existing 70% coverage gate was
+  unchanged and passed. Skips were database/platform conditional: no
+  `YNOY_TEST_DATABASE_URL`, and Windows symlink/file-identity conditions.
+  Therefore this does not establish a PostgreSQL integration pass.
+- **Additional separate checks:** 33 focused defect cases passed; 15 frozen
+  external-witness correctness cases passed with two capability-dependent
+  cases deselected; six installed-wheel CLI cases passed. Full Ruff, mypy over
+  311 files, source limits, compileall, and diff check passed. The rebuilt wheel
+  installed via bundled pip in an isolated environment, and the real
+  `ynoy.exe` ran.
+- **CLI case boundary:** The six installed-wheel cases exercised SQLite
+  persistence, source review, live-user authorization, correction/reload,
+  hashes, JSONL and backup, and prepared-index operations with network,
+  providers, and PostgreSQL blocked. The two deselected witness cases require
+  an opaque privacy-blind index and external source mutation, unsupported by
+  the current API.
+- **Historical correction:** The first run was 900 passed, 31 skipped, 4
+  failed. The history oracle/setup was corrected. Three baseline expiry
+  failures were verified against the untouched base; a clock-only fixture fix
+  passed its three focused tests. The final aggregate above includes the
+  corrected state.
+- **Code review:** The independent code-only 53-file review reported no
+  confirmed P0/P1/P2 findings. GitHub review remains pending after the draft
+  pull request.
+- **Does not establish:** PostgreSQL integration, external source identity,
+  producer-registered deletion/backup completeness, WAL/SHM cleanup,
+  interrupted-import recovery, real-corpus readiness, retrieval quality, or
+  persona fidelity. RQ-043 remains open.

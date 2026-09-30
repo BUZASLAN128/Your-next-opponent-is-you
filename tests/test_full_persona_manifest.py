@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 from support.full_persona import add_large_canonical_file, prepared_full_persona_source
-from ynoy.full_persona.store import FullPersonaStore
 
 from ynoy.errors import DataValidationError
 from ynoy.full_persona.manifest import freeze_full_corpus
+from ynoy.full_persona.store import FullPersonaStore
 from ynoy.models.full_persona import FullCorpusLimits
 
 

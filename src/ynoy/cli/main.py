@@ -13,6 +13,7 @@ from ynoy.cli.handlers import (
     handle_bootstrap,
     handle_corpus,
     handle_database,
+    handle_direct_memory,
     handle_doctor,
     handle_erase,
     handle_manager,
@@ -30,6 +31,7 @@ from ynoy.util import json_default, redact_mapping
 Handler = Callable[[argparse.Namespace, CommandContext], dict[str, object]]
 HANDLERS: dict[str, Handler] = {
     "doctor": handle_doctor,
+    "direct-memory": handle_direct_memory,
     "database": handle_database,
     "corpus": handle_corpus,
     "bootstrap": handle_bootstrap,

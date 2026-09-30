@@ -1,7 +1,7 @@
 # Open Questions and Deep-Research Briefs
 
 > Status: prioritized research backlog
-> Last updated: 2026-07-17
+> Last updated: 2026-09-30
 > Constraint: the V1 runtime baseline is confirmed in D-025 through D-032;
 > questions may challenge it with evidence but must not silently expand it.
 
@@ -1486,3 +1486,76 @@ against the deterministic planner.
 eight-step arm budget, oracle, response boundary, and failure outcomes are now
 implemented and tested. The remaining discriminating check is one safe live
 run; until then, no completion or planning-quality conclusion is available.
+
+### RQ-042 — Does the Direct Memory Path Preserve Source and Decision Boundaries in Operation?
+
+**Status:** Structural implementation question partially answered under D-076.
+The final synthetic aggregate and additional focused store/CLI checks pass, but
+this establishes contract behavior only. Retrieval usefulness, real-source
+completeness, and represented-user decision fidelity remain open.
+
+**Known boundary:** Append integrity and deterministic prepared-tree reads can
+show structural behavior. They cannot establish that retrieved facts are
+relevant, that user-role text expresses the current user's belief, or that the
+assistant predicts the represented user's decisions accurately.
+
+**Next discriminating check:** After the separate RQ-043 source-lifecycle and
+adoption gates pass, audit real source-backed reads and corrections with the
+represented user before making any accuracy claim. Continue to distinguish
+retrieval quality from structure, provenance integrity, and personal
+authorship.
+
+### RQ-043 — What Privacy and Recovery Contracts Block Real-Corpus Use?
+
+**Status:** Open readiness gate under D-076. The current adapter is authorized
+as a source-backed text-snapshot subsystem, but that does not authorize or
+establish a complete real-corpus pipeline or deletion guarantee.
+
+**Observed implementation gap (implementation-lead report):** The prepared
+index persists exact source text, document names, and navigation summaries in a
+private source bundle. It has no canonical external-file binding, registered
+erasure/backup producer registry, WAL/SHM cleanup contract, or interrupted-
+corpus resume cursor. The project-wide
+[state/privacy/erasure contract](mathematical-foundation/state-privacy-erasure.md)
+requires a declared and attested producer universe, handler parity, recovery
+and backup scope, closure absence, and a post-delete tombstone fence; content
+hashes or row deletion alone do not satisfy it. The
+[implementation/test acceptance boundary](mathematical-foundation/implementation-test-contract.md)
+also states that synthetic green tests do not prove backup erasure or live
+privacy.
+
+**Next discriminating check:** Define a source identity that binds each
+imported bundle to its canonical external source and version, then specify and
+test producer registration, deletion of database and sidecar/backup artifacts,
+interrupted-import restart, and a future-retry fence across restore/recovery.
+Keep these gates separate from source authorship and represented-user adoption.
+Until they pass, keep real-corpus readiness blocked and make no end-to-end
+deletion claim.
+
+**Implementation evidence update (2026-09-30):** The integrated CLI help and
+source contracts now specify retrospective interpretation revisions,
+append-prefix `known_at`, event/valid-time `as_of`, single-subject isolation,
+local caller-imported tool receipts, full typed replacement for scope-changing
+corrections, bounded structural imports, and atomic non-overwriting backups.
+These are source/runtime contracts; the adapter still lacks the external
+source identity, registered erasure/backup lifecycle, WAL/SHM cleanup, and
+restartable import cursor required to close this question.
+
+The first integrated run reported 900 passed, 31 skipped, and four failures.
+The direct-memory history oracle is being corrected and three harvest fixture
+dates are under verified-base review. The root's final review and updated wheel
+rebuild remain pending. No aggregate green result has been reached.
+
+**Final validation update (2026-09-30):** The corrected aggregate passed 931,
+skipped 31, and had zero failures, 197 warnings, and 83.54% branch coverage in
+481.88 seconds. The 70% coverage floor passed. Thirty-one skips were
+database/platform conditional, so no PostgreSQL integration pass is implied.
+Separate focused checks passed, including six installed-wheel CLI cases. The
+combined source/review contract now passes its structural suite, but this does
+not resolve the remaining lifecycle/privacy gaps in RQ-043 or establish
+retrieval/decision accuracy.
+
+The independent external-witness slice passed 15 cases and deselected two
+cases that require a privacy-blind opaque index and external source mutation.
+Those requirements are outside the current authorized adapter, so they remain
+deferred rather than treated as failures or implemented behavior.
