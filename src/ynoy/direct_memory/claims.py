@@ -8,6 +8,7 @@ from ynoy.direct_memory.codec import strict_dumps, strict_loads
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.ledger import append_revision_record, load_claim_revisions
 from ynoy.direct_memory.models import (
+    MAX_FACT_KEY_LENGTH,
     ClaimRevision,
     ProvenanceState,
     RevisionKind,
@@ -25,6 +26,19 @@ from ynoy.direct_memory.payload_snapshot import (
 from ynoy.direct_memory.source_events import trusted_time
 from ynoy.direct_memory.sources import SourceOperations
 from ynoy.errors import DataValidationError
+
+
+def _validate_fact_key(fact_key: str) -> None:
+    if (
+        not isinstance(fact_key, str)
+        or not fact_key
+        or fact_key != fact_key.strip()
+        or len(fact_key) > MAX_FACT_KEY_LENGTH
+    ):
+        raise DataValidationError(
+            "direct_memory_fact_key_invalid",
+            "Claim fact keys must be non-empty, trimmed, and at most 240 characters.",
+        )
 
 
 class ClaimOperations:
@@ -47,6 +61,7 @@ class ClaimOperations:
         tool_receipt_id: str | None = None,
         subject_id: str = "self",
     ) -> ClaimRevision:
+        _validate_fact_key(fact_key)
         state = manual_claim_state(state)
         evidence = self._project_evidence(project, evidence_ids)
         snapshot = snapshot_payload(payload)
@@ -181,13 +196,15 @@ class ClaimOperations:
         *,
         known_at: datetime | None = None,
         as_of: datetime | None = None,
+        revision_cutoff: int | None = None,
     ) -> tuple[ClaimRevision, ...]:
-        with closing(self.database.connect()) as connection:
-            revisions = load_claim_revisions(
-                connection, project=project, known_at=known_at, as_of=as_of
-            )
-        verify_revision_sources(self, revisions)
-        return revisions
+        return _list_claim_revisions(
+            self,
+            project,
+            known_at=known_at,
+            as_of=as_of,
+            revision_cutoff=revision_cutoff,
+        )
 
     def _tool_receipt(self, receipt_id: str | None) -> ToolReceipt | None:
         if receipt_id is None:
@@ -221,6 +238,36 @@ class ClaimOperations:
             raise DataValidationError(
                 "direct_memory_tool_receipt_integrity", "Stored tool receipt failed verification."
             ) from exc
+
+
+def _list_claim_revisions(
+    operations: ClaimOperations,
+    project: str,
+    *,
+    known_at: datetime | None,
+    as_of: datetime | None,
+    revision_cutoff: int | None,
+) -> tuple[ClaimRevision, ...]:
+    if known_at is not None and known_at.utcoffset() is None:
+        raise DataValidationError(
+            "direct_memory_cutoff_invalid", "Temporal cutoffs must be timezone-aware."
+        )
+    if revision_cutoff is None and known_at is not None:
+        revision_cutoff = operations.database.revision_snapshot(project, known_at=known_at)[project]
+    if revision_cutoff is not None and revision_cutoff < 0:
+        raise DataValidationError(
+            "direct_memory_revision_invalid", "Revision cutoff cannot be negative."
+        )
+    with closing(operations.database.connect()) as connection:
+        revisions = load_claim_revisions(
+            connection,
+            project=project,
+            known_at=known_at if revision_cutoff is None else None,
+            as_of=as_of,
+            revision_cutoff=revision_cutoff,
+        )
+    verify_revision_sources(operations, revisions)
+    return revisions
 
 
 __all__ = ["ClaimOperations"]

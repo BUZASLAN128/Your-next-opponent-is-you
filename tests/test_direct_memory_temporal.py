@@ -96,6 +96,41 @@ def test_event_time_and_recorded_knowledge_cutoffs_are_independent(
     )
 
 
+def test_known_at_uses_a_contiguous_revision_prefix_when_clock_moves_back(
+    tmp_path: Path,
+) -> None:
+    clock = [NOW]
+    store = DirectMemoryStore(
+        tmp_path / "memory.sqlite3", clock=lambda: clock[0], data_plane=DataPlane.PUBLIC_SYNTHETIC
+    )
+    store.record_live_user_input(
+        source_id=SOURCE_ID,
+        project=PROJECT,
+        said_at=NOW,
+        exact_text="Recorded before the historical cutoff.",
+        expected_revision=0,
+    )
+    clock[0] = NOW - timedelta(days=2)
+    store.record_source_event(
+        source_id="backdated-recording",
+        project=PROJECT,
+        speaker=Speaker.USER,
+        said_at=NOW,
+        exact_text="Recorded after the cutoff despite its earlier clock value.",
+        expected_revision=store.current_revision(PROJECT),
+    )
+    _append_authorized_revision(store, 3, ProvenanceState.INTENT, {"status": "later"})
+
+    historical = store.brief(
+        PROJECT,
+        as_of=NOW + timedelta(days=1),
+        known_at=NOW - timedelta(days=1),
+    )
+
+    assert historical.source_events == ()
+    assert historical.claim_revisions == ()
+
+
 def _append_authorized_revision(
     store: DirectMemoryStore,
     index: int,

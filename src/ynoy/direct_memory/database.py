@@ -4,6 +4,7 @@ import os
 import sqlite3
 from collections.abc import Iterator
 from contextlib import closing, contextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
 from ynoy.direct_memory.backup_publish import backup_to_path
@@ -62,6 +63,44 @@ class DirectMemoryDatabase:
                 "SELECT revision FROM projects WHERE project=?", (project,)
             ).fetchone()
         return int(row["revision"]) if row else 0
+
+    def revision_snapshot(
+        self, project: str | None = None, *, known_at: datetime | None = None
+    ) -> dict[str, int]:
+        """Capture immutable project revision watermarks from one SQLite snapshot."""
+        if known_at is not None and known_at.utcoffset() is None:
+            raise DataValidationError(
+                "direct_memory_cutoff_invalid", "Temporal cutoffs must be timezone-aware."
+            )
+        with closing(self.connect()) as connection:
+            connection.execute("BEGIN")
+            if project is None:
+                rows = connection.execute(
+                    "SELECT project,revision FROM projects ORDER BY project"
+                ).fetchall()
+                watermarks = {str(row["project"]): int(row["revision"]) for row in rows}
+            else:
+                row = connection.execute(
+                    "SELECT revision FROM projects WHERE project=?", (project,)
+                ).fetchone()
+                watermarks = {project: int(row["revision"]) if row else 0}
+            if known_at is None:
+                return watermarks
+            selected = (project,) if project is not None else tuple(watermarks)
+            cutoff_text = known_at.astimezone(UTC).isoformat()
+            for name in selected:
+                if name is None:
+                    continue
+                row = connection.execute(
+                    _FIRST_RECORDED_AFTER_CUTOFF_SQL,
+                    (name, name, name, name, name, name, name, cutoff_text),
+                ).fetchone()
+                first_future_revision = row[0]
+                if first_future_revision is not None:
+                    watermarks[name] = min(
+                        watermarks.get(name, 0), int(first_future_revision) - 1
+                    )
+        return watermarks
 
     @contextmanager
     def mutation(
@@ -179,3 +218,16 @@ class DirectMemoryDatabase:
             _SCHEMA_VERSION,
             _DDL,
         )
+
+
+_FIRST_RECORDED_AFTER_CUTOFF_SQL = """
+SELECT MIN(revision) FROM (
+    SELECT revision,recorded_at FROM source_events WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM authorization_uses WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM source_attributions WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM tool_receipts WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM reviews WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM corrections WHERE project=?
+    UNION ALL SELECT revision,recorded_at FROM claim_revisions WHERE project=?
+) WHERE recorded_at>?
+"""

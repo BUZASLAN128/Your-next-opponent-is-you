@@ -14,6 +14,7 @@ from .contracts import DocumentRef, NodeRead, PageRead, PreparedDocument
 from .json_codec import canonical_json_bytes
 from .normalization import normalize_document
 from .plane_storage import (
+    assert_document_capacity_locked,
     check_index_root,
     ensure_index_root,
     index_integrity_error,
@@ -41,7 +42,7 @@ class StructuralIndex:
         ensure_index_root(self.root)
         try:
             prepare_index_lock_file(self.root)
-            with exclusive_run_lock(self.root / "index.lock"):
+            with exclusive_run_lock(self.root / "index.lock", expose_handle=True) as lock_handle:
                 path = self.root / f"{payload['document_id']}.json"
                 reject_link_if_present(path)
                 if path.exists():
@@ -53,6 +54,7 @@ class StructuralIndex:
                     if canonical_json_bytes(existing) != encoded:
                         raise index_integrity_error("immutable document ID collision")
                     return read_support.document_ref(existing)
+                assert_document_capacity_locked(self.root, lock_handle)
                 publish_verified_document(
                     path,
                     encoded,

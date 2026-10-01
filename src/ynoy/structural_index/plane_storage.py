@@ -158,3 +158,22 @@ def list_documents_locked(
             raise index_integrity_error("document ID does not match its immutable path")
         result.append(read_support.document_ref(payload))
     return result
+
+
+def assert_document_capacity_locked(root: Path, lock_handle: BinaryIO) -> None:
+    """Refuse another immutable document while holding the index OS lock."""
+    document_count = 0
+    for entry in root.iterdir():
+        if entry.name == "index.lock":
+            verify_index_lock_file(root, entry, lock_handle)
+            continue
+        if not _DOCUMENT_ID.fullmatch(entry.stem) or entry.suffix != ".json":
+            raise index_integrity_error("index directory contains an unknown artifact")
+        document_count += 1
+        if document_count > _MAX_DOCUMENTS:
+            raise index_integrity_error("index exceeds the document-count limit")
+    if document_count >= _MAX_DOCUMENTS:
+        raise DataValidationError(
+            "structural_index_document_limit",
+            "Structural index has reached its document-count limit.",
+        )

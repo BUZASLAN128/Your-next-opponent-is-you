@@ -34,27 +34,14 @@ class ExportOperations:
             raise DataValidationError(
                 "direct_memory_project_invalid", "Project must be non-empty and trimmed."
             )
-        projects = self._projects(project)
-        entries = []
-        for name in projects:
-            entries.extend(self._export_project(name))
-        entries.sort(
-            key=lambda item: (item["project"], item["revision"], item["record_type"], item["id"])
-        )
-        return "\n".join(strict_dumps(item) for item in entries)
+        return _export_snapshot(self, project)
 
-    def _projects(self, project: str | None) -> tuple[str, ...]:
-        if project is not None:
-            return (project,)
-        with closing(self.database.connect()) as connection:
-            rows = connection.execute("SELECT project FROM projects ORDER BY project").fetchall()
-        return tuple(str(row["project"]) for row in rows)
-
-    def _export_project(self, project: str) -> list[dict[str, object]]:
+    def _export_project(self, project: str, revision_cutoff: int) -> list[dict[str, object]]:
         entries: list[dict[str, object]] = []
         with closing(self.database.connect()) as connection:
             sources = connection.execute(
-                "SELECT * FROM source_events WHERE project=? ORDER BY revision", (project,)
+                "SELECT * FROM source_events WHERE project=? AND revision<=? ORDER BY revision",
+                (project, revision_cutoff),
             ).fetchall()
         for row in sources:
             event = self.sources.get_source_event(str(row["source_id"]))
@@ -66,10 +53,12 @@ class ExportOperations:
             )
             self._export_live_input(event.source_id, project, event.revision, entries)
             self._export_tool_receipt(event.source_id, project, event.revision, entries)
-            self._export_attribution(event.source_id, project, entries)
-        self._export_reviews(project, entries)
-        self._export_authorization_uses(project, entries)
-        for revision in self.claims.list_claim_revisions(project):
+            self._export_attribution(event.source_id, project, entries, revision_cutoff)
+        self._export_reviews(project, entries, revision_cutoff=revision_cutoff)
+        self._export_authorization_uses(project, entries, revision_cutoff)
+        for revision in self.claims.list_claim_revisions(
+            project, revision_cutoff=revision_cutoff
+        ):
             entries.append(
                 _entry(
                     "claim_revision", project, revision.revision, revision.revision_id, revision,
@@ -78,10 +67,14 @@ class ExportOperations:
             )
         return entries
 
-    def _export_authorization_uses(self, project: str, entries: list[dict[str, object]]) -> None:
+    def _export_authorization_uses(
+        self, project: str, entries: list[dict[str, object]], revision_cutoff: int
+    ) -> None:
         with closing(self.database.connect()) as connection:
             rows = connection.execute(
-                "SELECT * FROM authorization_uses WHERE project=? ORDER BY revision", (project,)
+                "SELECT * FROM authorization_uses WHERE project=? AND revision<=? "
+                "ORDER BY revision",
+                (project, revision_cutoff),
             ).fetchall()
         for row in rows:
             event = self.sources.get_source_event(row["live_user_source_id"])
@@ -144,11 +137,16 @@ class ExportOperations:
             )
 
     def _export_attribution(
-        self, source_id: str, project: str, entries: list[dict[str, object]]
+        self,
+        source_id: str,
+        project: str,
+        entries: list[dict[str, object]],
+        revision_cutoff: int,
     ) -> None:
         with closing(self.database.connect()) as connection:
             row = connection.execute(
-                "SELECT * FROM source_attributions WHERE source_id=?", (source_id,)
+                "SELECT * FROM source_attributions WHERE source_id=? AND project=? AND revision<=?",
+                (source_id, project, revision_cutoff),
             ).fetchone()
         if row is None:
             return
@@ -184,10 +182,13 @@ class ExportOperations:
             )
         )
 
-    def _export_reviews(self, project: str, entries: list[dict[str, object]]) -> None:
+    def _export_reviews(
+        self, project: str, entries: list[dict[str, object]], *, revision_cutoff: int
+    ) -> None:
         with closing(self.database.connect()) as connection:
             rows = connection.execute(
-                "SELECT * FROM reviews WHERE project=? ORDER BY revision", (project,)
+                "SELECT * FROM reviews WHERE project=? AND revision<=? ORDER BY revision",
+                (project, revision_cutoff),
             ).fetchall()
         for row in rows:
             stored = self.reviews.get_review(str(row["review_id"]))
@@ -206,7 +207,9 @@ class ExportOperations:
                     data_plane=self.database.data_plane,
                 )
             )
-            for correction in self.corrections.list_corrections(stored.review_id):
+            for correction in self.corrections.list_corrections(
+                stored.review_id, revision_cutoff=revision_cutoff
+            ):
                 entries.append(
                     _entry(
                         "correction",
@@ -246,6 +249,17 @@ def _jsonable(value: object) -> object:
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         return [_jsonable(item) for item in value]
     return value
+
+
+def _export_snapshot(operations: ExportOperations, project: str | None) -> str:
+    watermarks = operations.database.revision_snapshot(project)
+    entries = []
+    for name, revision_cutoff in watermarks.items():
+        entries.extend(operations._export_project(name, revision_cutoff))
+    entries.sort(
+        key=lambda item: (item["project"], item["revision"], item["record_type"], item["id"])
+    )
+    return "\n".join(strict_dumps(item) for item in entries)
 
 
 __all__ = ["ExportOperations"]

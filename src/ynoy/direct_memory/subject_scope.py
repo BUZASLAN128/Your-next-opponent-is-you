@@ -14,12 +14,18 @@ def assert_project_subject(connection: sqlite3.Connection, project: str, subject
         )
 
 
-def project_subject(connection: sqlite3.Connection, project: str) -> str | None:
+def project_subject(
+    connection: sqlite3.Connection, project: str, *, revision_cutoff: int | None = None
+) -> str | None:
+    revision_filter = " AND source_events.revision<=?" if revision_cutoff is not None else ""
+    parameters: tuple[object, ...] = (project,)
+    if revision_cutoff is not None:
+        parameters = (project, revision_cutoff)
     rows = connection.execute(
         "SELECT DISTINCT live_inputs.subject_id FROM live_inputs "
         "JOIN source_events ON source_events.source_id=live_inputs.source_id "
-        "WHERE source_events.project=? ORDER BY live_inputs.subject_id",
-        (project,),
+        "WHERE source_events.project=?" + revision_filter + " ORDER BY live_inputs.subject_id",
+        parameters,
     ).fetchall()
     subjects = tuple(str(row[0]) for row in rows)
     if len(subjects) > 1 or any(not item or item != item.strip() for item in subjects):

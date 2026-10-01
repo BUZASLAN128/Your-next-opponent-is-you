@@ -29,6 +29,20 @@ class ToolResultOperations:
         result: Mapping[str, object],
         expected_revision: int,
     ) -> ToolReceipt:
+        if (
+            not isinstance(source_id, str)
+            or not source_id
+            or source_id != source_id.strip()
+        ):
+            raise DataValidationError(
+                "direct_memory_source_invalid",
+                "Tool source identifier must be non-empty and trimmed.",
+            )
+        if not isinstance(project, str) or not project or project != project.strip():
+            raise DataValidationError(
+                "direct_memory_project_invalid",
+                "Tool project identifier must be non-empty and trimmed.",
+            )
         input_json = strict_dumps(inputs)
         result_json = strict_dumps(result)
         result_value = strict_loads(result_json)

@@ -14,6 +14,7 @@ from ynoy.models.review_state import ReviewedInteractionState
 from ynoy.util import canonical_sha256
 
 Sha256 = Field(pattern=r"^[0-9a-f]{64}$")
+MAX_FACT_KEY_LENGTH = 240
 
 
 class SourceType(StrEnum):
@@ -72,7 +73,7 @@ class SourceEvent(StrictModel):
 
 
 class FactProposal(StrictModel):
-    fact_key: str = Field(min_length=1, max_length=240)
+    fact_key: str = Field(min_length=1, max_length=MAX_FACT_KEY_LENGTH)
     evidence_ids: tuple[str, ...] = Field(min_length=1)
     proposal: AtomicClaimProposal
 
@@ -175,7 +176,7 @@ class StoredCorrection(StrictModel):
 class ClaimRevision(StrictModel):
     revision_id: str = Field(min_length=1)
     project: str = Field(min_length=1)
-    fact_key: str = Field(min_length=1)
+    fact_key: str = Field(min_length=1, max_length=MAX_FACT_KEY_LENGTH)
     evidence_ids: tuple[str, ...] = Field(min_length=1)
     state: ProvenanceState
     kind: RevisionKind
@@ -189,6 +190,8 @@ class ClaimRevision(StrictModel):
 
     @model_validator(mode="after")
     def provenance_is_separate_from_truth(self) -> ClaimRevision:
+        if self.fact_key != self.fact_key.strip():
+            raise ValueError("claim revision fact key must be trimmed")
         if self.recorded_at.utcoffset() is None or (
             self.event_time is not None and self.event_time.utcoffset() is None
         ):

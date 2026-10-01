@@ -36,7 +36,6 @@ def _exclusive_run_lock(path: Path, *, expose_handle: bool) -> Iterator[BinaryIO
     reject_link_if_present(path.parent)
     reject_link_if_present(path)
     with path.open("a+b") as handle:
-        _prepare_lock_file(handle)
         try:
             _acquire(handle)
         except OSError as exc:
@@ -45,6 +44,7 @@ def _exclusive_run_lock(path: Path, *, expose_handle: bool) -> Iterator[BinaryIO
                 "Another process currently owns this full-persona run lock.",
             ) from exc
         try:
+            _prepare_lock_file(handle)
             yield handle if expose_handle else None
         finally:
             _release(handle)

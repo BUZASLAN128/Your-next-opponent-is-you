@@ -24,10 +24,16 @@ class CorrectionReader:
         self.sources = SourceOperations(database, clock)
         self.reviews = ReviewOperations(database, clock)
 
-    def list_corrections(self, review_id: str) -> tuple[StoredCorrection, ...]:
+    def list_corrections(
+        self, review_id: str, *, revision_cutoff: int | None = None
+    ) -> tuple[StoredCorrection, ...]:
+        if revision_cutoff is not None and revision_cutoff < 0:
+            raise DataValidationError(
+                "direct_memory_revision_invalid", "Revision cutoff cannot be negative."
+            )
         stored = self.reviews.get_review(review_id)
         facts = self.reviews.review_facts(review_id)
-        rows = self._rows(review_id)
+        rows = self._rows(review_id, revision_cutoff=revision_cutoff)
         receipts: list[InteractionCorrectionReceipt] = []
         records = []
         for row in rows:
@@ -36,11 +42,16 @@ class CorrectionReader:
             records.append(record)
         return tuple(records)
 
-    def _rows(self, review_id: str) -> Sequence[sqlite3.Row]:
+    def _rows(
+        self, review_id: str, *, revision_cutoff: int | None = None
+    ) -> Sequence[sqlite3.Row]:
         with closing(self.database.connect()) as connection:
-            return connection.execute(
-                "SELECT * FROM corrections WHERE review_id=? ORDER BY revision", (review_id,)
-            ).fetchall()
+            query = "SELECT * FROM corrections WHERE review_id=?"
+            parameters: tuple[object, ...] = (review_id,)
+            if revision_cutoff is not None:
+                query += " AND revision<=?"
+                parameters = (review_id, revision_cutoff)
+            return connection.execute(query + " ORDER BY revision", parameters).fetchall()
 
     def _read_row(
         self,

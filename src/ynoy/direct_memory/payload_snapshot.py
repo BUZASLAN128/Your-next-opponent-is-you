@@ -15,6 +15,7 @@ from ynoy.direct_memory.models import (
     UserAuthorizationReceipt,
 )
 from ynoy.errors import DataValidationError
+from ynoy.models import ClaimReviewDecision
 
 if TYPE_CHECKING:
     from ynoy.direct_memory.claims import ClaimOperations
@@ -226,13 +227,52 @@ def _correction_revision_matches(
     ]
     if len(decisions) != 1:
         return False
+    return _correction_revision_metadata_matches(
+        reader, revision, correction, decisions[0]
+    )
+
+
+def _correction_revision_metadata_matches(
+    reader: CorrectionReader,
+    revision: ClaimRevision,
+    correction: StoredCorrection,
+    decision: ClaimReviewDecision,
+) -> bool:
+    from ynoy.direct_memory.correction_revisions import outcome_revision_metadata
+
     links = reader.reviews.review_facts(correction.review_id)
-    claim_id = str(decisions[0].claim_id)
+    claim_id = str(decision.claim_id)
     link = next((item for item in links if item["claim_id"] == claim_id), None)
+    if link is None or link["fact_key"] != revision.fact_key:
+        return False
+    evidence_ids = tuple(cast(list[str], link["evidence_ids"]))
+    if evidence_ids != revision.evidence_ids:
+        return False
+    stored_review = reader.reviews.get_review(correction.review_id)
+    source = reader.sources.get_source_event(stored_review.source_id)
+    event_time = stored_review.review.source.event_time or source.said_at
+    state, kind, related_fact_key = outcome_revision_metadata(
+        decision, correction.operation, str(link["fact_key"]), correction.supersessions
+    )
+    expected_payload = {
+        "review_sha256": stored_review.review_sha256,
+        "correction_sha256": correction.correction.receipt_sha256,
+        "decision": decision.model_dump(mode="json"),
+        "operation": correction.operation,
+    }
     return bool(
-        link is not None
-        and link["fact_key"] == revision.fact_key
-        and tuple(cast(list[str], link["evidence_ids"])) == revision.evidence_ids
+        revision.project == correction.project
+        and revision.fact_key == link["fact_key"]
+        and revision.evidence_ids == evidence_ids
+        and revision.state == state
+        and revision.kind == kind
+        and revision.related_fact_key == related_fact_key
+        and revision.tool_receipt_id is None
+        and revision.event_time == event_time
+        and revision.recorded_at == correction.recorded_at
+        and revision.revision == correction.revision
+        and revision.authorization == correction.authorization
+        and revision.payload == expected_payload
     )
 
 

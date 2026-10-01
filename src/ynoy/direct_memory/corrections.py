@@ -86,8 +86,10 @@ class CorrectionOperations:
             selected_supersessions,
         )
 
-    def list_corrections(self, review_id: str) -> tuple[StoredCorrection, ...]:
-        return self.reader.list_corrections(review_id)
+    def list_corrections(
+        self, review_id: str, *, revision_cutoff: int | None = None
+    ) -> tuple[StoredCorrection, ...]:
+        return self.reader.list_corrections(review_id, revision_cutoff=revision_cutoff)
 
     def _build_correction(
         self,

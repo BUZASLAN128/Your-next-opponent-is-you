@@ -33,12 +33,21 @@ class BriefOperations:
 
     def brief(self, project: str, *, as_of: datetime, known_at: datetime) -> DirectMemoryBrief:
         _validate_cutoffs(project, as_of, known_at)
+        revision_cutoff = self.database.revision_snapshot(project, known_at=known_at)[project]
         with closing(self.database.connect()) as connection:
-            subject_id = project_subject(connection, project)
-        source_events = self._visible_sources(project, as_of, known_at)
-        claim_revisions = self.claims.list_claim_revisions(project, known_at=known_at, as_of=as_of)
-        native_briefs, fact_keys = self._review_briefs(project, as_of, known_at, subject_id)
-        conflicts = _unresolved_conflicts(native_briefs, fact_keys)
+            subject_id = project_subject(
+                connection, project, revision_cutoff=revision_cutoff
+            )
+        source_events = self._visible_sources(project, as_of, revision_cutoff)
+        claim_revisions = self.claims.list_claim_revisions(
+            project,
+            known_at=known_at,
+            as_of=as_of,
+            revision_cutoff=revision_cutoff,
+        )
+        review_summaries = self._review_briefs(project, as_of, revision_cutoff, subject_id)
+        native_briefs = [item[0] for item in review_summaries]
+        conflicts = _unresolved_conflicts(review_summaries)
         reasons = _abstention_reasons(native_briefs, conflicts)
         return DirectMemoryBrief(
             project=project,
@@ -57,33 +66,32 @@ class BriefOperations:
         )
 
     def _visible_sources(
-        self, project: str, as_of: datetime, known_at: datetime
+        self, project: str, as_of: datetime, revision_cutoff: int
     ) -> tuple[SourceEvent, ...]:
         with closing(self.database.connect()) as connection:
             rows = connection.execute(
-                "SELECT source_id FROM source_events WHERE project=? ORDER BY revision", (project,)
+                "SELECT source_id FROM source_events WHERE project=? AND revision<=? "
+                "ORDER BY revision",
+                (project, revision_cutoff),
             ).fetchall()
         visible = []
         for row in rows:
             event = self.sources.get_source_event(str(row["source_id"]))
-            if event.recorded_at <= known_at and (event.said_at is None or event.said_at <= as_of):
+            if event.said_at is None or event.said_at <= as_of:
                 visible.append(event)
         return tuple(visible)
 
     def _review_briefs(
-        self, project: str, as_of: datetime, known_at: datetime, subject_id: str | None
-    ) -> tuple[list[DecisionBrief], dict[str, str]]:
+        self, project: str, as_of: datetime, revision_cutoff: int, subject_id: str | None
+    ) -> list[tuple[DecisionBrief, dict[str, str]]]:
         with closing(self.database.connect()) as connection:
             rows = connection.execute(
-                "SELECT review_id,source_id,recorded_at FROM reviews "
-                "WHERE project=? ORDER BY revision",
-                (project,),
+                "SELECT review_id,source_id FROM reviews WHERE project=? AND revision<=? "
+                "ORDER BY revision",
+                (project, revision_cutoff),
             ).fetchall()
-        briefs = []
-        fact_keys: dict[str, str] = {}
+        briefs: list[tuple[DecisionBrief, dict[str, str]]] = []
         for row in rows:
-            if datetime.fromisoformat(row["recorded_at"]) > known_at:
-                continue
             stored = self.reviews.get_review(str(row["review_id"]))
             if subject_id is not None and stored.review.subject_id != subject_id:
                 raise DataValidationError(
@@ -94,23 +102,21 @@ class BriefOperations:
             event_times = (source.said_at, stored.review.source.event_time)
             if any(value is not None and value > as_of for value in event_times):
                 continue
-            corrections = self.corrections.list_corrections(stored.review_id)
-            prefix = []
-            for item in corrections:
-                if item.recorded_at > known_at:
-                    break
-                prefix.append(item.correction)
-            state = replay_interaction_review(stored.review, tuple(prefix))
-            briefs.append(
-                resolve_decision_brief(
-                    state,
-                    ScopeRef(person_id=stored.review.subject_id, project=project),
-                    as_of,
-                )
+            corrections = self.corrections.list_corrections(
+                stored.review_id, revision_cutoff=revision_cutoff
             )
+            prefix = tuple(item.correction for item in corrections)
+            state = replay_interaction_review(stored.review, tuple(prefix))
+            brief = resolve_decision_brief(
+                state,
+                ScopeRef(person_id=stored.review.subject_id, project=project),
+                as_of,
+            )
+            fact_keys: dict[str, str] = {}
             for fact in self.reviews.review_facts(stored.review_id):
                 fact_keys[str(fact["claim_id"])] = str(fact["fact_key"])
-        return briefs, fact_keys
+            briefs.append((brief, fact_keys))
+        return briefs
 
 
 def _validate_cutoffs(project: str, as_of: datetime, known_at: datetime) -> None:
@@ -125,10 +131,10 @@ def _validate_cutoffs(project: str, as_of: datetime, known_at: datetime) -> None
 
 
 def _unresolved_conflicts(
-    briefs: list[DecisionBrief], fact_keys: dict[str, str]
+    reviews: list[tuple[DecisionBrief, dict[str, str]]]
 ) -> tuple[tuple[str, ...], ...]:
     groups: dict[tuple[str, str, str], list[tuple[ClaimModality, str]]] = defaultdict(list)
-    for brief in briefs:
+    for brief, fact_keys in reviews:
         for entry in brief.all_entries():
             fact_key = fact_keys.get(str(entry.source_claim_id))
             if not fact_key:

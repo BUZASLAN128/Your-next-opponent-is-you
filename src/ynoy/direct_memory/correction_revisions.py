@@ -71,16 +71,7 @@ def _append_one_outcome(
     revision: int,
     interpretation_time: datetime | None,
 ) -> None:
-    if isinstance(decision, RejectClaimDecision):
-        state = ProvenanceState.REJECTED
-        kind = _rejection_kind(operation)
-        related = supersessions.get(fact_key) if operation == "supersede" else None
-    elif isinstance(decision, ConfirmClaimDecision):
-        state, kind, related = ProvenanceState.ACCEPTED, RevisionKind.ASSERTION, None
-    elif isinstance(decision, ProposeForCoreDecision):
-        state, kind, related = ProvenanceState.PROPOSED, RevisionKind.ASSERTION, None
-    else:
-        state, kind, related = ProvenanceState.CORRECTED, RevisionKind.CORRECTION, None
+    state, kind, related = outcome_revision_metadata(decision, operation, fact_key, supersessions)
     append_revision_record(
         connection,
         project=stored.project,
@@ -111,4 +102,21 @@ def _rejection_kind(operation: str) -> RevisionKind:
     return RevisionKind.CORRECTION
 
 
-__all__ = ["append_outcome_revisions"]
+def outcome_revision_metadata(
+    decision: ClaimReviewDecision,
+    operation: str,
+    fact_key: str,
+    supersessions: Mapping[str, str],
+) -> tuple[ProvenanceState, RevisionKind, str | None]:
+    """Derive claim revision metadata from its immutable correction decision."""
+    if isinstance(decision, RejectClaimDecision):
+        related = supersessions.get(fact_key) if operation == "supersede" else None
+        return ProvenanceState.REJECTED, _rejection_kind(operation), related
+    if isinstance(decision, ConfirmClaimDecision):
+        return ProvenanceState.ACCEPTED, RevisionKind.ASSERTION, None
+    if isinstance(decision, ProposeForCoreDecision):
+        return ProvenanceState.PROPOSED, RevisionKind.ASSERTION, None
+    return ProvenanceState.CORRECTED, RevisionKind.CORRECTION, None
+
+
+__all__ = ["append_outcome_revisions", "outcome_revision_metadata"]

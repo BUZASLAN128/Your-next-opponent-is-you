@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import os
+from uuid import uuid4
 
 from ynoy.cli.context import CommandContext
 from ynoy.cli.direct_memory_files import cutoff, output_path
@@ -9,7 +11,7 @@ from ynoy.cli.handlers.direct_memory_reviews import handle_reviews
 from ynoy.cli.handlers.direct_memory_sources import handle_sources
 from ynoy.direct_memory import DirectMemoryStore
 from ynoy.direct_memory.data_plane import DataPlane
-from ynoy.errors import StorageError
+from ynoy.errors import DataValidationError, StorageError
 from ynoy.policy import require_private_root
 from ynoy.private_files import (
     create_private_parents,
@@ -53,12 +55,27 @@ def handle_direct_memory(args: argparse.Namespace, context: CommandContext) -> d
     if operation == "backup":
         return {"backup_path": str(store.backup(destination))}
     content = store.export_jsonl(project=args.project)
+    stage = destination.with_name(f".{destination.name}.{uuid4().hex}.tmp")
+    stage_created = False
     try:
         create_private_parents(destination.parent, private_root=root)
-        with open_exclusive_private_utf8(destination, private_root=root) as stream:
+        stream = open_exclusive_private_utf8(stage, private_root=root)
+        stage_created = True
+        with stream:
             stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(stage, destination)
+        except FileExistsError as exc:
+            raise DataValidationError(
+                "direct_memory_output_exists", "Output must use a new destination."
+            ) from exc
     except OSError as exc:
         raise StorageError(
             "direct_memory_export_failed", "JSONL export could not be written."
         ) from exc
+    finally:
+        if stage_created:
+            stage.unlink(missing_ok=True)
     return {"export_path": str(destination), "project": args.project}

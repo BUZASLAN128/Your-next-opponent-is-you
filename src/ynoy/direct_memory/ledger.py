@@ -117,20 +117,28 @@ def load_claim_revisions(
     project: str,
     known_at: datetime | None = None,
     as_of: datetime | None = None,
+    revision_cutoff: int | None = None,
 ) -> tuple[ClaimRevision, ...]:
     for cutoff in (known_at, as_of):
         if cutoff is not None and cutoff.utcoffset() is None:
             raise DataValidationError(
                 "direct_memory_cutoff_invalid", "Temporal cutoffs must be timezone-aware."
             )
-    rows = connection.execute(
-        "SELECT * FROM claim_revisions WHERE project=? ORDER BY revision", (project,)
-    ).fetchall()
+    if revision_cutoff is not None and revision_cutoff < 0:
+        raise DataValidationError(
+            "direct_memory_revision_invalid", "Revision cutoff cannot be negative."
+        )
+    query = "SELECT * FROM claim_revisions WHERE project=?"
+    parameters: tuple[object, ...] = (project,)
+    if revision_cutoff is not None:
+        query += " AND revision<=?"
+        parameters = (project, revision_cutoff)
+    rows = connection.execute(query + " ORDER BY revision", parameters).fetchall()
     values = tuple(_claim_revision_from_row(row) for row in rows)
     return tuple(
         item
         for item in values
-        if (known_at is None or item.recorded_at <= known_at)
+        if (revision_cutoff is not None or known_at is None or item.recorded_at <= known_at)
         and (as_of is None or item.event_time is None or item.event_time <= as_of)
     )
 

@@ -7,7 +7,12 @@ import pytest
 
 from tests.direct_memory_fixtures import NOW, PROJECT, SOURCE_ID, SOURCE_TEXT, make_native_review
 from ynoy.decision_brief import resolve_decision_brief
-from ynoy.direct_memory import AuthorizationIntent, DataPlane, DirectMemoryStore, FactProposal
+from ynoy.direct_memory import (
+    AuthorizationIntent,
+    DataPlane,
+    DirectMemoryStore,
+    FactProposal,
+)
 from ynoy.direct_memory.codec import correction_payload_sha256
 from ynoy.errors import DataValidationError
 from ynoy.models import ConfirmClaimDecision, ScopeRef
