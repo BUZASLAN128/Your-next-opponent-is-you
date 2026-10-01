@@ -78,25 +78,10 @@ def _changed_metadata_payload(
     return changed, digest
 
 
-@pytest.mark.parametrize(
-    "changes",
-    [
-        {"state": ProvenanceState.REJECTED},
-        {"kind": RevisionKind.RETRACTION},
-        {"kind": RevisionKind.SUPERSESSION, "related_fact_key": "replacement"},
-        {"tool_receipt_id": "metadata-tamper-tool"},
-        {"event_time": NOW + timedelta(days=2)},
-        {"recorded_at": NOW + timedelta(days=2)},
-        {"revision": 100},
-    ],
-    ids=["state", "kind", "related-fact", "tool-receipt", "event-time", "recorded-at", "revision"],
-)
-def test_self_consistent_correction_revision_metadata_tampering_is_rejected(
+def _store_with_tampered_correction_revision(
     tmp_path: Path, changes: dict[str, object]
-) -> None:
-    store, stored, decisions, authorization, _, _, _, _ = _fixture(
-        tmp_path, {}, trigger=99
-    )
+) -> DirectMemoryStore:
+    store, stored, decisions, authorization, _, _, _, _ = _fixture(tmp_path, {}, trigger=99)
     tool = store.record_tool_result(
         source_id="metadata-tamper-tool",
         project=PROJECT,
@@ -118,7 +103,44 @@ def test_self_consistent_correction_revision_metadata_tampering_is_rejected(
     )
     revision = store.list_claim_revisions(PROJECT)[-1]
     _rewrite_revision_metadata(store, revision, changes)
+    return store
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"state": ProvenanceState.REJECTED},
+        {"kind": RevisionKind.RETRACTION},
+        {"kind": RevisionKind.SUPERSESSION, "related_fact_key": "replacement"},
+        {"tool_receipt_id": "metadata-tamper-tool"},
+        {"event_time": NOW + timedelta(days=2)},
+        {"recorded_at": NOW + timedelta(days=2)},
+        {"revision": 100},
+    ],
+    ids=["state", "kind", "related-fact", "tool-receipt", "event-time", "recorded-at", "revision"],
+)
+def test_self_consistent_correction_revision_metadata_tampering_is_rejected(
+    tmp_path: Path, changes: dict[str, object]
+) -> None:
+    store = _store_with_tampered_correction_revision(tmp_path, changes)
 
     with pytest.raises(DataValidationError) as rejected:
         store.list_claim_revisions(PROJECT)
+    assert rejected.value.code == "direct_memory_claim_revision_integrity"
+
+
+@pytest.mark.parametrize("surface", ["list", "brief", "export"])
+def test_cutoff_surfaces_reject_correction_outcome_revision_outside_watermark(
+    tmp_path: Path, surface: str
+) -> None:
+    store = _store_with_tampered_correction_revision(tmp_path, {"revision": 100})
+    cutoff = NOW + timedelta(days=2)
+
+    with pytest.raises(DataValidationError) as rejected:
+        if surface == "list":
+            store.list_claim_revisions(PROJECT)
+        elif surface == "brief":
+            store.brief(PROJECT, as_of=cutoff, known_at=cutoff)
+        else:
+            store.export_jsonl(PROJECT)
     assert rejected.value.code == "direct_memory_claim_revision_integrity"

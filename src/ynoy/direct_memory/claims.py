@@ -5,6 +5,7 @@ from contextlib import closing
 from datetime import datetime
 
 from ynoy.direct_memory.codec import strict_dumps, strict_loads
+from ynoy.direct_memory.correction_revision_integrity import verify_correction_revision_prefix
 from ynoy.direct_memory.database import DirectMemoryDatabase
 from ynoy.direct_memory.ledger import append_revision_record, load_claim_revisions
 from ynoy.direct_memory.models import (
@@ -258,6 +259,8 @@ def _list_claim_revisions(
         raise DataValidationError(
             "direct_memory_revision_invalid", "Revision cutoff cannot be negative."
         )
+    if revision_cutoff is not None:
+        verify_correction_revision_prefix(operations, project, revision_cutoff)
     with closing(operations.database.connect()) as connection:
         revisions = load_claim_revisions(
             connection,
