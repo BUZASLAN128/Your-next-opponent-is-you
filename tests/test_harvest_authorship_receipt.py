@@ -118,7 +118,8 @@ def test_source_dependency_deletion_removes_authorship_closure(tmp_path: Path) -
 def test_cli_authorship_seal_is_local_and_emits_safe_summary(
     tmp_path: Path, capsys, monkeypatch
 ) -> None:
-    _, private, prepared, _ = prepare_authorship_fixture(tmp_path)
+    _, private, prepared, now = prepare_authorship_fixture(tmp_path)
+    monkeypatch.setattr("ynoy.persona_study.artifacts.utc_now", lambda: now)
 
     def forbidden(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("authorship CLI must not call database or model provider")

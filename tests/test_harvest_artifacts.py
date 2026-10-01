@@ -91,7 +91,9 @@ def test_delete_run_removes_all_harvest_artifacts(tmp_path: Path) -> None:
 def test_harvest_cli_never_calls_database_or_model_provider(
     tmp_path: Path, capsys, monkeypatch
 ) -> None:
-    source, private, study_id, _, sentinels = _prepare_inputs(tmp_path)
+    source, private, study_id, now, sentinels = _prepare_inputs(tmp_path)
+    monkeypatch.setattr("ynoy.persona_study.artifacts.utc_now", lambda: now)
+    monkeypatch.setattr("ynoy.persona_study.harvest.utc_now", lambda: now)
 
     def forbidden(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("harvester must not call database or model provider")

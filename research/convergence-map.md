@@ -1,7 +1,7 @@
 # Research Convergence Map
 
 > Status: living, technology-neutral product model
-> Last updated: 2026-07-16
+> Last updated: 2026-09-30
 > Authority: organizes confirmed requirements, research findings, candidates,
 > and evidence gates; it does not select infrastructure
 
@@ -1018,3 +1018,246 @@ flags.
 **Open evidence:** A safe live run was deferred because available system RAM
 was lower than the prior model working set. The implementation result does not
 substitute for a measured model outcome.
+
+## Direct Main-Assistant Memory Adapter — 2026-09-30
+
+**Confirmed decision:** The existing YNOY main assistant may continue through
+a scoped local SQLite append store and deterministic PageIndex navigation of
+explicitly supplied prepared page trees. The existing PostgreSQL core remains
+the baseline for paths that already use it. The adapter reuses native review,
+correction, replay, and decision-brief contracts while preserving exact source
+payloads, append-time provenance, separate valid and known time, and
+claim-holder and action-authorization boundaries.
+
+**Implementation status:** The implementation lead reports stable
+`DirectMemoryStore` and `StructuralIndex` interfaces and a `ynoy direct-memory`
+CLI namespace. Focused slices reportedly passed 49 relevant source-admission,
+correction, and replay tests plus 21 Windows structural-index acceptance tests
+after a lock-handle fix. Facade/CLI integration and aggregate validation remain
+pending, so no full pass is claimed. This report therefore describes the
+approved contract and bounded reported evidence, not complete integrated
+behavior.
+
+**Inference:** If these boundaries hold in the integrated path, the project
+gains a direct assistant memory substrate without an intermediary model or
+mandatory embeddings. This would close an operational integration gap, not a
+persona-evidence or retrieval-quality gap. The inference is disproved by any
+source mutation, stale-write acceptance, role-to-user promotion without an
+explicit binding, summary presented as page evidence, or conflict resolution
+that chooses a truth without review.
+
+**Next convergence gate:** Verify the implemented API/CLI against synthetic
+source, timestamp, revision, correction, attribution, authorization, conflict,
+and bounded exact-read cases. Keep real-corpus use and scientific accuracy
+claims behind their separate authorization and evaluation gates.
+
+## Direct-Memory CLI and Real-Corpus Readiness Update — 2026-09-30
+
+**Reported interface:** The CLI help now exposes
+`ynoy --private-root ROOT direct-memory [--synthetic]` with 18 subcommands;
+every ledger mutation requires an expected revision. Real file inputs are
+constrained to the explicit private root, output files are exclusive-created
+outside Git, and prepared-index operations do not initialize SQLite. The
+unchanged native brief is returned with a separate `native_brief_hashes`
+canonical hash.
+
+**Reported checks:** The source-admission/correction/replay slice has 49
+passing cases (14 new plus 35 relevant existing); the database-focused slice
+has 12 passing cases; the Windows structural-index acceptance slice has 21
+passing cases after a lock-handle fix; and focused mypy passes for seven
+modules. Combined store/CLI issues remain under repair. These are separate
+focused results; aggregate validation has not passed.
+
+**Privacy boundary:** The prepared index persists exact text, document name,
+and navigation summaries in a private source bundle. It is not a
+privacy-blind metadata index. The adapter has no canonical external-file
+binding, registered erasure/backup producer registry, WAL/SHM cleanup
+contract, or interrupted-import cursor. Real-corpus readiness remains blocked
+on these contracts and the existing adoption gates. No full pipeline deletion
+or real-corpus privacy claim is supported.
+
+## Direct-Memory Review and Temporal Contract Update — 2026-09-30
+
+**Observed source contract:** Corrections, retractions, and supersessions are
+retrospective interpretation revisions. They preserve the original source
+payload/hash and native review creation time. `known_at` selects the appended
+prefix; `as_of` filters source event time and native validity. A correction
+wrapper retains the source event time. A world-state change requires a separate
+assertion event. One project accepts only one live subject, and mixed-subject
+legacy briefs fail closed.
+
+**Authority boundary:** A tool receipt is imported by the trusted local caller,
+not cryptographically produced by an executor. Its exact canonical result must
+match the `tool_verified` claim payload, and failed, cancelled, or explicitly
+unexecuted results are rejected. It provides no truth oracle or execution
+authority. Scope-changing corrections require complete typed replacement
+claims so replay does not restore stale inference/scope fields.
+
+**Validation status:** The first integrated run reported 900 passed, 31
+skipped, and 4 failed. One history-test oracle is being corrected; three
+pre-existing harvest clock fixtures (July test dates against a September
+runtime) are under verified-base review. Root final review remains pending.
+Offline full dependency sync hits Windows PE-launcher handling. Dependency sync
+without project installation, offline wheel build, and bundled-pip isolated
+installation are reported successful; the updated wheel rebuild is pending.
+This is not aggregate-green evidence.
+
+**Persistent readiness boundary:** The PageIndex source bundle stores exact
+text, document name, and summaries, so it is not privacy-blind. External-file
+identity binding, registered erasure/backup producers, WAL/SHM cleanup, and
+restartable import cursors remain absent. These gaps, plus separate adoption
+gates, keep real-corpus use and full deletion claims blocked.
+
+## Final Synthetic Acceptance Checkpoint — 2026-09-30
+
+**Observed test result:** The final aggregate passed 931 tests, skipped 31, and
+had zero failures, 197 warnings, and 83.54% measured branch coverage in 481.88
+seconds. The unchanged 70% branch gate passed. Skips were database/platform
+conditional (no `YNOY_TEST_DATABASE_URL` and Windows symlink/file-identity
+conditions), so PostgreSQL integration is unverified.
+
+**Additional evidence:** 33 focused defect tests, 15 independent external-
+witness correctness tests (two capability-dependent cases deselected), and six
+installed-wheel CLI tests passed. Ruff, mypy on 311 files, source limits,
+compileall, and diff check passed. The rebuilt wheel installed via bundled pip
+and the installed `ynoy.exe` ran. A code-only review of a 53-file manifest
+reported no confirmed P0/P1/P2 findings; GitHub review remains pending after
+the draft PR.
+
+**Validation history:** The first aggregate was 900 passed, 31 skipped, four
+failed. The history-test oracle/setup was corrected. Three baseline expiry
+failures were verified against the untouched base, then a clock-only fixture
+change passed three focused tests. The final aggregate above covers the
+corrected state; the initial result remains preserved as history.
+
+**Limits:** Neither aggregate nor witness results establish real-corpus
+privacy, source lifecycle/deletion, registered backup erasure, WAL/SHM
+cleanup, interrupted-import recovery, retrieval quality, or persona fidelity.
+The two deselected witness cases require an opaque privacy-blind index and
+external source mutation, capabilities outside this adapter. RQ-043 remains
+open.
+
+## Supersession Binding and Conflict-Key Follow-Up — 2026-09-30
+
+The implementation now refuses `operation='supersede'` before consuming
+authorization. `FactProposal` lacks the canonical active/query-valid receipt
+tuple for the same subject, layer, and decision key required by the
+implementation-test contract. This is a fail-closed boundary, not implemented
+supersession binding or cycle-safe supersession; `correct` and `retract` remain
+supported.
+
+The adapter's outer, cross-review
+`DirectMemoryBrief.unresolved_conflicts` grouping keys on subject, layer, and
+explicit `fact_key`. Independent keys do not create a false cross-review
+conflict, while opposite modalities on one key conflict even if wording
+differs. Native per-review `DecisionBrief` detection retains its existing
+layer-plus-normalized-prose behavior; the native resolver and hashes were not
+migrated. The previous 931-pass aggregate is
+the `811f6fd` checkpoint and predates this change.
+
+## Follow-Up Validation Checkpoint — 2026-09-30
+
+The current full suite passed 935 with 31 conditional skips and zero failures,
+197 warnings, and 83.55% measured branch coverage in 461.27 seconds. The 70%
+gate passed. Thirty-one focused tests and six installed-wheel CLI tests passed;
+model, network, and PostgreSQL calls were blocked for the CLI run. Two changed
+production modules matched the installed-wheel bytes. Ruff, mypy over 311
+files, source limits, compileall, and diff check passed.
+
+The independent witness run passed 14 and explicitly deselected three cases.
+Two require deferred corpus APIs; one conflicts with the adapter's outer
+cross-review contract by expecting different explicit keys to conflict
+because their prose is alike.
+Four tracked decision-key cases cover distinct keys, same-key modality
+conflicts across wording, and layer separation. The baseline `811f6fd` targeted
+comparison reproduced three failures and two passes; those outcomes are
+historical. GitHub review remains a separate exact-head gate; the earlier
+checkpoint review does not cover these changes. These results do not establish
+PostgreSQL integration or real-corpus, retrieval, or persona claims.
+
+## Direct-Memory P1 Remediation Contract — 2026-09-30
+
+The reported remediation contract strengthens three system boundaries:
+immutable strict-JSON capture before authorization plus reload verification;
+explicit private-by-default versus synthetic data-plane identity carried
+outside native content hashes; and owner/link-safe creation checks for new
+POSIX roots/files. Legacy schema v1 and unlabelled index 0.1 are rejected
+read-only. New index envelope 0.2 stores plane outside content identity and
+uses separate private and D0 synthetic structural-index directories. Source,
+brief, and export envelopes retain the outer plane label while native hashes
+remain unchanged.
+
+This is an implementation contract update, not a claim that the remediation
+passes. At this architecture-only checkpoint, three P1 items awaited gates
+and exact-head review. Historical
+935/31/83.55% results belong to published head
+`b9f96e3733ae5ddf3f0ccc0b67f956ea6a80af4d`; current test counts are not final.
+Windows ACL behavior is OS-managed and unverified, and POSIX runtime
+verification was unavailable (`wsl --list` returned `E_ACCESSDENIED`). Six
+remote P2 findings remain open and nonblocking. Deferred real-archive
+lifecycle, deletion, and invalidation remain outside this update. See Event
+067, L-056, RQ-044, and the [adapter architecture note](direct-assistant-memory-adapter.md).
+
+## Pre-Fix Local P1 Implementation Checkpoint — 2026-09-30
+
+The frozen-manifest-33 candidate
+(`a3b71e82f04ccad07324db2ac120a6fa147d8bcf38b52910710bb7603189f5c2`)
+passed the reported local implementation gates: 947 passed, 37 skipped, zero
+failed; 73 focused cases passed with six POSIX skips; the final wheel passed
+14 CLI plus plane/index cases; 19 changed sources matched wheel bytes; and
+Ruff, mypy over 317 files, source limits, compile, and diff checks passed.
+L-057 records timings, log path, and wheel hash. The 37 aggregate skips are
+the prior 31 database/platform skips plus six POSIX skips, so PostgreSQL and
+POSIX runtime behavior remain unverified.
+
+At this manifest-33 checkpoint, independent review and exact-head GitHub
+review were pending. Event 069 supersedes this review status. This result
+does not change the historical 935/31/83.55%
+checkpoint, the six open nonblocking P2 findings, or deferred real-corpus
+lifecycle/deletion/invalidation scope.
+
+## Corrective Review and Manifest-36 Fix — 2026-09-30
+
+Independent Sol/high correctness and GPT-6.1 Sol/ultra security review found
+the same P1 on the manifest-33 candidate: ordinary `correct` could build from
+an empty supersessions mapping while build-clock state changed after
+authorization, commit an inadmissible wrapper, consume the receipt, and fail
+reload. The source owner reports fixing it by detaching `MappingProxyType`
+selection before validation/hash and extracting only the SQL insert into
+`correction_records.py`, preserving native hash and API.
+
+Manifest 36 SHA-256 is
+`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`; prior
+manifest-33 hashes are reported unchanged. The correction/auth/history/CLI
+slice passed 30 tests in 8.25 seconds; static checks including mypy over 318
+modules passed. At that report time, the full aggregate was still running;
+L-059 now records the final post-fix result. Manifest-33's 947/37 results
+remain pre-fix only.
+
+The reviews also deduplicated one additional open P2 in
+`payload_snapshot.py:205`, where the correction-derived state/kind/time/
+revision matcher only partially binds state. A helper/memory probe accepted
+wrong state when the row-unkeyed digest was recomputed; no end-to-end
+corrupted-file proof is available, while native brief replay still receives
+the correct receipt. This finding remains unfixed. Seven P2 findings are open
+in total; source/transcript review reported no P0. At that report time, final
+delta-security review was pending. L-060 records the completed review; exact-
+head GitHub review remains pending. See Event 069, L-058, L-060, and RQ-044.
+
+## Final Post-Fix Aggregate — 2026-09-30
+
+Manifest 36 (`9769921c5fb3ef99dc4ead90c0120c3c8883a35bac60049e06b4b83a37e0a1d4`)
+passed the full aggregate: 949 passed, 37 skipped, zero failures, 197
+warnings, and 83.39% measured branch coverage in 472.95 seconds. The final
+wheel passed 16 cases in 4.45 seconds, and 21 production sources matched
+wheel bytes. Ruff, mypy over 318 modules, source limits, compile, and diff
+checks passed. L-059 records the log path and wheel hash. The 947/37/83.39%
+manifest-33 result is pre-fix; 935/31/83.55% is older history.
+
+Original-candidate general correctness review concluded with no remaining
+P0/P1 and one P2; seven P2 findings remain open overall. GPT-6.1 Sol/ultra
+completed bounded review of the three-file fix and closed that P1 with no
+residual P0/P1 in the reviewed delta (L-060). Exact-head GitHub review remains
+pending. The PR remains draft. CI, POSIX runtime,
+PostgreSQL, and real-corpus lifecycle/deletion gaps remain; no production-ready
+claim follows.

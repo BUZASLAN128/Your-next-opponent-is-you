@@ -1,5 +1,48 @@
 # Research Hub
 
+> 2026-09-30 scoped direct-assistant memory decision: the user authorized a
+> local SQLite append adapter and deterministic PageIndex navigation for
+> continued work in the existing main assistant. The existing PostgreSQL V1
+> core remains in force for its current paths. The historical checkpoint at
+> published head `b9f96e3733ae5ddf3f0ccc0b67f956ea6a80af4d` passed 935 tests,
+> skipped 31, and had zero failures, with 197 warnings and 83.55% branch
+> coverage. Focused, installed-wheel CLI, independent-witness,
+> static-check, and package checks are separately recorded below. The prepared
+> index retains exact source text in a private bundle; it is not a privacy-
+> blind metadata index.
+> Real-corpus readiness remains blocked on source binding, deletion/backup and
+> SQLite sidecar cleanup, interrupted-import recovery, and adoption gates. No
+> full executive-agent parity, retrieval accuracy, or real-corpus claim follows.
+> The first integrated run at prior checkpoint `811f6fd` reported 900 passed,
+> 31 skipped, and 4 failures; its history oracle/setup and clock-only baseline
+> fixtures were corrected. That checkpoint's aggregate passed 931 tests,
+> skipped 31, had no failures, and measured 83.54% branch coverage (70% gate
+> unchanged). That checkpoint's 31 skips were database/platform conditional; no
+> PostgreSQL integration or real-corpus privacy claim follows. Ruff, mypy on
+> 311 files, source limits, compileall, and diff check passed. The prior
+> checkpoint wheel ran through bundled-pip isolated installation; full offline `uv sync` still hits Windows PE-launcher
+> handling. GitHub review remains a separate exact-head gate; the earlier
+> checkpoint review does not cover these changes. See L-055 for the
+> historical follow-up validation and witness exclusions.
+> See the [architecture note](direct-assistant-memory-adapter.md), Event 066,
+> D-076, L-051, L-054, L-055, RQ-042, and RQ-043.
+
+> 2026-09-30 P1 remediation update: Event 067 and L-056 record the data-plane
+> and filesystem contracts. Review found a P1 in the manifest-33 `correct`
+> path; the source owner reports its fix in manifest 36. The post-fix full
+> aggregate passed 949 with 37 skipped, 83.39% branch coverage, and zero
+> failures. Wheel and static checks passed. Manifest-33's 947/37 result is
+> pre-fix; 935/31/83.55% is older history. Seven P2 findings remain open.
+> GPT-6.1 Sol/ultra completed bounded review of the three-file fix and closed
+> the P1 with no residual P0/P1 in that delta. Exact-head GitHub review is
+> pending. PostgreSQL, POSIX runtime, CI, and real-corpus lifecycle gaps
+> remain. See Event 070 and L-060. The PR
+> is draft and not production-ready. See
+> [RQ-044](open-questions.md#rq-044--do-the-direct-memory-p1-remediations-pass-their-final-gates),
+> [convergence update](convergence-map.md#direct-memory-p1-remediation-contract--2026-09-30),
+> and the [adapter architecture note](direct-assistant-memory-adapter.md).
+> Events 068–069 and L-057–L-058 preserve earlier checkpoints and the P1 fix.
+
 > 2026-07-20 product-direction checkpoint: the confirmed target is a personal
 > executive agent that carries the user's decision logic, manages projects,
 > organizes agents, and returns to the user when uncertainty is material. Main
@@ -78,8 +121,14 @@
 > bounded assisted review implemented; the private audit awaits represented-
 > user labels and the first new proposal receipt remains unreliable, while real
 > persona evidence, sealed comparison, and production security proofs remain
-> pending
-> Last updated: 2026-07-18
+> pending. A scoped direct-main-assistant memory adapter's current synthetic
+> aggregate passed 935 tests with 31 conditional skips and zero failures; the
+> separate 14-pass/3-deselected independent-witness result is not all green.
+> The 31 database/platform-conditional skips mean no PostgreSQL integration or
+> real-corpus claim is implied. Real-corpus
+> source binding, registered erasure, backup/WAL-SHM cleanup, and import
+> recovery also remain open.
+> Last updated: 2026-09-30
 > Infrastructure status: the V1 local CLI/runtime baseline is confirmed; one
 > pinned Qwen3-8B loopback extractor has synthetic and bounded private
 > proposal evidence, while assisted-review decisions, correction quality,

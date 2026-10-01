@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import Field, model_validator
 
 from ynoy.constants import DEFAULT_BOOTSTRAP_MAX_STATEMENT_BYTES
+from ynoy.errors import DataValidationError
 from ynoy.models.base import (
     ClaimHolder,
     DataClass,
@@ -25,6 +26,7 @@ from ynoy.models.review_vocab import (
     SpeechAct,
     TargetLayer,
 )
+from ynoy.source_spans import validate_exact_source_spans
 from ynoy.util import sha256_text
 
 
@@ -95,6 +97,8 @@ class InteractionReceipt(RecordBase):
 
     @model_validator(mode="after")
     def source_contract_is_consistent(self) -> InteractionReceipt:
+        if self.created_at.utcoffset() is None:
+            raise ValueError("interaction creation time must include a timezone")
         identifiers = (self.source_name, self.conversation_id, self.turn_id)
         if any(not value.strip() or value != value.strip() for value in identifiers):
             raise ValueError("interaction source identifiers must be trimmed")
@@ -105,8 +109,15 @@ class InteractionReceipt(RecordBase):
                 raise ValueError("unknown event time cannot carry a timestamp")
         elif self.event_time is None:
             raise ValueError("known event time precision requires a timestamp")
+        elif self.event_time.utcoffset() is None:
+            raise ValueError("known event time must include a timezone")
         elif self.event_time_precision == "date_only" and any(
-            (self.event_time.hour, self.event_time.minute, self.event_time.second)
+            (
+                self.event_time.hour,
+                self.event_time.minute,
+                self.event_time.second,
+                self.event_time.microsecond,
+            )
         ):
             raise ValueError("date-only event time must use midnight")
         if not _is_bounded_text(self.response):
@@ -228,6 +239,17 @@ class InteractionReview(StrictModel):
             for claim in self.claims
         ):
             raise ValueError("review claims must match source receipt and subject")
+        try:
+            validate_exact_source_spans(
+                self.source.response,
+                (
+                    (s.character_start, s.character_end, s.text)
+                    for claim in self.claims
+                    for s in claim.source_spans
+                ),
+            )
+        except DataValidationError as exc:
+            raise ValueError(exc.message) from exc
         if self.allowed_actions != tuple(ReviewAction):
             raise ValueError("review must expose every canonical correction action")
         model_assisted = self.proposal_method == "local_model"
